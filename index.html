@@ -249,21 +249,22 @@ button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent);
     </div>
     <dl class="readout">
       <div><dt>스펙트럼 중심</dt><dd id="centroid">— Hz</dd></div>
-      <div><dt>장면</dt><dd id="sceneName">Bloom</dd></div>
+      <div><dt>장면</dt><dd id="sceneName">Ring</dd></div>
       <div><dt>대칭 수</dt><dd id="sym">6</dd></div>
       <div><dt>감지한 박</dt><dd id="beatCount">0</dd></div>
     </dl>
-    <p class="keys"><kbd>Space</kbd> 재생 · <kbd>1–3</kbd> 장면 · <kbd>A</kbd> 자동 전환<br><kbd>H</kbd> 화면 정리 · <kbd>F</kbd> 전체화면</p>
+    <p class="keys"><kbd>Space</kbd> 재생 · <kbd>1–4</kbd> 장면 · <kbd>A</kbd> 자동 전환<br><kbd>H</kbd> 화면 정리 · <kbd>F</kbd> 전체화면</p>
   </aside>
 
   <section class="intro" id="intro">
     <h2>음악이 색과 형태가 되는 무대</h2>
     <p>소리를 실시간으로 분석해 박자와 주파수 대역마다 다른 움직임을 줍니다.</p>
     <dl class="map">
-      <dt>BEAT</dt><dd>박이 감지될 때마다 빛이 터지고 색이 이동합니다. 8박마다 대칭 수가 바뀝니다.</dd>
-      <dt>LOW</dt><dd>저음이 중심 형태의 크기와 맥동을 정합니다.</dd>
-      <dt>MID</dt><dd>중음이 윤곽의 굴곡과 회전 속도를 바꿉니다.</dd>
-      <dt>HIGH</dt><dd>고음이 선의 굵기와 반짝이는 입자를 만듭니다.</dd>
+      <dt>RING</dt><dd>조용할 때는 얇은 원 하나만 남습니다. 원의 위쪽은 저음, 아래쪽은 고음을 맡습니다.</dd>
+      <dt>LOW</dt><dd>저음이 울리면 원의 위쪽이 바깥으로 크게 휘어집니다.</dd>
+      <dt>MID</dt><dd>중음은 원의 옆구리를 휘게 하면서 동시에 두께를 더하고, 원 전체에 잔물결을 만듭니다.</dd>
+      <dt>HIGH</dt><dd>고음이 울리면 원의 아래쪽 선이 두꺼워집니다.</dd>
+      <dt>BEAT</dt><dd>박마다 원이 살짝 부풀고 바깥으로 얇은 잔향 원이 퍼지며 색이 이동합니다.</dd>
       <dt>HUE</dt><dd>스펙트럼 중심 주파수가 높을수록 색이 차가운 쪽으로 이동합니다.</dd>
     </dl>
     <div class="intro-actions">
@@ -281,11 +282,12 @@ button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent);
     <button id="micBtn">마이크</button>
     <span class="spacer"></span>
     <div class="seg" role="group" aria-label="장면">
-      <button data-scene="0" aria-pressed="true">1 Bloom</button>
-      <button data-scene="1" aria-pressed="false">2 Tunnel</button>
-      <button data-scene="2" aria-pressed="false">3 Orbit</button>
+      <button data-scene="0" aria-pressed="true">1 Ring</button>
+      <button data-scene="1" aria-pressed="false">2 Bloom</button>
+      <button data-scene="2" aria-pressed="false">3 Tunnel</button>
+      <button data-scene="3" aria-pressed="false">4 Orbit</button>
     </div>
-    <button id="autoBtn" aria-pressed="true">자동 전환</button>
+    <button id="autoBtn" aria-pressed="false">자동 전환</button>
     <button id="fsBtn">전체화면</button>
   </nav>
 </div>
@@ -680,10 +682,10 @@ function analyse(t, dt) {
 /* ------------------------------------------------------------------ */
 /* Visual state                                                       */
 /* ------------------------------------------------------------------ */
-const SCENES = ['Bloom', 'Tunnel', 'Orbit'];
+const SCENES = ['Ring', 'Bloom', 'Tunnel', 'Orbit'];
 const SYMS = [5, 6, 7, 8, 9, 12];
-const V = { scene: 0, auto: true, hueBase: 250, hue: 250, rot: 0, spin: 0, sym: 6,
-            rings: [], ringClock: 0, parts: [], stars: [] };
+const V = { scene: 0, auto: false, hueBase: 250, hue: 250, rot: 0, spin: 0, sym: 6,
+            rings: [], ringClock: 0, parts: [], stars: [], echoes: [], ringR: 0 };
 for (let i = 0; i < 180; i++) V.stars.push({ a: rand(0, TAU), d: rand(0, 1), s: rand(0.3, 1) });
 
 function onBeat() {
@@ -695,7 +697,11 @@ function onBeat() {
     do { s = SYMS[(Math.random() * SYMS.length) | 0]; } while (s === V.sym);
     V.sym = s;
   }
-  burst(Math.round(24 + F.sub * 70), 120 + F.sub * 420);
+  if (V.scene === 0) {
+    // ring scene: keep the circle legible, so emit a lighter burst from the ring itself
+    burst(Math.round(12 + F.sub * 30), 60 + F.sub * 220, V.ringR);
+    V.echoes.push({ r: V.ringR, life: 1 });
+  } else burst(Math.round(24 + F.sub * 70), 120 + F.sub * 420);
   spawnRing(true);
   if (V.auto && A.mode !== 'idle' && beatCount % 32 === 0) setScene((V.scene + 1) % SCENES.length);
 }
@@ -709,11 +715,11 @@ function setScene(i) {
 function hueDiff(a, b) { return ((b - a + 540) % 360) - 180; }
 
 /* particles: beat bursts from the centre, high-band sparkles on a ring */
-function burst(n, speed) {
+function burst(n, speed, fromR = 0) {
   const cx = W / 2, cy = H / 2;
   for (let i = 0; i < n; i++) {
     const a = rand(0, TAU), v = speed * rand(0.35, 1);
-    V.parts.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1,
+    V.parts.push({ x: cx + Math.cos(a) * fromR, y: cy + Math.sin(a) * fromR, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1,
                    decay: rand(0.5, 1.2), size: rand(1, 3), hue: V.hue + rand(-30, 40) });
   }
   if (V.parts.length > 1400) V.parts.splice(0, V.parts.length - 1400);
@@ -752,6 +758,101 @@ function spawnRing(strong) {
 /* ------------------------------------------------------------------ */
 /* Scenes                                                             */
 /* ------------------------------------------------------------------ */
+/* Ring: the base of the performance is a thin circle.
+   Going round the circle maps frequency: the top is the lowest bin, both sides climb
+   symmetrically, and the bottom is the highest bin. Low frequencies bend the circle
+   outward; high frequencies thicken the line; the mids in between do a little of both. */
+const RING_N = 360, RING_HALF = RING_N / 2;
+const ringV = new Float32Array(RING_HALF + 1);
+const ringS = new Float32Array(RING_HALF + 1);
+const ringOuterX = new Float32Array(RING_N), ringOuterY = new Float32Array(RING_N);
+const ringInnerX = new Float32Array(RING_N), ringInnerY = new Float32Array(RING_N);
+const smoothstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+
+function sceneRing(t, dt) {
+  const cx = W / 2, cy = H / 2, M = Math.min(W, H);
+  const R0 = M * 0.27;
+  const quiet = A.mode === 'idle' ? 0.45 : 1;
+
+  // sample the log spectrum onto the half circle, smoothed over time
+  for (let i = 0; i <= RING_HALF; i++) {
+    const x = (i / RING_HALF) * (NB - 12) + 2, j = x | 0, f = x - j;
+    const v = spec[j] * (1 - f) + spec[Math.min(NB - 1, j + 1)] * f;
+    const tilt = 0.75 + 0.7 * (i / RING_HALF);          // upper bins carry less energy; lift them
+    ringV[i] += (clamp(v * tilt, 0, 1) - ringV[i]) * Math.min(1, dt * 18);
+  }
+  // ... and over space, so bends read as smooth curves rather than spikes
+  for (let i = 0; i <= RING_HALF; i++) {
+    let s = 0, n = 0;
+    for (let d = -4; d <= 4; d++) {
+      const k = i + d;
+      if (k < 0 || k > RING_HALF) continue;
+      const w = 5 - Math.abs(d); s += ringV[k] * w; n += w;
+    }
+    ringS[i] = s / n;
+  }
+
+  const base = R0 * (1 + F.sub * 0.05 + F.pulse * 0.03);
+  V.ringR = base;
+  const bendAmp = M * 0.14, thickAmp = M * 0.05;
+
+  for (let i = 0; i < RING_N; i++) {
+    const a = -Math.PI / 2 + (i / RING_N) * TAU;
+    const k = i <= RING_HALF ? i : RING_N - i;           // mirror left and right
+    const x = k / RING_HALF;                              // 0 = lowest bin (top) .. 1 = highest (bottom)
+    const e = Math.pow(ringS[k], 2.2) * quiet;            // gate quiet bins so silence stays a clean circle
+    const bendW = 1 - smoothstep(0.3, 0.7, x);
+    const thickW = smoothstep(0.3, 0.7, x);
+    const ripple = Math.sin(a * V.sym * 2 + V.rot * 3) * F.mid * M * 0.008 * quiet;
+    const r = base + e * bendAmp * bendW + ripple;
+    const half = (1.1 + e * thickAmp * thickW + F.high * 1.5 * quiet) / 2;
+    const c = Math.cos(a), s = Math.sin(a);
+    ringOuterX[i] = cx + c * (r + half); ringOuterY[i] = cy + s * (r + half);
+    ringInnerX[i] = cx + c * (r - half); ringInnerY[i] = cy + s * (r - half);
+  }
+
+  // the reference circle: where the ring sits in silence
+  g.strokeStyle = `hsla(${V.hue},40%,80%,0.14)`;
+  g.lineWidth = 1;
+  g.beginPath(); g.arc(cx, cy, R0, 0, TAU); g.stroke();
+
+  // beat echoes: thin circles that leave the ring and fade
+  let w = 0;
+  for (const ec of V.echoes) {
+    ec.r += dt * M * (0.25 + F.low * 0.3);
+    ec.life -= dt * (reduceMotion ? 2.5 : 1.1);
+    if (ec.life <= 0) continue;
+    V.echoes[w++] = ec;
+    g.strokeStyle = `hsla(${V.hue + 30},90%,70%,${ec.life * 0.45})`;
+    g.lineWidth = 1;
+    g.beginPath(); g.arc(cx, cy, ec.r, 0, TAU); g.stroke();
+  }
+  V.echoes.length = w;
+
+  // the ring itself: a filled band between the outer and inner contours (inner traced backwards
+  // so the centre stays open), coloured from the low-frequency hue at the top to the high-frequency hue at the bottom
+  g.beginPath();
+  g.moveTo(ringOuterX[0], ringOuterY[0]);
+  for (let i = 1; i < RING_N; i++) g.lineTo(ringOuterX[i], ringOuterY[i]);
+  g.closePath();
+  g.moveTo(ringInnerX[RING_N - 1], ringInnerY[RING_N - 1]);
+  for (let i = RING_N - 2; i >= 0; i--) g.lineTo(ringInnerX[i], ringInnerY[i]);
+  g.closePath();
+  let fill = `hsla(${V.hue},95%,68%,0.95)`;
+  if (g.createConicGradient) {
+    const cg = g.createConicGradient(-Math.PI / 2, cx, cy);
+    cg.addColorStop(0, `hsla(${V.hue},95%,66%,0.95)`);
+    cg.addColorStop(0.5, `hsla(${V.hue + 110},95%,72%,0.95)`);
+    cg.addColorStop(1, `hsla(${V.hue},95%,66%,0.95)`);
+    fill = cg;
+  }
+  // drawn opaque over the additive layers so the colour holds instead of blowing out to white
+  g.globalCompositeOperation = 'source-over';
+  g.fillStyle = fill;
+  g.fill('nonzero');
+  g.globalCompositeOperation = 'lighter';
+}
+
 function sceneBloom(t) {
   const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.5, k = V.sym, h = V.hue;
   const M = 48;
@@ -893,7 +994,7 @@ function sceneOrbit(t, dt) {
   }
 }
 
-const sceneFns = [sceneBloom, sceneTunnel, sceneOrbit];
+const sceneFns = [sceneRing, sceneBloom, sceneTunnel, sceneOrbit];
 
 /* ------------------------------------------------------------------ */
 /* HUD                                                                */
@@ -957,7 +1058,7 @@ function frame(now) {
   drawParticles(dt);
 
   if (!reduceMotion && F.pulse > 0.02) {
-    g.fillStyle = `hsla(${V.hue},100%,60%,${F.pulse * 0.07})`;
+    g.fillStyle = `hsla(${V.hue},100%,60%,${F.pulse * (V.scene === 0 ? 0.025 : 0.07)})`;
     g.fillRect(0, 0, W, H);
   }
   g.globalCompositeOperation = 'source-over';
@@ -1018,7 +1119,7 @@ window.addEventListener('keydown', (e) => {
     if (e.target.closest('button, label')) return;   // let the focused control handle its own Space
     e.preventDefault(); togglePlay();
   }
-  else if (k === '1' || k === '2' || k === '3') setScene(+k - 1);
+  else if (k >= '1' && k <= '4' && k.length === 1) setScene(+k - 1);
   else if (k === 'a') autoBtn.click();
   else if (k === 'h') ui.classList.toggle('is-hidden');
   else if (k === 'f') toggleFullscreen();
