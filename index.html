@@ -260,11 +260,11 @@ button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent);
     <h2>음악이 색과 형태가 되는 무대</h2>
     <p>소리를 실시간으로 분석해 박자와 주파수 대역마다 다른 움직임을 줍니다.</p>
     <dl class="map">
-      <dt>RING</dt><dd>조용할 때는 얇은 원 하나만 남습니다. 원의 위쪽은 저음, 아래쪽은 고음을 맡습니다.</dd>
-      <dt>LOW</dt><dd>저음이 울리면 원의 위쪽이 바깥으로 크게 휘어집니다.</dd>
-      <dt>MID</dt><dd>중음은 원의 옆구리를 휘게 하면서 동시에 두께를 더하고, 원 전체에 잔물결을 만듭니다.</dd>
-      <dt>HIGH</dt><dd>고음이 울리면 원의 아래쪽 선이 두꺼워집니다.</dd>
-      <dt>BEAT</dt><dd>박마다 원이 살짝 부풀고 바깥으로 얇은 잔향 원이 퍼지며 색이 이동합니다.</dd>
+      <dt>RING</dt><dd>조용할 때는 얇은 원 하나만 남습니다. 소리가 들어오면 원에서 선이 자라 나오고, 원과 선 사이가 색으로 채워집니다.</dd>
+      <dt>LOW</dt><dd>원의 위쪽이 저음을 맡아 넓고 부드럽게 크게 부풀어 오릅니다.</dd>
+      <dt>MID</dt><dd>원의 옆부분이 중음을 맡고, 원 전체에 잔물결이 생깁니다.</dd>
+      <dt>HIGH</dt><dd>원의 아래쪽이 고음을 맡아 잘고 날카로운 결로 움직입니다.</dd>
+      <dt>BEAT</dt><dd>박마다 원 자체가 부풀고, 그 위의 선도 함께 밀려나며 색이 이동합니다.</dd>
       <dt>HUE</dt><dd>스펙트럼 중심 주파수가 높을수록 색이 차가운 쪽으로 이동합니다.</dd>
     </dl>
     <div class="intro-actions">
@@ -685,7 +685,7 @@ function analyse(t, dt) {
 const SCENES = ['Ring', 'Bloom', 'Tunnel', 'Orbit'];
 const SYMS = [5, 6, 7, 8, 9, 12];
 const V = { scene: 0, auto: false, hueBase: 250, hue: 250, rot: 0, spin: 0, sym: 6,
-            rings: [], ringClock: 0, parts: [], stars: [], echoes: [], ringR: 0 };
+            rings: [], ringClock: 0, parts: [], stars: [], ringR: 0 };
 for (let i = 0; i < 180; i++) V.stars.push({ a: rand(0, TAU), d: rand(0, 1), s: rand(0.3, 1) });
 
 function onBeat() {
@@ -698,9 +698,8 @@ function onBeat() {
     V.sym = s;
   }
   if (V.scene === 0) {
-    // ring scene: keep the circle legible, so emit a lighter burst from the ring itself
-    burst(Math.round(12 + F.sub * 30), 60 + F.sub * 220, V.ringR);
-    V.echoes.push({ r: V.ringR, life: 1 });
+    // ring scene: a light burst leaving the ring, so the shape stays legible
+    burst(Math.round(10 + F.sub * 24), 60 + F.sub * 200, V.ringR * 1.15);
   } else burst(Math.round(24 + F.sub * 70), 120 + F.sub * 420);
   spawnRing(true);
   if (V.auto && A.mode !== 'idle' && beatCount % 32 === 0) setScene((V.scene + 1) % SCENES.length);
@@ -726,9 +725,9 @@ function burst(n, speed, fromR = 0) {
 }
 function sparkle(dt) {
   const n = F.high * 220 * dt;
-  const R = Math.min(W, H) * (0.3 + F.sub * 0.15);
+  const R = V.scene === 0 ? V.ringR * 1.25 : Math.min(W, H) * (0.3 + F.sub * 0.15);
   for (let i = 0; i < n; i++) {
-    const a = rand(0, TAU), r = R * rand(0.6, 1.5);
+    const a = rand(0, TAU), r = R * (V.scene === 0 ? rand(1, 1.6) : rand(0.6, 1.5));
     V.parts.push({ x: W / 2 + Math.cos(a) * r, y: H / 2 + Math.sin(a) * r,
                    vx: Math.cos(a) * 20, vy: Math.sin(a) * 20, life: 1, decay: rand(1.5, 3),
                    size: rand(0.6, 1.8), hue: V.hue + 160 + rand(-20, 20) });
@@ -758,20 +757,33 @@ function spawnRing(strong) {
 /* ------------------------------------------------------------------ */
 /* Scenes                                                             */
 /* ------------------------------------------------------------------ */
-/* Ring: the base of the performance is a thin circle.
+/* Ring: the base of the performance is a thin circle, and everything grows out of it.
    Going round the circle maps frequency: the top is the lowest bin, both sides climb
-   symmetrically, and the bottom is the highest bin. Low frequencies bend the circle
-   outward; high frequencies thicken the line; the mids in between do a little of both. */
+   symmetrically, and the bottom is the highest bin. Each angle pushes a single performance
+   line outward from the circle by that frequency's level, and the space between the circle
+   and the line is filled, so the circle, its beat swell and the moving line are one shape.
+   Lows make broad, smooth swells; highs make finer, sharper texture. */
 const RING_N = 360, RING_HALF = RING_N / 2;
 const ringV = new Float32Array(RING_HALF + 1);
-const ringS = new Float32Array(RING_HALF + 1);
-const ringOuterX = new Float32Array(RING_N), ringOuterY = new Float32Array(RING_N);
-const ringInnerX = new Float32Array(RING_N), ringInnerY = new Float32Array(RING_N);
+const ringWide = new Float32Array(RING_HALF + 1);
+const ringFine = new Float32Array(RING_HALF + 1);
+const ringX = new Float32Array(RING_N), ringY = new Float32Array(RING_N);
 const smoothstep = (a, b, x) => { const u = clamp((x - a) / (b - a), 0, 1); return u * u * (3 - 2 * u); };
+
+function smoothInto(src, dst, radius) {
+  for (let i = 0; i <= RING_HALF; i++) {
+    let s = 0, n = 0;
+    for (let d = -radius; d <= radius; d++) {
+      const k = i + d;
+      if (k < 0 || k > RING_HALF) continue;
+      const w = radius + 1 - Math.abs(d); s += src[k] * w; n += w;
+    }
+    dst[i] = s / n;
+  }
+}
 
 function sceneRing(t, dt) {
   const cx = W / 2, cy = H / 2, M = Math.min(W, H);
-  const R0 = M * 0.27;
   const quiet = A.mode === 'idle' ? 0.45 : 1;
 
   // sample the log spectrum onto the half circle, smoothed over time
@@ -781,75 +793,69 @@ function sceneRing(t, dt) {
     const tilt = 0.75 + 0.7 * (i / RING_HALF);          // upper bins carry less energy; lift them
     ringV[i] += (clamp(v * tilt, 0, 1) - ringV[i]) * Math.min(1, dt * 18);
   }
-  // ... and over space, so bends read as smooth curves rather than spikes
-  for (let i = 0; i <= RING_HALF; i++) {
-    let s = 0, n = 0;
-    for (let d = -4; d <= 4; d++) {
-      const k = i + d;
-      if (k < 0 || k > RING_HALF) continue;
-      const w = 5 - Math.abs(d); s += ringV[k] * w; n += w;
-    }
-    ringS[i] = s / n;
-  }
+  smoothInto(ringV, ringWide, 9);   // broad curves for the lows
+  smoothInto(ringV, ringFine, 2);   // finer detail for the highs
 
-  const base = R0 * (1 + F.sub * 0.05 + F.pulse * 0.03);
+  // the base circle swells with the sub-bass and on each beat; the line rides on top of it
+  const base = M * 0.25 * (1 + F.sub * 0.07 + F.pulse * 0.04);
   V.ringR = base;
-  const bendAmp = M * 0.14, thickAmp = M * 0.05;
+  const amp = M * 0.17;
 
+  let maxR = base;
   for (let i = 0; i < RING_N; i++) {
     const a = -Math.PI / 2 + (i / RING_N) * TAU;
     const k = i <= RING_HALF ? i : RING_N - i;           // mirror left and right
     const x = k / RING_HALF;                              // 0 = lowest bin (top) .. 1 = highest (bottom)
-    const e = Math.pow(ringS[k], 2.2) * quiet;            // gate quiet bins so silence stays a clean circle
-    const bendW = 1 - smoothstep(0.3, 0.7, x);
-    const thickW = smoothstep(0.3, 0.7, x);
-    const ripple = Math.sin(a * V.sym * 2 + V.rot * 3) * F.mid * M * 0.008 * quiet;
-    const r = base + e * bendAmp * bendW + ripple;
-    const half = (1.1 + e * thickAmp * thickW + F.high * 1.5 * quiet) / 2;
-    const c = Math.cos(a), s = Math.sin(a);
-    ringOuterX[i] = cx + c * (r + half); ringOuterY[i] = cy + s * (r + half);
-    ringInnerX[i] = cx + c * (r - half); ringInnerY[i] = cy + s * (r - half);
+    const fineW = smoothstep(0.25, 0.75, x);
+    const v = ringWide[k] * (1 - fineW) + ringFine[k] * fineW;
+    const e = Math.pow(v, 2) * quiet;                     // gate quiet bins so silence stays a clean circle
+    const reach = amp * (1 - 0.35 * x);                   // lows reach further than highs
+    const ripple = (0.5 + 0.5 * Math.sin(a * V.sym * 2 + V.rot * 3)) * F.mid * M * 0.012 * quiet;
+    const r = base + e * reach + ripple;
+    if (r > maxR) maxR = r;
+    ringX[i] = cx + Math.cos(a) * r; ringY[i] = cy + Math.sin(a) * r;
   }
 
-  // the reference circle: where the ring sits in silence
-  g.strokeStyle = `hsla(${V.hue},40%,80%,0.14)`;
-  g.lineWidth = 1;
-  g.beginPath(); g.arc(cx, cy, R0, 0, TAU); g.stroke();
-
-  // beat echoes: thin circles that leave the ring and fade
-  let w = 0;
-  for (const ec of V.echoes) {
-    ec.r += dt * M * (0.25 + F.low * 0.3);
-    ec.life -= dt * (reduceMotion ? 2.5 : 1.1);
-    if (ec.life <= 0) continue;
-    V.echoes[w++] = ec;
-    g.strokeStyle = `hsla(${V.hue + 30},90%,70%,${ec.life * 0.45})`;
-    g.lineWidth = 1;
-    g.beginPath(); g.arc(cx, cy, ec.r, 0, TAU); g.stroke();
-  }
-  V.echoes.length = w;
-
-  // the ring itself: a filled band between the outer and inner contours (inner traced backwards
-  // so the centre stays open), coloured from the low-frequency hue at the top to the high-frequency hue at the bottom
-  g.beginPath();
-  g.moveTo(ringOuterX[0], ringOuterY[0]);
-  for (let i = 1; i < RING_N; i++) g.lineTo(ringOuterX[i], ringOuterY[i]);
-  g.closePath();
-  g.moveTo(ringInnerX[RING_N - 1], ringInnerY[RING_N - 1]);
-  for (let i = RING_N - 2; i >= 0; i--) g.lineTo(ringInnerX[i], ringInnerY[i]);
-  g.closePath();
-  let fill = `hsla(${V.hue},95%,68%,0.95)`;
-  if (g.createConicGradient) {
-    const cg = g.createConicGradient(-Math.PI / 2, cx, cy);
-    cg.addColorStop(0, `hsla(${V.hue},95%,66%,0.95)`);
-    cg.addColorStop(0.5, `hsla(${V.hue + 110},95%,72%,0.95)`);
-    cg.addColorStop(1, `hsla(${V.hue},95%,66%,0.95)`);
-    fill = cg;
-  }
-  // drawn opaque over the additive layers so the colour holds instead of blowing out to white
   g.globalCompositeOperation = 'source-over';
-  g.fillStyle = fill;
+
+  // inside the circle: a soft tint that brightens with the overall level
+  const inner = g.createRadialGradient(cx, cy, 0, cx, cy, base);
+  inner.addColorStop(0, `hsla(${V.hue},80%,40%,0)`);
+  inner.addColorStop(0.7, `hsla(${V.hue - 20},80%,45%,${0.06 + F.level * 0.12})`);
+  inner.addColorStop(1, `hsla(${V.hue},90%,55%,${0.18 + F.level * 0.25})`);
+  g.fillStyle = inner;
+  g.beginPath(); g.arc(cx, cy, base, 0, TAU); g.fill();
+
+  // the performance band: from the base circle out to the moving line, filled as one shape.
+  // the line is traced clockwise and the circle anticlockwise, so only the band between them fills
+  g.beginPath();
+  g.moveTo(ringX[0], ringY[0]);
+  for (let i = 1; i < RING_N; i++) g.lineTo(ringX[i], ringY[i]);
+  g.closePath();
+  g.moveTo(cx + base, cy);
+  g.arc(cx, cy, base, 0, -TAU, true);
+  g.closePath();
+  const reachTo = Math.max(base + 2, maxR);
+  const band = g.createRadialGradient(cx, cy, base, cx, cy, reachTo);
+  band.addColorStop(0, `hsla(${V.hue},90%,50%,0.92)`);
+  band.addColorStop(0.5, `hsla(${V.hue + 50},95%,60%,0.9)`);
+  band.addColorStop(1, `hsla(${V.hue + 110},100%,72%,0.95)`);
+  g.fillStyle = band;
   g.fill('nonzero');
+
+  // the moving line and the base circle, drawn thin on top of the fill
+  g.beginPath();
+  g.moveTo(ringX[0], ringY[0]);
+  for (let i = 1; i < RING_N; i++) g.lineTo(ringX[i], ringY[i]);
+  g.closePath();
+  g.strokeStyle = `hsla(${V.hue + 110},100%,82%,0.95)`;
+  g.lineWidth = 1.4;
+  g.stroke();
+  g.beginPath(); g.arc(cx, cy, base, 0, TAU);
+  g.strokeStyle = `hsla(${V.hue},60%,88%,0.9)`;
+  g.lineWidth = 1.2;
+  g.stroke();
+
   g.globalCompositeOperation = 'lighter';
 }
 
@@ -1048,7 +1054,8 @@ function frame(now) {
 
   // motion trails: louder passages keep shorter trails so the image stays legible
   g.globalCompositeOperation = 'source-over';
-  const fade = reduceMotion ? 0.4 : 0.12 + 0.2 * F.level;
+  // the ring scene clears faster so its single connected shape stays crisp
+  const fade = reduceMotion ? 0.4 : V.scene === 0 ? 0.32 : 0.12 + 0.2 * F.level;
   g.fillStyle = `rgba(7,7,12,${fade})`;
   g.fillRect(0, 0, W, H);
 
