@@ -1,0 +1,1042 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Resonance Stage</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+KR:wght@400;500;600&display=swap">
+<style>
+/* Layout: full-bleed canvas stage; title top-left, analyzer HUD top-right, transport bar along the bottom.
+   Single dark look by choice (a performance stage); the accent hue is driven live by the music. */
+:root {
+  --stage: #07070c;
+  --ink: #eceaf4;
+  --dim: #9592a8;
+  --line: rgba(236, 234, 244, .16);
+  --panel: rgba(12, 11, 20, .58);
+  --accent: hsl(265 90% 68%);
+  --on-accent: #0b0a12;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+  --gutter: 20px;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+[hidden] { display: none !important; }
+body {
+  margin: 0;
+  background: var(--stage);
+  color: var(--ink);
+  font-family: var(--body);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+#stage { position: fixed; inset: 0; display: block; touch-action: manipulation; }
+
+.ui { position: fixed; inset: 0; pointer-events: none; transition: opacity .45s ease; }
+.ui > * { pointer-events: auto; }
+.ui.is-hidden { opacity: 0; }
+.ui.is-hidden > * { pointer-events: none; }
+
+.brand {
+  position: absolute;
+  top: calc(var(--gutter) + env(safe-area-inset-top, 0px));
+  left: var(--gutter);
+  max-width: calc(50% - var(--gutter));
+}
+.brand h1 {
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(20px, 2.8vw, 30px);
+  letter-spacing: -.01em;
+  line-height: 1;
+  margin: 0;
+}
+.brand h1 span {
+  display: block;
+  margin-top: .55em;
+  font-weight: 400;
+  font-size: .4em;
+  letter-spacing: .45em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+#trackName {
+  margin: 12px 0 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hud {
+  position: absolute;
+  top: calc(var(--gutter) + env(safe-area-inset-top, 0px));
+  right: var(--gutter);
+  width: 228px;
+  padding: 14px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  font-family: var(--mono);
+  font-size: 11px;
+}
+.bpm { display: flex; align-items: baseline; gap: 8px; }
+#bpm { font-family: var(--display); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.bpm small { color: var(--dim); letter-spacing: .14em; }
+#beatDot {
+  margin-left: auto;
+  align-self: center;
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: var(--accent);
+  opacity: .15;
+}
+.meters { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 14px; }
+.meter { display: grid; gap: 4px; justify-items: center; }
+.meter .bar { position: relative; width: 100%; height: 64px; background: rgba(236, 234, 244, .06); border-radius: 2px; overflow: hidden; }
+.meter b { position: absolute; inset: 0; background: var(--accent); transform-origin: bottom; transform: scaleY(0); }
+.meter span { letter-spacing: .08em; }
+.meter em { font-style: normal; font-size: 9px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.readout { display: grid; gap: 5px; margin: 14px 0 0; }
+.readout div { display: flex; justify-content: space-between; gap: 8px; }
+.readout dt { color: var(--dim); }
+.readout dd { margin: 0; font-variant-numeric: tabular-nums; }
+.keys { margin: 12px 0 0; padding-top: 10px; border-top: 1px solid var(--line); color: var(--dim); font-size: 10px; line-height: 1.7; }
+.keys kbd { font-family: var(--mono); color: var(--ink); }
+
+.intro {
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100% - 2 * var(--gutter)));
+  box-sizing: border-box;
+  padding: 28px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+.intro h2 {
+  margin: 0 0 12px;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(22px, 3.6vw, 30px);
+  line-height: 1.2;
+  text-wrap: balance;
+}
+.intro p { margin: 0; line-height: 1.7; color: #cfccdd; max-width: 60ch; }
+.intro .map { display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; margin: 16px 0 20px; font-size: 13px; }
+.intro .map dt { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; color: var(--accent); padding-top: 2px; }
+.intro .map dd { margin: 0; color: #cfccdd; }
+.intro-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.intro .hint { margin-top: 14px; font-size: 12px; color: var(--dim); }
+
+.transport {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px var(--gutter) calc(16px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(7, 7, 12, .9), rgba(7, 7, 12, 0));
+}
+.progress {
+  flex: 1 0 100%;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.progress .track { position: relative; width: 100%; height: 3px; background: rgba(236, 234, 244, .12); border-radius: 2px; overflow: hidden; }
+#progressFill { position: absolute; inset: 0; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+
+button, .btn {
+  font: 500 13px/1 var(--body);
+  color: var(--ink);
+  background: rgba(236, 234, 244, .06);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 10px 14px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color .15s, background .15s, color .15s;
+}
+button:hover, .btn:hover { border-color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.primary { background: var(--accent); color: var(--on-accent); border-color: transparent; font-weight: 600; }
+.primary:hover { border-color: transparent; filter: brightness(1.08); }
+button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+.seg { display: flex; }
+.seg button { border-radius: 0; }
+.seg button + button { margin-left: -1px; }
+.seg button:first-child { border-radius: 4px 0 0 4px; }
+.seg button:last-child { border-radius: 0 4px 4px 0; }
+.seg button[aria-pressed="true"] { position: relative; z-index: 1; }
+.spacer { flex: 1; }
+
+.drop {
+  position: fixed;
+  inset: 12px;
+  display: grid;
+  place-items: center;
+  border: 2px dashed var(--accent);
+  border-radius: 10px;
+  background: rgba(7, 7, 12, .7);
+  font-family: var(--display);
+  font-size: clamp(18px, 3vw, 28px);
+  pointer-events: none;
+}
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(110px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 2 * var(--gutter));
+  box-sizing: border-box;
+  padding: 10px 14px;
+  background: rgba(20, 18, 32, .92);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  :root { --gutter: 16px; }
+  .hud { width: 150px; padding: 10px; }
+  #bpm { font-size: 24px; }
+  .meters { gap: 4px; margin-top: 10px; }
+  .meter .bar { height: 40px; }
+  .meter em, .readout, .keys { display: none; }
+  .intro { top: 54%; padding: 20px; }
+  .intro .map { font-size: 12px; margin: 12px 0 16px; }
+  .spacer { display: none; }
+  button, .btn { padding: 9px 11px; font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ui, button, .btn { transition: none; }
+}
+</style>
+</head>
+<body>
+<canvas id="stage" aria-label="음악에 반응하는 시각화"></canvas>
+
+<div class="ui" id="ui">
+  <header class="brand">
+    <h1>Resonance<span>Audio · Visual</span></h1>
+    <p id="trackName">대기 중 · 소리 없이 미리보기</p>
+  </header>
+
+  <aside class="hud" aria-label="실시간 분석">
+    <div class="bpm"><span id="bpm">---</span><small>BPM</small><i id="beatDot" aria-hidden="true"></i></div>
+    <div class="meters" id="meters">
+      <div class="meter"><div class="bar"><b></b></div><span>SUB</span><em>20–60</em></div>
+      <div class="meter"><div class="bar"><b></b></div><span>LOW</span><em>60–250</em></div>
+      <div class="meter"><div class="bar"><b></b></div><span>MID</span><em>250–2k</em></div>
+      <div class="meter"><div class="bar"><b></b></div><span>HIGH</span><em>2k–6k</em></div>
+      <div class="meter"><div class="bar"><b></b></div><span>AIR</span><em>6k+</em></div>
+    </div>
+    <dl class="readout">
+      <div><dt>스펙트럼 중심</dt><dd id="centroid">— Hz</dd></div>
+      <div><dt>장면</dt><dd id="sceneName">Bloom</dd></div>
+      <div><dt>대칭 수</dt><dd id="sym">6</dd></div>
+      <div><dt>감지한 박</dt><dd id="beatCount">0</dd></div>
+    </dl>
+    <p class="keys"><kbd>Space</kbd> 재생 · <kbd>1–3</kbd> 장면 · <kbd>A</kbd> 자동 전환<br><kbd>H</kbd> 화면 정리 · <kbd>F</kbd> 전체화면</p>
+  </aside>
+
+  <section class="intro" id="intro">
+    <h2>음악이 색과 형태가 되는 무대</h2>
+    <p>소리를 실시간으로 분석해 박자와 주파수 대역마다 다른 움직임을 줍니다.</p>
+    <dl class="map">
+      <dt>BEAT</dt><dd>박이 감지될 때마다 빛이 터지고 색이 이동합니다. 8박마다 대칭 수가 바뀝니다.</dd>
+      <dt>LOW</dt><dd>저음이 중심 형태의 크기와 맥동을 정합니다.</dd>
+      <dt>MID</dt><dd>중음이 윤곽의 굴곡과 회전 속도를 바꿉니다.</dd>
+      <dt>HIGH</dt><dd>고음이 선의 굵기와 반짝이는 입자를 만듭니다.</dd>
+      <dt>HUE</dt><dd>스펙트럼 중심 주파수가 높을수록 색이 차가운 쪽으로 이동합니다.</dd>
+    </dl>
+    <div class="intro-actions">
+      <button id="introDemo" class="primary">데모 트랙 재생</button>
+      <label class="btn" for="fileInput">내 음악 파일 열기</label>
+    </div>
+    <p class="hint">오디오 파일을 화면에 끌어다 놓아도 재생됩니다.</p>
+  </section>
+
+  <nav class="transport" aria-label="재생 제어">
+    <div class="progress" id="progress" title="재생 위치"><div class="track"><div id="progressFill"></div></div></div>
+    <button id="playBtn" class="primary">▶ 데모 재생</button>
+    <input type="file" id="fileInput" accept="audio/*" hidden>
+    <label class="btn" for="fileInput">파일 열기</label>
+    <button id="micBtn">마이크</button>
+    <span class="spacer"></span>
+    <div class="seg" role="group" aria-label="장면">
+      <button data-scene="0" aria-pressed="true">1 Bloom</button>
+      <button data-scene="1" aria-pressed="false">2 Tunnel</button>
+      <button data-scene="2" aria-pressed="false">3 Orbit</button>
+    </div>
+    <button id="autoBtn" aria-pressed="true">자동 전환</button>
+    <button id="fsBtn">전체화면</button>
+  </nav>
+</div>
+
+<div class="drop" id="drop" hidden>여기에 놓으면 바로 재생합니다</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(() => {
+'use strict';
+
+const $ = (s) => document.querySelector(s);
+const canvas = $('#stage');
+const g = canvas.getContext('2d');
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const TAU = Math.PI * 2;
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const rand = (a, b) => a + Math.random() * (b - a);
+
+let W = 0, H = 0, DPR = 1;
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = window.innerWidth; H = window.innerHeight;
+  canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+  canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
+  g.setTransform(DPR, 0, 0, DPR, 0, 0);
+  g.fillStyle = '#07070c'; g.fillRect(0, 0, W, H);
+}
+window.addEventListener('resize', resize);
+resize();
+
+/* ------------------------------------------------------------------ */
+/* Audio graph: every source -> bus -> analyser, bus -> monitor -> out */
+/* ------------------------------------------------------------------ */
+const A = { ctx: null, bus: null, monitor: null, analyser: null, freq: null, time: null,
+            mode: 'idle', mediaEl: null, mediaSrc: null, objectURL: null, mic: null, micStream: null };
+let source = 'demo';      // what the play button resumes: 'demo' | 'file' | 'mic'
+let fileLabel = '';
+
+function ensureAudio() {
+  if (!A.ctx) {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    A.ctx = new AC();
+    A.bus = A.ctx.createGain();
+    A.analyser = A.ctx.createAnalyser();
+    A.analyser.fftSize = 2048;
+    A.analyser.smoothingTimeConstant = 0.7;
+    A.monitor = A.ctx.createGain();
+    A.bus.connect(A.analyser);
+    A.bus.connect(A.monitor);
+    A.monitor.connect(A.ctx.destination);
+    A.freq = new Uint8Array(A.analyser.frequencyBinCount);
+    A.time = new Uint8Array(A.analyser.fftSize);
+  }
+  if (A.ctx.state === 'suspended') A.ctx.resume();
+  return A.ctx;
+}
+
+function stopAll() {
+  Demo.stop();
+  if (A.mediaEl) A.mediaEl.pause();
+  if (A.micStream) {
+    A.micStream.getTracks().forEach((t) => t.stop());
+    if (A.mic) A.mic.disconnect();
+    A.micStream = null; A.mic = null;
+  }
+  if (A.monitor) A.monitor.gain.value = 1;
+  A.mode = 'idle';
+}
+
+/* ------------------------------------------------------------------ */
+/* Demo track: a 124 BPM synth loop in A minor, built from oscillators */
+/* Sections every 8 bars: intro -> build -> drop -> breakdown           */
+/* ------------------------------------------------------------------ */
+const Demo = (() => {
+  const BPM = 124, STEP = 60 / BPM / 4;
+  const PROG = [[45, 'm'], [41, 'M'], [48, 'M'], [43, 'M']]; // Am F C G
+  const SECTIONS = ['Intro', 'Build', 'Drop', 'Breakdown'];
+  const mtof = (m) => 440 * Math.pow(2, (m - 69) / 12);
+  let out = null, delay = null, noise = null, timer = null, step = 0, next = 0, playing = false;
+
+  function build(ctx) {
+    if (out) return;
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -14; comp.ratio.value = 4; comp.attack.value = 0.003; comp.release.value = 0.2;
+    out = ctx.createGain(); out.gain.value = 0.9;
+    out.connect(comp); comp.connect(A.bus);
+    delay = ctx.createDelay(1); delay.delayTime.value = STEP * 3;
+    const fb = ctx.createGain(); fb.gain.value = 0.38;
+    const tone = ctx.createBiquadFilter(); tone.type = 'lowpass'; tone.frequency.value = 3500;
+    delay.connect(tone); tone.connect(fb); fb.connect(delay); tone.connect(out);
+    noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+    const d = noise.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+  }
+  function env(node, t, peak, a, dcy) {
+    const p = node.gain;
+    p.setValueAtTime(0.0001, t);
+    p.exponentialRampToValueAtTime(peak, t + a);
+    p.exponentialRampToValueAtTime(0.0001, t + a + dcy);
+  }
+  function kick(ctx, t) {
+    const o = ctx.createOscillator(), gn = ctx.createGain();
+    o.frequency.setValueAtTime(160, t);
+    o.frequency.exponentialRampToValueAtTime(42, t + 0.13);
+    env(gn, t, 1, 0.002, 0.42);
+    o.connect(gn); gn.connect(out); o.start(t); o.stop(t + 0.5);
+  }
+  function noiseHit(ctx, t, type, f, q, peak, dcy) {
+    const s = ctx.createBufferSource(); s.buffer = noise;
+    const fl = ctx.createBiquadFilter(); fl.type = type; fl.frequency.value = f; fl.Q.value = q;
+    const gn = ctx.createGain(); env(gn, t, peak, 0.001, dcy);
+    s.connect(fl); fl.connect(gn); gn.connect(out);
+    s.start(t, Math.random() * 0.5); s.stop(t + dcy + 0.05);
+  }
+  function snare(ctx, t) {
+    noiseHit(ctx, t, 'bandpass', 1900, 0.8, 0.55, 0.2);
+    const o = ctx.createOscillator(), gn = ctx.createGain(); o.type = 'triangle';
+    o.frequency.setValueAtTime(220, t); o.frequency.exponentialRampToValueAtTime(140, t + 0.08);
+    env(gn, t, 0.35, 0.001, 0.1);
+    o.connect(gn); gn.connect(out); o.start(t); o.stop(t + 0.15);
+  }
+  function hat(ctx, t, open) { noiseHit(ctx, t, 'highpass', 7500, 0.7, open ? 0.16 : 0.1, open ? 0.22 : 0.035); }
+  function bass(ctx, t, m, dur) {
+    const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m);
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.Q.value = 8;
+    f.frequency.setValueAtTime(1400, t); f.frequency.exponentialRampToValueAtTime(180, t + dur);
+    const gn = ctx.createGain(); env(gn, t, 0.32, 0.005, dur);
+    o.connect(f); f.connect(gn); gn.connect(out); o.start(t); o.stop(t + dur + 0.05);
+  }
+  function arp(ctx, t, m) {
+    const o = ctx.createOscillator(); o.type = 'square'; o.frequency.value = mtof(m);
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 4200;
+    const gn = ctx.createGain(); env(gn, t, 0.07, 0.003, 0.16);
+    o.connect(f); f.connect(gn); gn.connect(out); gn.connect(delay);
+    o.start(t); o.stop(t + 0.22);
+  }
+  function pad(ctx, t, notes, dur) {
+    const f = ctx.createBiquadFilter(); f.type = 'lowpass';
+    f.frequency.setValueAtTime(600, t); f.frequency.linearRampToValueAtTime(2400, t + dur * 0.6);
+    const gn = ctx.createGain(), p = gn.gain;
+    p.setValueAtTime(0.0001, t); p.linearRampToValueAtTime(0.05, t + 0.5);
+    p.setValueAtTime(0.05, t + dur - 0.4); p.linearRampToValueAtTime(0.0001, t + dur);
+    f.connect(gn); gn.connect(out);
+    notes.forEach((m) => [-8, 8].forEach((dt) => {
+      const o = ctx.createOscillator(); o.type = 'sawtooth'; o.frequency.value = mtof(m); o.detune.value = dt;
+      o.connect(f); o.start(t); o.stop(t + dur + 0.05);
+    }));
+  }
+  function playStep(ctx, s, t) {
+    const bar = Math.floor(s / 16), i = s % 16, sec = Math.floor(bar / 8) % 4;
+    const [root, q] = PROG[bar % 4];
+    const chord = [root + 12, root + 12 + (q === 'm' ? 3 : 4), root + 19];
+    if (sec !== 3 && i % 4 === 0) kick(ctx, t);
+    if (sec === 3 && bar % 8 === 7 && i % 2 === 0) kick(ctx, t);            // riser into the next intro
+    if ((sec === 1 || sec === 2) && (i === 4 || i === 12)) snare(ctx, t);
+    if (sec === 2 && bar % 2 === 1 && (i === 14 || i === 15)) snare(ctx, t);
+    if (sec !== 3) {
+      if (i % 4 === 2) hat(ctx, t, true);
+      else if (i % 2 === 0 || sec === 2) hat(ctx, t, false);
+    }
+    if (sec === 1 || sec === 2) {
+      const pat = [1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0];
+      if (pat[i]) bass(ctx, t, root + (i === 14 ? 12 : 0), STEP * 1.8);
+    }
+    if (sec >= 1) {
+      const notes = [chord[0] + 12, chord[1] + 12, chord[2] + 12, chord[1] + 24];
+      if (sec === 2 || i % 2 === 0) arp(ctx, t, notes[i % 4]);
+    }
+    if (i === 0) pad(ctx, t, chord, STEP * 16);
+  }
+  function sched() {
+    const ctx = A.ctx;
+    while (next < ctx.currentTime + 0.14) { playStep(ctx, step, next); next += STEP; step++; }
+  }
+  return {
+    BPM,
+    get playing() { return playing; },
+    get section() { return SECTIONS[Math.floor(Math.max(0, step - 1) / 128) % 4]; },
+    get progress() { return (Math.max(0, step - 1) % 512) / 512; },
+    start() {
+      const ctx = ensureAudio(); build(ctx);
+      out.gain.cancelScheduledValues(ctx.currentTime);
+      out.gain.setValueAtTime(0.9, ctx.currentTime);
+      step = 0; next = ctx.currentTime + 0.06; playing = true;
+      sched(); timer = setInterval(sched, 25);
+    },
+    stop() {
+      if (!playing) return;
+      playing = false; clearInterval(timer); timer = null;
+      out.gain.setTargetAtTime(0.0001, A.ctx.currentTime, 0.04);
+    },
+  };
+})();
+
+/* ------------------------------------------------------------------ */
+/* Sources                                                            */
+/* ------------------------------------------------------------------ */
+function startDemo() {
+  stopAll();
+  Demo.start();
+  A.mode = 'demo'; source = 'demo';
+  started();
+}
+
+function playFile(file) {
+  if (!file) return;
+  const okType = (file.type && file.type.startsWith('audio')) || /\.(mp3|wav|ogg|oga|m4a|aac|flac|webm|opus)$/i.test(file.name);
+  if (!okType) { toast('오디오 파일만 열 수 있습니다. mp3, wav, ogg, m4a 같은 형식을 사용해 주세요.'); return; }
+  const ctx = ensureAudio();
+  stopAll();
+  if (!A.mediaEl) {
+    A.mediaEl = new Audio();
+    A.mediaSrc = ctx.createMediaElementSource(A.mediaEl);
+    A.mediaSrc.connect(A.bus);
+    A.mediaEl.addEventListener('ended', () => { A.mode = 'idle'; updateTransport(); });
+  }
+  if (A.objectURL) URL.revokeObjectURL(A.objectURL);
+  A.objectURL = URL.createObjectURL(file);
+  A.mediaEl.src = A.objectURL;
+  fileLabel = file.name.replace(/\.[^.]+$/, '');
+  source = 'file';
+  A.mediaEl.play().then(() => {
+    A.mode = 'file'; started();
+  }).catch(() => {
+    toast('이 파일은 브라우저에서 재생할 수 없습니다. mp3나 wav로 변환해 다시 시도해 주세요.');
+    updateTransport();
+  });
+}
+
+async function startMic() {
+  const ctx = ensureAudio();
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    toast('이 환경에서는 마이크를 쓸 수 없습니다. 오디오 파일을 열어 주세요.');
+    return;
+  }
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+    });
+    stopAll();
+    A.micStream = stream;
+    A.mic = ctx.createMediaStreamSource(stream);
+    A.mic.connect(A.bus);
+    A.monitor.gain.value = 0;   // analyse only; never play the mic back (feedback)
+    A.mode = 'mic'; source = 'mic';
+    started();
+  } catch (e) {
+    toast('마이크 권한을 얻지 못했습니다. 브라우저 권한을 허용하거나 오디오 파일을 열어 주세요.');
+  }
+}
+
+function togglePlay() {
+  if (A.mode !== 'idle') stopAll();
+  else if (source === 'file' && A.mediaEl && A.mediaEl.src) {
+    ensureAudio();
+    A.mediaEl.play().then(() => { A.mode = 'file'; updateTransport(); }).catch(() => {});
+  } else if (source === 'mic') startMic();
+  else startDemo();
+  updateTransport();
+}
+
+function started() {
+  $('#intro').hidden = true;
+  resetBeatTracking();
+  updateTransport();
+}
+
+/* ------------------------------------------------------------------ */
+/* Analysis: band energies, spectral centroid, log spectrum, beats     */
+/* ------------------------------------------------------------------ */
+const NB = 128;
+const spec = new Float32Array(NB);
+const wave = new Float32Array(512);
+const raw = { sub: 0, low: 0, mid: 0, high: 0, air: 0 };
+const F = { sub: 0, low: 0, mid: 0, high: 0, air: 0, level: 0, centroid: 0.35, centroidHz: 0,
+            beat: false, pulse: 0, bpm: 0 };
+const BAND_KEYS = ['sub', 'low', 'mid', 'high', 'air'];
+const BAND_HZ = [[20, 60], [60, 250], [250, 2000], [2000, 6000], [6000, 16000]];
+
+let binMap = null;
+function buildBinMap() {
+  const hz = A.ctx.sampleRate / A.analyser.fftSize, n = A.analyser.frequencyBinCount;
+  binMap = [];
+  for (let i = 0; i < NB; i++) {
+    const f0 = 30 * Math.pow(16000 / 30, i / NB), f1 = 30 * Math.pow(16000 / 30, (i + 1) / NB);
+    const a = Math.min(n - 1, Math.floor(f0 / hz));
+    const b = Math.min(n, Math.max(a + 1, Math.ceil(f1 / hz)));
+    binMap.push([a, b]);
+  }
+}
+
+const energyHist = [];
+const intervals = [];
+let lastBeat = -1, prevBeatE = 0, idlePhase = 0, beatCount = 0;
+function resetBeatTracking() {
+  energyHist.length = 0; intervals.length = 0; lastBeat = -1; prevBeatE = 0; F.bpm = 0;
+}
+function detectBeat(e, now) {
+  energyHist.push(e);
+  if (energyHist.length > 60) energyHist.shift();
+  let mean = 0;
+  for (const x of energyHist) mean += x;
+  mean /= energyHist.length;
+  let v = 0;
+  for (const x of energyHist) v += (x - mean) * (x - mean);
+  const sd = Math.sqrt(v / energyHist.length);
+  const rising = e > prevBeatE;
+  prevBeatE = e;
+  const hit = energyHist.length > 20 && rising && e > 0.16 && e > mean + Math.max(0.045, sd * 1.15) && now - lastBeat > 0.27;
+  if (!hit) return false;
+  if (lastBeat > 0) {
+    const iv = now - lastBeat;
+    if (iv < 2) {
+      let bpm = 60 / iv;
+      while (bpm < 80) bpm *= 2;
+      while (bpm > 170) bpm /= 2;
+      intervals.push(bpm);
+      if (intervals.length > 24) intervals.shift();
+      if (intervals.length >= 4) {
+        const sorted = [...intervals].sort((a, b) => a - b);
+        const med = sorted[sorted.length >> 1];
+        F.bpm = F.bpm ? F.bpm + (med - F.bpm) * 0.25 : med;
+      }
+    }
+  }
+  lastBeat = now;
+  return true;
+}
+
+function analyse(t, dt) {
+  let cHz, beat;
+  if (A.mode !== 'idle' && A.analyser) {
+    if (!binMap) buildBinMap();
+    A.analyser.getByteFrequencyData(A.freq);
+    A.analyser.getByteTimeDomainData(A.time);
+    const fr = A.freq, hz = A.ctx.sampleRate / A.analyser.fftSize;
+    const band = (lo, hi) => {
+      const a = Math.max(1, Math.floor(lo / hz)), b = Math.min(fr.length - 1, Math.ceil(hi / hz));
+      let s = 0;
+      for (let i = a; i <= b; i++) s += fr[i];
+      return s / ((b - a + 1) * 255);
+    };
+    BAND_KEYS.forEach((k, i) => { raw[k] = band(BAND_HZ[i][0], BAND_HZ[i][1]); });
+    // the upper bands carry less energy in most music; lift them so they read on screen
+    raw.high = clamp(raw.high * 1.6, 0, 1); raw.air = clamp(raw.air * 2.4, 0, 1);
+    let num = 0, den = 0;
+    for (let i = 1; i < fr.length; i++) { num += i * hz * fr[i]; den += fr[i]; }
+    cHz = den > 0 ? num / den : 0;
+    for (let i = 0; i < NB; i++) {
+      const [a, b] = binMap[i];
+      let m = 0;
+      for (let j = a; j < b; j++) if (fr[j] > m) m = fr[j];
+      spec[i] = m / 255;
+    }
+    const stride = A.time.length / wave.length;
+    for (let i = 0; i < wave.length; i++) wave[i] = (A.time[(i * stride) | 0] - 128) / 128;
+    beat = detectBeat(band(40, 150), t);
+  } else {
+    // idle preview: a quiet synthetic pulse at 100 BPM so the stage is never empty
+    const ph = (t * 100 / 60) % 1;
+    beat = ph < idlePhase;
+    idlePhase = ph;
+    const k = Math.exp(-ph * 8);
+    raw.sub = 0.08 + 0.3 * k; raw.low = 0.14 + 0.22 * k;
+    raw.mid = 0.22 + 0.08 * Math.sin(t * 0.7); raw.high = 0.14 + 0.08 * Math.sin(t * 1.3 + 1);
+    raw.air = 0.08 + 0.05 * Math.sin(t * 2.1);
+    cHz = 900 + 700 * Math.sin(t * 0.11);
+    for (let i = 0; i < NB; i++) {
+      const x = i / NB;
+      spec[i] = clamp((1 - x) * 0.7 * (0.55 + 0.45 * k) + 0.22 * (0.5 + 0.5 * Math.sin(i * 0.23 - t * 1.6)) * (0.4 + x), 0, 1);
+    }
+    for (let i = 0; i < wave.length; i++) {
+      const x = i / wave.length;
+      wave[i] = Math.sin(x * TAU * 3 + t * 2) * 0.22 * (0.5 + k) + 0.07 * Math.sin(i * 0.21 + t * 5);
+    }
+  }
+  for (const k of BAND_KEYS) {
+    const target = raw[k];
+    F[k] += (target - F[k]) * (target > F[k] ? 0.55 : 0.12);
+  }
+  F.level = (F.sub + F.low + F.mid + F.high + F.air) / 5;
+  if (cHz > 0) {
+    F.centroidHz += (cHz - F.centroidHz) * 0.1;
+    const c = clamp(Math.log(F.centroidHz / 200) / Math.log(30), 0, 1);
+    F.centroid += (c - F.centroid) * 0.06;
+  }
+  F.beat = beat;
+  F.pulse = beat ? 1 : F.pulse * Math.exp(-dt * 6);
+}
+
+/* ------------------------------------------------------------------ */
+/* Visual state                                                       */
+/* ------------------------------------------------------------------ */
+const SCENES = ['Bloom', 'Tunnel', 'Orbit'];
+const SYMS = [5, 6, 7, 8, 9, 12];
+const V = { scene: 0, auto: true, hueBase: 250, hue: 250, rot: 0, spin: 0, sym: 6,
+            rings: [], ringClock: 0, parts: [], stars: [] };
+for (let i = 0; i < 180; i++) V.stars.push({ a: rand(0, TAU), d: rand(0, 1), s: rand(0.3, 1) });
+
+function onBeat() {
+  beatCount++;
+  V.hueBase += 14 + F.sub * 40;
+  V.spin += (reduceMotion ? 0.15 : 0.55) * (beatCount % 2 ? 1 : -0.6);
+  if (beatCount % 8 === 0) {
+    let s;
+    do { s = SYMS[(Math.random() * SYMS.length) | 0]; } while (s === V.sym);
+    V.sym = s;
+  }
+  burst(Math.round(24 + F.sub * 70), 120 + F.sub * 420);
+  spawnRing(true);
+  if (V.auto && A.mode !== 'idle' && beatCount % 32 === 0) setScene((V.scene + 1) % SCENES.length);
+}
+
+function setScene(i) {
+  V.scene = i;
+  document.querySelectorAll('[data-scene]').forEach((b) => b.setAttribute('aria-pressed', String(+b.dataset.scene === i)));
+  $('#sceneName').textContent = SCENES[i];
+}
+
+function hueDiff(a, b) { return ((b - a + 540) % 360) - 180; }
+
+/* particles: beat bursts from the centre, high-band sparkles on a ring */
+function burst(n, speed) {
+  const cx = W / 2, cy = H / 2;
+  for (let i = 0; i < n; i++) {
+    const a = rand(0, TAU), v = speed * rand(0.35, 1);
+    V.parts.push({ x: cx, y: cy, vx: Math.cos(a) * v, vy: Math.sin(a) * v, life: 1,
+                   decay: rand(0.5, 1.2), size: rand(1, 3), hue: V.hue + rand(-30, 40) });
+  }
+  if (V.parts.length > 1400) V.parts.splice(0, V.parts.length - 1400);
+}
+function sparkle(dt) {
+  const n = F.high * 220 * dt;
+  const R = Math.min(W, H) * (0.3 + F.sub * 0.15);
+  for (let i = 0; i < n; i++) {
+    const a = rand(0, TAU), r = R * rand(0.6, 1.5);
+    V.parts.push({ x: W / 2 + Math.cos(a) * r, y: H / 2 + Math.sin(a) * r,
+                   vx: Math.cos(a) * 20, vy: Math.sin(a) * 20, life: 1, decay: rand(1.5, 3),
+                   size: rand(0.6, 1.8), hue: V.hue + 160 + rand(-20, 20) });
+  }
+}
+function drawParticles(dt) {
+  const drag = Math.pow(0.3, dt);
+  let w = 0;
+  for (let i = 0; i < V.parts.length; i++) {
+    const p = V.parts[i];
+    p.x += p.vx * dt; p.y += p.vy * dt; p.vx *= drag; p.vy *= drag;
+    p.life -= p.decay * dt;
+    if (p.life <= 0) continue;
+    V.parts[w++] = p;
+    g.fillStyle = `hsla(${p.hue},100%,68%,${p.life})`;
+    const s = p.size * (0.5 + p.life);
+    g.fillRect(p.x - s / 2, p.y - s / 2, s, s);
+  }
+  V.parts.length = w;
+}
+
+function spawnRing(strong) {
+  V.rings.push({ z: 0.02, hue: V.hue + (strong ? 0 : 40), sides: V.sym, rot: V.rot,
+                 w: strong ? 2 + F.sub * 3 : 0.8, strong });
+}
+
+/* ------------------------------------------------------------------ */
+/* Scenes                                                             */
+/* ------------------------------------------------------------------ */
+function sceneBloom(t) {
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.5, k = V.sym, h = V.hue;
+  const M = 48;
+  for (let L = 0; L < 3; L++) {
+    const r0 = R * (0.16 + L * 0.08) * (1 + F.sub * 0.35 + F.pulse * 0.08);
+    const amp = R * (0.62 - L * 0.14) * (0.55 + F.level * 0.9);
+    const dir = L % 2 ? -1 : 1, off = L * 10;
+    const total = k * 2 * M;
+    g.beginPath();
+    for (let j = 0; j <= total; j++) {
+      const sector = Math.floor(j / M) % (k * 2), idx = j % M;
+      const si = sector % 2 ? M - 1 - idx : idx;
+      const v = spec[clamp(off + Math.floor(si * (NB - 40) / M), 0, NB - 1)];
+      const a = (j / total) * TAU + V.rot * dir * (1 + L * 0.3);
+      const r = r0 + v * v * amp;
+      const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      if (j === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.closePath();
+    const hl = h + L * 38;
+    g.fillStyle = `hsla(${hl},90%,55%,${0.06 + F.level * 0.08})`;
+    g.fill();
+    g.strokeStyle = `hsla(${hl},100%,${62 + L * 6}%,${0.55 + F.high * 0.4})`;
+    g.lineWidth = 0.8 + F.high * 3;
+    g.stroke();
+  }
+  // core: a breathing blob whose outline bends with the mids and shivers with the highs
+  const rc = R * 0.11 * (1 + F.sub * 0.9 + F.pulse * 0.35);
+  g.beginPath();
+  for (let i = 0; i <= 120; i++) {
+    const a = (i / 120) * TAU;
+    const r = rc * (1 + 0.28 * F.mid * Math.sin(k * a + t * 2.4) + 0.12 * F.high * Math.sin(13 * a - t * 7));
+    const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+    if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+  }
+  const grad = g.createRadialGradient(cx, cy, 0, cx, cy, rc * 1.3);
+  grad.addColorStop(0, `hsla(${h + 180},100%,85%,0.9)`);
+  grad.addColorStop(1, `hsla(${h + 140},100%,55%,0)`);
+  g.fillStyle = grad;
+  g.fill();
+}
+
+function sceneTunnel(t, dt) {
+  const cx = W / 2, cy = H / 2, diag = Math.hypot(W, H) * 0.6, base = Math.min(W, H) * 0.04;
+  V.ringClock += dt * (2 + F.level * 10);
+  if (V.ringClock > 1) { V.ringClock = 0; spawnRing(false); }
+  const speed = (reduceMotion ? 0.12 : 0.22) + F.low * 0.7 + F.pulse * 0.4;
+  let w = 0;
+  for (const ring of V.rings) {
+    ring.z += dt * speed * (0.4 + ring.z);
+    const r = base + Math.pow(ring.z, 2) * diag;
+    if (r > diag * 1.2) continue;
+    V.rings[w++] = ring;
+    const alpha = Math.min(1, ring.z * 4) * (ring.strong ? 0.9 : 0.35);
+    g.beginPath();
+    for (let i = 0; i <= ring.sides; i++) {
+      const a = ring.rot + (i / ring.sides) * TAU + V.rot * 0.5;
+      const bump = 1 + spec[(i * 11 + 5) % NB] * 0.25 * F.mid;
+      const x = cx + Math.cos(a) * r * bump, y = cy + Math.sin(a) * r * bump;
+      if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.strokeStyle = `hsla(${ring.hue},100%,${ring.strong ? 62 : 72}%,${alpha})`;
+    g.lineWidth = ring.w * (0.4 + ring.z * 3) * (1 + F.high);
+    g.stroke();
+  }
+  V.rings.length = w;
+  // spectrum spokes radiating from the vanishing point
+  const k = V.sym, spokes = k * 12;
+  for (let i = 0; i < spokes; i++) {
+    const v = spec[Math.floor((i % 12) * 7 + 4)];
+    const a = (i / spokes) * TAU - V.rot;
+    const r0 = base * 1.6, r1 = r0 + v * v * Math.min(W, H) * 0.32;
+    g.strokeStyle = `hsla(${V.hue + 160 + v * 60},100%,65%,${0.25 + v * 0.6})`;
+    g.lineWidth = 1 + v * 2;
+    g.beginPath();
+    g.moveTo(cx + Math.cos(a) * r0, cy + Math.sin(a) * r0);
+    g.lineTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1);
+    g.stroke();
+  }
+  const glow = g.createRadialGradient(cx, cy, 0, cx, cy, base * (3 + F.sub * 6));
+  glow.addColorStop(0, `hsla(${V.hue},100%,80%,${0.5 + F.pulse * 0.4})`);
+  glow.addColorStop(1, `hsla(${V.hue},100%,50%,0)`);
+  g.fillStyle = glow;
+  g.fillRect(cx - base * 9, cy - base * 9, base * 18, base * 18);
+}
+
+function sceneOrbit(t, dt) {
+  const cx = W / 2, cy = H / 2, R = Math.min(W, H) * 0.5;
+  // star field: drifts outward faster when the highs are busy
+  const sp = (0.04 + F.high * 0.5 + F.pulse * 0.2) * dt;
+  for (const s of V.stars) {
+    s.d += sp * (0.3 + s.d) * s.s;
+    if (s.d > 1) { s.d = rand(0, 0.08); s.a = rand(0, TAU); }
+    const r = s.d * Math.hypot(W, H) * 0.55;
+    const sz = 0.6 + s.d * 2.2;
+    g.fillStyle = `hsla(${V.hue + 200},60%,85%,${(0.2 + F.air) * s.d})`;
+    g.fillRect(cx + Math.cos(s.a + V.rot * 0.1) * r, cy + Math.sin(s.a + V.rot * 0.1) * r, sz, sz);
+  }
+  // band ribbons: one horizontal line per frequency band, amplitude from that band's energy
+  BAND_KEYS.forEach((key, b) => {
+    const y0 = H * (0.18 + b * 0.16), amp = H * 0.07 * F[key];
+    g.beginPath();
+    for (let i = 0; i <= 96; i++) {
+      const x = (i / 96) * W;
+      const wv = wave[(i * 5 + b * 37) % wave.length];
+      const y = y0 + Math.sin(i * 0.18 + t * (1 + b * 0.6)) * amp + wv * amp * 1.5;
+      if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.strokeStyle = `hsla(${V.hue + b * 28},90%,60%,${0.12 + F[key] * 0.35})`;
+    g.lineWidth = 1;
+    g.stroke();
+  });
+  // polar oscilloscope: the waveform wrapped into rings, one per symmetry step
+  const copies = 4;
+  for (let c = 0; c < copies; c++) {
+    const r0 = R * (0.2 + c * 0.11) * (1 + F.sub * 0.4);
+    const ampW = R * (0.28 - c * 0.04) * (1 + F.sub);
+    const rot = V.rot * (c % 2 ? -1 : 1) * (1 + c * 0.25);
+    g.beginPath();
+    const N = wave.length;
+    for (let i = 0; i <= N; i++) {
+      const a = (i / N) * TAU + rot;
+      const wv = wave[i % N] * (1 - Math.abs(Math.sin(a * V.sym * 0.5)) * 0.3);
+      const r = r0 + wv * ampW;
+      const x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+      if (i === 0) g.moveTo(x, y); else g.lineTo(x, y);
+    }
+    g.strokeStyle = `hsla(${V.hue + c * 30},100%,${60 + c * 5}%,${0.7 - c * 0.12})`;
+    g.lineWidth = (1.2 + F.high * 3) * (1 - c * 0.15);
+    g.stroke();
+  }
+  // orbiting satellites, one per symmetry step, pushed outward by the bass
+  for (let i = 0; i < V.sym; i++) {
+    const a = (i / V.sym) * TAU + V.rot * 1.4;
+    const r = R * (0.62 + F.sub * 0.25);
+    const s = 3 + F.mid * 10 + F.pulse * 6;
+    g.fillStyle = `hsla(${V.hue + 180},100%,75%,0.85)`;
+    g.beginPath(); g.arc(cx + Math.cos(a) * r, cy + Math.sin(a) * r, s, 0, TAU); g.fill();
+  }
+}
+
+const sceneFns = [sceneBloom, sceneTunnel, sceneOrbit];
+
+/* ------------------------------------------------------------------ */
+/* HUD                                                                */
+/* ------------------------------------------------------------------ */
+const meterEls = [...document.querySelectorAll('.meter b')];
+const beatDot = $('#beatDot'), bpmEl = $('#bpm'), centroidEl = $('#centroid'), symEl = $('#sym'),
+      beatCountEl = $('#beatCount'), trackEl = $('#trackName'), fillEl = $('#progressFill'),
+      rootStyle = document.documentElement.style;
+let hudTick = 0;
+const fmtTime = (s) => { s = Math.max(0, s | 0); return `${(s / 60) | 0}:${String(s % 60).padStart(2, '0')}`; };
+
+function updateHud() {
+  meterEls.forEach((el, i) => { el.style.transform = `scaleY(${clamp(F[BAND_KEYS[i]], 0, 1).toFixed(3)})`; });
+  beatDot.style.opacity = (0.15 + F.pulse * 0.85).toFixed(2);
+  if (++hudTick % 6) return;
+  if (A.mode === 'demo') bpmEl.textContent = Demo.BPM;
+  else bpmEl.textContent = A.mode !== 'idle' && F.bpm ? Math.round(F.bpm) : '---';
+  centroidEl.textContent = F.centroidHz ? `${Math.round(F.centroidHz).toLocaleString('ko-KR')} Hz` : '— Hz';
+  symEl.textContent = V.sym;
+  beatCountEl.textContent = beatCount;
+  const h = Math.round(((V.hue % 360) + 360) % 360);
+  rootStyle.setProperty('--accent', `hsl(${h} 90% 68%)`);
+  let label, prog = 0;
+  if (A.mode === 'demo') { label = `데모 트랙 · ${Demo.BPM} BPM · ${Demo.section}`; prog = Demo.progress; }
+  else if (source === 'file' && A.mediaEl && A.mediaEl.src) {
+    const d = A.mediaEl.duration || 0, c = A.mediaEl.currentTime || 0;
+    label = `${A.mode === 'file' ? '' : '일시정지 · '}${fileLabel} · ${fmtTime(c)} / ${fmtTime(d)}`;
+    prog = d ? c / d : 0;
+  } else if (A.mode === 'mic') label = '마이크 입력 · 실시간 분석';
+  else label = '대기 중 · 소리 없이 미리보기';
+  if (trackEl.textContent !== label) trackEl.textContent = label;
+  fillEl.style.transform = `scaleX(${prog.toFixed(4)})`;
+}
+
+/* ------------------------------------------------------------------ */
+/* Frame loop                                                         */
+/* ------------------------------------------------------------------ */
+let lastT = 0;
+function frame(now) {
+  const t = now / 1000;
+  const dt = lastT ? Math.min(0.05, t - lastT) : 1 / 60;
+  lastT = t;
+  analyse(t, dt);
+  if (F.beat) onBeat();
+
+  // hue follows the spectral centroid (bright sound -> cooler colour) on top of a beat-driven drift
+  const target = V.hueBase + 200 - F.centroid * 220;
+  V.hue += hueDiff(V.hue % 360, ((target % 360) + 360) % 360) * Math.min(1, dt * 3);
+  V.spin *= Math.exp(-dt * 2.5);
+  V.rot += dt * ((reduceMotion ? 0.05 : 0.12) + F.mid * 0.9 + V.spin);
+
+  // motion trails: louder passages keep shorter trails so the image stays legible
+  g.globalCompositeOperation = 'source-over';
+  const fade = reduceMotion ? 0.4 : 0.12 + 0.2 * F.level;
+  g.fillStyle = `rgba(7,7,12,${fade})`;
+  g.fillRect(0, 0, W, H);
+
+  g.globalCompositeOperation = 'lighter';
+  sceneFns[V.scene](t, dt);
+  sparkle(dt);
+  drawParticles(dt);
+
+  if (!reduceMotion && F.pulse > 0.02) {
+    g.fillStyle = `hsla(${V.hue},100%,60%,${F.pulse * 0.07})`;
+    g.fillRect(0, 0, W, H);
+  }
+  g.globalCompositeOperation = 'source-over';
+
+  updateHud();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+/* ------------------------------------------------------------------ */
+/* Controls                                                           */
+/* ------------------------------------------------------------------ */
+const playBtn = $('#playBtn'), autoBtn = $('#autoBtn'), ui = $('#ui');
+
+function updateTransport() {
+  const playing = A.mode !== 'idle';
+  const what = source === 'file' ? '파일' : source === 'mic' ? '마이크' : '데모';
+  playBtn.textContent = playing ? '❚❚ 정지' : `▶ ${what} 재생`;
+  $('#micBtn').setAttribute('aria-pressed', String(A.mode === 'mic'));
+}
+
+let toastTimer = null;
+function toast(msg) {
+  const el = $('#toast');
+  el.textContent = msg; el.hidden = false;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.hidden = true; }, 4200);
+}
+
+$('#introDemo').addEventListener('click', startDemo);
+playBtn.addEventListener('click', togglePlay);
+$('#micBtn').addEventListener('click', () => { if (A.mode === 'mic') { stopAll(); source = 'demo'; updateTransport(); } else startMic(); });
+$('#fileInput').addEventListener('change', (e) => { playFile(e.target.files[0]); e.target.value = ''; });
+document.querySelectorAll('[data-scene]').forEach((b) => b.addEventListener('click', () => setScene(+b.dataset.scene)));
+autoBtn.addEventListener('click', () => { V.auto = !V.auto; autoBtn.setAttribute('aria-pressed', String(V.auto)); });
+
+function toggleFullscreen() {
+  const el = document.documentElement;
+  if (document.fullscreenElement) { document.exitFullscreen().catch(() => {}); return; }
+  if (!el.requestFullscreen) { toast('이 화면에서는 전체화면을 지원하지 않습니다.'); return; }
+  el.requestFullscreen().catch(() => toast('이 화면에서는 전체화면을 지원하지 않습니다.'));
+}
+$('#fsBtn').addEventListener('click', toggleFullscreen);
+
+$('#progress').addEventListener('click', (e) => {
+  if (source !== 'file' || !A.mediaEl || !A.mediaEl.duration) return;
+  const r = e.currentTarget.getBoundingClientRect();
+  A.mediaEl.currentTime = clamp((e.clientX - r.left) / r.width, 0, 1) * A.mediaEl.duration;
+});
+
+// tapping the stage hides or shows the controls (useful on phones and when projecting)
+canvas.addEventListener('click', () => { if ($('#intro').hidden) ui.classList.toggle('is-hidden'); });
+
+window.addEventListener('keydown', (e) => {
+  if (e.target.closest('input, textarea')) return;
+  const k = e.key.toLowerCase();
+  if (k === ' ') {
+    if (e.target.closest('button, label')) return;   // let the focused control handle its own Space
+    e.preventDefault(); togglePlay();
+  }
+  else if (k === '1' || k === '2' || k === '3') setScene(+k - 1);
+  else if (k === 'a') autoBtn.click();
+  else if (k === 'h') ui.classList.toggle('is-hidden');
+  else if (k === 'f') toggleFullscreen();
+});
+
+// drag and drop an audio file anywhere on the page
+const drop = $('#drop');
+let dragDepth = 0;
+window.addEventListener('dragenter', (e) => { e.preventDefault(); dragDepth++; drop.hidden = false; });
+window.addEventListener('dragover', (e) => e.preventDefault());
+window.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; drop.hidden = true; } });
+window.addEventListener('drop', (e) => {
+  e.preventDefault(); dragDepth = 0; drop.hidden = true;
+  if (e.dataTransfer && e.dataTransfer.files.length) playFile(e.dataTransfer.files[0]);
+});
+
+updateTransport();
+})();
+</script>
+</body>
+</html>
