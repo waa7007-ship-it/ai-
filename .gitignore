@@ -1,0 +1,11 @@
+# 비밀 정보 (API 키, 비밀번호) - 절대 깃에 올리지 않음
+.env
+.env.*
+!.env.example
+
+# 고객(인플루언서) 데이터 - 깃에 올리지 않음
+data/
+
+# 구글 로그인 정보 파일
+credentials.json
+token.json
