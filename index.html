@@ -5,27 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>영어 단어 카드</title>
 
-  <!-- 귀여운 글꼴 (인터넷이 안 되면 컴퓨터에 있는 기본 글꼴로 보여요) -->
+  <!-- 읽기 편한 글꼴 (인터넷이 안 되면 컴퓨터에 있는 기본 글꼴로 보여요) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 
   <!-- ===================== CSS (모양 꾸미기) ===================== -->
   <style>
-    /* ---------- 자주 쓰는 파스텔 색깔을 이름 붙여 모아 두기 ---------- */
+    /* ---------- 자주 쓰는 색깔을 이름 붙여 모아 두기 (차분한 색) ---------- */
     :root {
-      --pink:        #ffb3cc;
-      --pink-dark:   #f06292;
-      --peach:       #ffd8b1;
-      --yellow:      #fff1a8;
-      --mint:        #b8f2d0;
-      --mint-dark:   #2e9e62;
-      --sky:         #bfe3ff;
-      --sky-dark:    #1e88e5;
-      --lavender:    #dccbff;
-      --lavender-dark: #7c5cd6;
-      --text:        #4a4a5a;
-      --white:       #ffffff;
+      --bg:          #f3f4f7;
+      --surface:     #ffffff;
+      --line:        #dde1e8;
+      --text:        #2b3140;
+      --text-soft:   #6b7385;
+      --text-faint:  #9aa1b0;
+      --navy:        #34507a;
+      --navy-soft:   #e6ecf5;
+      --green:       #2f7d5b;
+      --green-soft:  #e2f1ea;
+      --amber:       #a8661c;
+      --amber-soft:  #f8ecdc;
+      --red:         #b24a4a;
+      --red-soft:    #f8e4e4;
+
+      /* 난이도 색 */
+      --lv-basic:     #2f7d5b;
+      --lv-basic-bg:  #e2f1ea;
+      --lv-mid:       #34507a;
+      --lv-mid-bg:    #e6ecf5;
+      --lv-high:      #7a3f6e;
+      --lv-high-bg:   #f2e6ef;
     }
 
     * {
@@ -33,8 +43,7 @@
     }
 
     html {
-      background: linear-gradient(160deg, #fff7e0 0%, #ffe3ef 45%, #e3f1ff 100%);
-      min-height: 100%;
+      background: var(--bg);
     }
 
     /* 화면 한 개 높이 안에 모두 들어가도록 세로로 가운데 정렬 */
@@ -42,9 +51,10 @@
       margin: 0;
       min-height: 100vh;
       min-height: 100dvh;   /* 휴대폰 주소창 높이까지 생각한 화면 높이 */
-      font-family: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
-      font-size: 20px;
+      font-family: "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-size: 18px;
       color: var(--text);
+      background: var(--bg);
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -55,32 +65,30 @@
     /* 화면 가운데 모아 두는 상자 */
     .wrap {
       width: 100%;
-      max-width: 560px;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
 
     h1 {
       margin: 0;
-      font-size: 2rem;
-      font-weight: normal;
-      color: var(--pink-dark);
-      text-shadow: 3px 3px 0 var(--white);
-      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--navy);
+      letter-spacing: -0.5px;
     }
 
     /* ---------- 진행 상황 (몇 개 외웠는지) ---------- */
     .progress-box {
       width: 100%;
-      background: var(--white);
-      border-radius: 20px;
-      padding: 10px 16px 12px;
-      box-shadow: 0 6px 16px rgba(240, 98, 146, 0.15);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 10px 14px 12px;
     }
 
-    /* 글자와 '처음부터' 버튼을 한 줄에 */
     .progress-top {
       display: flex;
       align-items: center;
@@ -90,19 +98,17 @@
     }
 
     .progress-text {
-      font-size: 1.2rem;
+      font-size: 1.05rem;
     }
 
     .progress-text b {
-      color: var(--pink-dark);
-      font-weight: normal;
-      font-size: 1.35rem;
+      color: var(--green);
     }
 
     .progress-bar {
       width: 100%;
-      height: 20px;
-      background: #f3eef7;
+      height: 10px;
+      background: #eceef2;
       border-radius: 999px;
       overflow: hidden;
     }
@@ -110,62 +116,75 @@
     .progress-fill {
       height: 100%;
       width: 0%;
-      background: linear-gradient(90deg, var(--mint), #8fe3b3, var(--sky));
+      background: var(--green);
       border-radius: 999px;
       transition: width 0.5s;
     }
 
     .reset-btn {
       flex-shrink: 0;
-      border: 2px solid #e6dcef;
-      background: #faf7fc;
-      color: #a99bb8;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text-soft);
       font-family: inherit;
       font-size: 0.85rem;
-      padding: 4px 10px;
+      padding: 5px 12px;
       border-radius: 999px;
       cursor: pointer;
     }
 
-    /* ---------- 주제 고르기 버튼 (6개를 한 줄에) ---------- */
-    .topics {
+    /* ---------- 주제 / 난이도 고르기 ---------- */
+    .filter {
       width: 100%;
       display: flex;
       gap: 6px;
+      overflow-x: auto;              /* 좁은 화면에서는 옆으로 밀어서 보기 */
+      scrollbar-width: none;
     }
 
-    .topic-btn {
-      flex: 1 1 0;           /* 6개가 같은 너비로 한 줄에 */
-      min-width: 0;
+    .filter::-webkit-scrollbar {
+      display: none;
+    }
+
+    .filter-label {
+      flex-shrink: 0;
+      align-self: center;
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      width: 46px;
+      white-space: nowrap;
+    }
+
+    .chip {
+      flex: 1 0 auto;
       font-family: inherit;
-      font-size: 1rem;
-      border: 3px solid var(--pink);
-      background: var(--white);
-      color: var(--pink-dark);
-      padding: 8px 4px;
-      min-height: 48px;
-      border-radius: 16px;
+      font-size: 0.95rem;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text-soft);
+      padding: 8px 12px;
+      min-height: 42px;
+      border-radius: 10px;
       cursor: pointer;
       white-space: nowrap;
-      transition: transform 0.15s;
     }
 
-    .topic-btn:hover {
-      transform: scale(1.05);
+    .chip:hover {
+      border-color: var(--navy);
     }
 
-    /* 지금 선택된 주제 */
-    .topic-btn.active {
-      background: var(--pink);
-      color: var(--white);
+    /* 지금 선택된 버튼 */
+    .chip.active {
+      background: var(--navy);
+      border-color: var(--navy);
+      color: #fff;
     }
 
     /* ---------- 카드 (뒤집기 애니메이션) ---------- */
     .card-area {
       width: 100%;
-      max-width: 420px;
-      height: 190px;          /* 예전(380px)의 절반 크기 */
-      perspective: 1000px;   /* 3D 느낌을 주는 설정 */
+      height: 240px;
+      perspective: 1200px;   /* 3D 느낌을 주는 설정 */
     }
 
     .card {
@@ -185,147 +204,180 @@
     .card-face {
       position: absolute;
       inset: 0;
-      border-radius: 24px;
-      background: var(--white);
-      box-shadow: 0 10px 24px rgba(124, 92, 214, 0.18);
+      border-radius: 18px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 8px 24px rgba(30, 40, 60, 0.08);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 14px;
+      padding: 36px 20px;
       text-align: center;
       backface-visibility: hidden;          /* 뒤쪽 면은 안 보이게 */
       -webkit-backface-visibility: hidden;
     }
 
     .card-front {
-      border: 6px solid var(--yellow);
+      border-top: 5px solid var(--navy);
     }
 
     .card-back {
-      border: 6px solid var(--sky);
+      border-top: 5px solid var(--text-faint);
       transform: rotateY(180deg);           /* 뒷면은 처음부터 돌려 놓기 */
+      justify-content: flex-start;
+      padding-top: 18px;
+      overflow-y: auto;                     /* 내용이 길면 카드 안에서만 스크롤 */
     }
 
-    /* 외운 카드는 테두리가 민트색 */
+    /* 외운 카드는 위쪽 선이 초록색 */
     .card.learned .card-front {
-      border-color: var(--mint);
+      border-top-color: var(--green);
     }
 
     /* 카드 구석에 붙는 작은 표시들 */
-    .badge {
+    .corner {
       position: absolute;
-      font-size: 0.8rem;
-      padding: 2px 10px;
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .corner-tl { top: 10px; left: 12px; }
+    .corner-tr { top: 10px; right: 12px; }
+    .corner-br { bottom: 8px; right: 12px; }
+    .corner-bl { bottom: 8px; left: 12px; }
+
+    .badge {
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 3px 10px;
       border-radius: 999px;
     }
 
-    .badge-learned {
-      top: 8px;
-      right: 8px;
-      background: var(--mint);
-      color: var(--mint-dark);
-      display: none;
-    }
+    .badge-learned { background: var(--green-soft); color: var(--green); display: none; }
+    .card.learned .badge-learned { display: inline-block; }
 
-    .card.learned .badge-learned {
-      display: block;
-    }
+    .badge-mine { background: var(--amber-soft); color: var(--amber); display: none; }
+    .card.mine .badge-mine { display: inline-block; }
 
-    .badge-mine {
-      top: 8px;
-      left: 8px;
-      background: var(--lavender);
-      color: var(--lavender-dark);
-      display: none;
-    }
+    .badge-topic { background: #eef0f4; color: var(--text-soft); }
 
-    .card.mine .badge-mine {
-      display: block;
-    }
+    /* 난이도 표시 */
+    .level-기본 { background: var(--lv-basic-bg); color: var(--lv-basic); }
+    .level-중급 { background: var(--lv-mid-bg);   color: var(--lv-mid); }
+    .level-고급 { background: var(--lv-high-bg);  color: var(--lv-high); }
 
-    /* 몇 번째 카드인지 (카드 오른쪽 아래) */
     .counter {
-      bottom: 8px;
-      right: 10px;
-      color: #b5abc2;
+      font-size: 0.8rem;
+      color: var(--text-faint);
     }
 
-    /* 내가 만든 카드 지우기 버튼 (카드 왼쪽 아래) */
+    /* 내가 만든 카드 지우기 버튼 */
     .delete-btn {
-      position: absolute;
-      bottom: 6px;
-      left: 8px;
       font-family: inherit;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       border: none;
-      background: #ffe0e0;
-      color: #c0506a;
+      background: var(--red-soft);
+      color: var(--red);
       padding: 4px 10px;
       border-radius: 999px;
       cursor: pointer;
     }
 
-    .emoji {
-      font-size: 3.4rem;
-      line-height: 1.1;
-    }
-
+    /* 앞면 글자 */
     .word {
-      font-size: 2rem;
+      font-size: 2.4rem;
+      font-weight: 700;
+      letter-spacing: -0.5px;
       word-break: break-word;
     }
 
-    .meaning {
-      font-size: 1.9rem;
-      color: var(--sky-dark);
-      margin-bottom: 8px;
-      word-break: break-word;
+    .word-info {
+      margin-top: 6px;
+      font-size: 1.05rem;
+      color: var(--text-soft);
     }
 
-    .example {
-      font-size: 1.1rem;
-      background: #eef7ff;
-      padding: 8px 14px;
-      border-radius: 14px;
-      word-break: break-word;
+    .word-info .pos {
+      color: var(--navy);
+      font-weight: 500;
+      margin-right: 8px;
     }
 
     .hint {
-      margin-top: 4px;
+      margin-top: 10px;
       font-size: 0.8rem;
-      color: #b5abc2;
+      color: var(--text-faint);
     }
 
-    /* ---------- 큰 버튼들 ---------- */
+    /* 뒷면 글자 */
+    .meaning {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+      word-break: keep-all;
+    }
+
+    .example {
+      width: 100%;
+      text-align: left;
+      background: #f6f7fa;
+      border-left: 3px solid var(--navy);
+      padding: 8px 12px;
+      border-radius: 8px;
+      word-break: break-word;
+    }
+
+    .example-en {
+      font-size: 1.02rem;
+      line-height: 1.4;
+    }
+
+    .example-ko {
+      margin-top: 2px;
+      font-size: 0.9rem;
+      color: var(--text-soft);
+    }
+
+    .synonyms {
+      margin-top: 8px;
+      font-size: 0.92rem;
+      color: var(--text-soft);
+    }
+
+    .synonyms b {
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    /* ---------- 버튼들 ---------- */
     .row {
       width: 100%;
       display: flex;
-      justify-content: center;
       gap: 8px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 1.15rem;
-      border: none;
+      font-size: 1.05rem;
+      font-weight: 500;
+      border: 1px solid transparent;
       color: var(--text);
-      padding: 10px 12px;
-      min-height: 54px;
-      border-radius: 18px;
+      padding: 8px 10px;
+      min-height: 50px;
+      border-radius: 12px;
       cursor: pointer;
       white-space: nowrap;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
-      transition: transform 0.1s;
+      transition: transform 0.1s, filter 0.15s;
     }
 
-    .btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-    }
+    .btn:hover   { filter: brightness(0.97); }
+    .btn:active  { transform: translateY(2px); }
 
     .btn:disabled {
-      opacity: 0.5;
+      opacity: 0.45;
       cursor: default;
     }
 
@@ -335,21 +387,18 @@
       min-width: 0;
     }
 
-    .btn-big { font-size: 1.3rem; min-height: 60px; }
-
-    .btn-learned { background: var(--mint); }
-    .btn-again   { background: var(--peach); }
-    .btn-move    { background: var(--yellow); }
-    .btn-speak   { background: var(--sky); }
-    .btn-shuffle { background: var(--lavender); }
-    .btn-add     { background: var(--pink); width: 100%; }
-    .btn-open    { background: var(--white); border: 3px dashed var(--lavender); color: var(--lavender-dark); width: 100%; }
+    .btn-learned { background: var(--green-soft); color: var(--green); }
+    .btn-again   { background: var(--amber-soft); color: var(--amber); }
+    .btn-plain   { background: var(--surface); border-color: var(--line); }
+    .btn-speak   { background: var(--navy-soft); color: var(--navy); }
+    .btn-primary { background: var(--navy); color: #fff; width: 100%; }
+    .btn-open    { background: transparent; border: 1px dashed #b9c0cc; color: var(--text-soft); width: 100%; min-height: 46px; }
 
     /* ---------- 팝업 창 (축하 창, 단어 만들기 창) ---------- */
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(255, 240, 248, 0.85);
+      background: rgba(30, 36, 50, 0.45);
       display: none;
       align-items: center;
       justify-content: center;
@@ -363,50 +412,48 @@
 
     .modal-box {
       position: relative;
-      background: var(--white);
-      border-radius: 32px;
-      padding: 24px 20px;
-      max-width: 440px;
+      background: var(--surface);
+      border-radius: 18px;
+      padding: 22px 20px;
+      max-width: 480px;
       width: 100%;
       max-height: 100%;
-      overflow-y: auto;      /* 아주 작은 화면이면 창 안에서만 스크롤 */
-      box-shadow: 0 16px 40px rgba(240, 98, 146, 0.25);
-      animation: pop 0.4s;
+      overflow-y: auto;      /* 작은 화면이면 창 안에서만 스크롤 */
+      box-shadow: 0 20px 50px rgba(20, 30, 50, 0.25);
+      animation: pop 0.25s ease-out;
     }
 
     .close-btn {
       position: absolute;
-      top: 10px;
+      top: 12px;
       right: 12px;
-      width: 44px;
-      height: 44px;
+      width: 40px;
+      height: 40px;
       border: none;
       border-radius: 50%;
-      background: #f3eef7;
-      font-size: 1.3rem;
+      background: #eef0f4;
+      color: var(--text-soft);
+      font-size: 1.1rem;
       cursor: pointer;
     }
 
-    /* 단어 만들기 창 */
-    .add-box {
-      border: 6px solid var(--lavender);
-    }
-
-    .add-box h2 {
-      margin: 0 0 12px;
-      font-size: 1.6rem;
-      font-weight: normal;
-      color: var(--lavender-dark);
-      text-align: center;
+    .modal-box h2 {
+      margin: 0 0 14px;
+      font-size: 1.35rem;
+      color: var(--navy);
     }
 
     .field {
       margin-bottom: 10px;
+      flex: 1;
+      min-width: 0;
     }
 
     .field label {
       display: block;
-      font-size: 1.1rem;
+      font-size: 0.92rem;
+      font-weight: 500;
+      color: var(--text-soft);
       margin-bottom: 4px;
     }
 
@@ -414,79 +461,67 @@
     .field select {
       width: 100%;
       font-family: inherit;
-      font-size: 1.2rem;
-      padding: 10px 14px;
-      border: 3px solid var(--lavender);
-      border-radius: 14px;
-      background: #fcfaff;
+      font-size: 1.05rem;
+      padding: 9px 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: #fafbfc;
       color: var(--text);
     }
 
     .field input:focus,
     .field select:focus {
-      outline: none;
-      border-color: var(--lavender-dark);
+      outline: 2px solid var(--navy-soft);
+      border-color: var(--navy);
     }
 
-    /* 이모지칸과 주제칸을 한 줄에 나란히 */
-    .field-pair {
+    /* 칸 여러 개를 한 줄에 나란히 */
+    .field-row {
       display: flex;
       gap: 10px;
-    }
-
-    .field-pair .field {
-      flex: 1;
     }
 
     .message {
       min-height: 1.5em;
       text-align: center;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       margin-bottom: 6px;
     }
 
-    .message.ok    { color: var(--mint-dark); }
-    .message.error { color: var(--pink-dark); }
+    .message.error { color: var(--red); }
 
     /* 축하 창 */
     .celebrate-box {
-      border: 8px solid var(--yellow);
       text-align: center;
     }
 
     .celebrate-emoji {
-      font-size: 5rem;
-      animation: bounce 1s infinite;
+      font-size: 3.5rem;
     }
 
     .celebrate-box h2 {
-      font-size: 2.2rem;
-      font-weight: normal;
-      color: var(--pink-dark);
-      margin: 10px 0;
+      font-size: 1.6rem;
+      margin: 6px 0 8px;
     }
 
     .celebrate-box p {
-      font-size: 1.3rem;
-      margin: 0 0 20px;
+      font-size: 1.05rem;
+      color: var(--text-soft);
+      margin: 0 0 18px;
     }
 
     @keyframes pop {
-      0%   { transform: scale(0.5); opacity: 0; }
-      80%  { transform: scale(1.05); }
-      100% { transform: scale(1); opacity: 1; }
+      from { transform: scale(0.94); opacity: 0; }
+      to   { transform: scale(1);    opacity: 1; }
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50%      { transform: translateY(-14px); }
-    }
-
-    /* 떨어지는 색종이 */
+    /* 떨어지는 색종이 (차분한 색 점) */
     .confetti {
       position: fixed;
-      top: -40px;
-      font-size: 2rem;
+      top: -20px;
+      width: 9px;
+      height: 14px;
+      border-radius: 2px;
       pointer-events: none;
       z-index: 11;
       animation: fall linear forwards;
@@ -498,31 +533,35 @@
 
     /* ---------- 휴대폰처럼 좁은 화면일 때 ---------- */
     @media (max-width: 480px) {
-      body           { font-size: 17px; padding: 10px 12px; }
-      h1             { font-size: 1.7rem; }
-      .wrap          { gap: 10px; }
-      .progress-text { font-size: 1.05rem; }
+      body        { font-size: 16px; padding: 10px 12px; }
+      .wrap       { gap: 8px; }
+      .chip       { padding: 6px 10px; min-height: 38px; flex-grow: 0; }
+      .card-area  { height: 250px; }
+      .card-back  { padding: 14px 14px 12px; }
+      .word       { font-size: 2rem; }
+      .meaning    { font-size: 1.15rem; margin-bottom: 8px; }
+      .example    { padding: 6px 10px; }
+      .example-en { font-size: 0.95rem; line-height: 1.35; }
+      .example-ko { font-size: 0.85rem; }
+      .synonyms   { margin-top: 6px; font-size: 0.85rem; }
+      .btn        { font-size: 1rem; min-height: 46px; }
+      .field-row  { flex-wrap: wrap; gap: 0 10px; }
+      .field-row .field { flex: 1 1 40%; }
+    }
 
-      /* 주제 버튼: 이모지를 위, 글자를 아래로 놓아 한 줄에 쏙 */
-      .topics     { gap: 4px; }
-      .topic-btn  {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 0.85rem;
-        padding: 4px 2px;
-        border-width: 2px;
-        border-radius: 12px;
-      }
-      .topic-btn .t-emoji { font-size: 1.3rem; }
+    /* 키가 조금 작은 화면(노트북 등)에서는 간격을 살짝 줄이기 */
+    @media (max-height: 760px) {
+      .wrap { gap: 8px; }
+      h1    { font-size: 1.3rem; }
+    }
 
-      .btn       { font-size: 1rem; padding: 8px 4px; }
-      .btn-big   { font-size: 1.2rem; }
-
-      .field-pair {
-        flex-direction: column;
-        gap: 0;
-      }
+    /* 키가 작은 화면(작은 휴대폰)에서는 제목을 숨기고 버튼 높이를 조금 줄이기 */
+    @media (max-height: 700px) {
+      h1        { display: none; }
+      .wrap     { gap: 6px; }
+      .chip     { min-height: 36px; }
+      .btn      { min-height: 44px; }
+      .btn-open { min-height: 40px; }
     }
   </style>
 </head>
@@ -531,109 +570,175 @@
   <!-- ===================== HTML (화면에 보이는 내용) ===================== -->
   <div class="wrap">
 
-    <h1>🌈 영어 단어 카드</h1>
+    <h1>English Vocabulary</h1>
 
     <!-- 진행 상황 -->
     <div class="progress-box">
       <div class="progress-top">
-        <div class="progress-text" id="progressText">20개 중 0개 외웠어요!</div>
-        <button class="reset-btn" id="resetBtn">↺ 처음부터</button>
+        <div class="progress-text" id="progressText">50개 중 0개 외웠어요</div>
+        <button class="reset-btn" id="resetBtn">처음부터</button>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
-    <!-- 주제 고르기 (6개 한 줄) -->
-    <div class="topics">
-      <button class="topic-btn active" data-topic="전체"><span class="t-emoji">🌟</span> 전체</button>
-      <button class="topic-btn" data-topic="동물"><span class="t-emoji">🐶</span> 동물</button>
-      <button class="topic-btn" data-topic="과일"><span class="t-emoji">🍎</span> 과일</button>
-      <button class="topic-btn" data-topic="색깔"><span class="t-emoji">🎨</span> 색깔</button>
-      <button class="topic-btn" data-topic="학교"><span class="t-emoji">🏫</span> 학교</button>
-      <button class="topic-btn" data-topic="내 단어"><span class="t-emoji">⭐</span> 내 단어</button>
+    <!-- 주제 고르기 -->
+    <div class="filter" id="topicFilter">
+      <span class="filter-label">주제</span>
+      <button class="chip active" data-topic="전체">전체</button>
+      <button class="chip" data-topic="비즈니스">비즈니스</button>
+      <button class="chip" data-topic="일상 회화">일상 회화</button>
+      <button class="chip" data-topic="감정/성격">감정/성격</button>
+      <button class="chip" data-topic="사회/뉴스">사회/뉴스</button>
+      <button class="chip" data-topic="여행/생활">여행/생활</button>
+      <button class="chip" data-topic="내 단어">내 단어</button>
+    </div>
+
+    <!-- 난이도 고르기 -->
+    <div class="filter" id="levelFilter">
+      <span class="filter-label">난이도</span>
+      <button class="chip active" data-level="전체">전체</button>
+      <button class="chip" data-level="기본">기본</button>
+      <button class="chip" data-level="중급">중급</button>
+      <button class="chip" data-level="고급">고급</button>
     </div>
 
     <!-- 단어 카드 -->
     <div class="card-area">
       <div class="card" id="card">
-        <!-- 앞면 -->
+        <!-- 앞면: 단어 + 품사 + 발음기호 -->
         <div class="card-face card-front">
-          <span class="badge badge-mine">⭐ 내 단어</span>
-          <span class="badge badge-learned">✅ 외웠어요</span>
-          <div class="emoji" id="emoji">🐶</div>
-          <div class="word" id="word">dog</div>
-          <div class="hint">👆 눌러서 뒤집기</div>
-          <button class="delete-btn" id="deleteBtn" hidden>🗑️ 지우기</button>
-          <span class="badge counter" id="counter">1 / 20</span>
+          <div class="corner corner-tl">
+            <span class="badge" id="levelBadge">중급</span>
+            <span class="badge badge-topic" id="topicBadge">비즈니스</span>
+            <span class="badge badge-mine">내 단어</span>
+          </div>
+          <div class="corner corner-tr">
+            <span class="badge badge-learned">✓ 외웠어요</span>
+          </div>
+          <div class="word" id="word">negotiate</div>
+          <div class="word-info">
+            <span class="pos" id="pos">동사</span>
+            <span id="ipa">/nɪˈɡoʊʃieɪt/</span>
+          </div>
+          <div class="hint">카드를 누르면 뜻이 보여요</div>
+          <div class="corner corner-bl">
+            <button class="delete-btn" id="deleteBtn" hidden>🗑️ 지우기</button>
+          </div>
+          <div class="corner corner-br">
+            <span class="counter" id="counter">1 / 50</span>
+          </div>
         </div>
-        <!-- 뒷면 -->
+        <!-- 뒷면: 뜻 + 예문 + 해석 + 유의어 -->
         <div class="card-face card-back">
-          <div class="meaning" id="meaning">개</div>
-          <div class="example" id="example">I have a dog.</div>
-          <div class="hint">👆 다시 누르면 앞면으로</div>
+          <div class="meaning" id="meaning">협상하다</div>
+          <div class="example">
+            <div class="example-en" id="exampleEn">We need to negotiate a better price.</div>
+            <div class="example-ko" id="exampleKo">우리는 더 좋은 가격으로 협상해야 해요.</div>
+          </div>
+          <div class="synonyms" id="synonyms"><b>유의어</b> bargain, discuss</div>
         </div>
       </div>
     </div>
 
     <!-- 외웠어요 / 다시 볼래요 -->
     <div class="row">
-      <button class="btn btn-big btn-learned" id="learnedBtn">외웠어요 ✅</button>
-      <button class="btn btn-big btn-again" id="againBtn">다시 볼래요 🔁</button>
+      <button class="btn btn-learned" id="learnedBtn">✅ 외웠어요</button>
+      <button class="btn btn-again" id="againBtn">🔁 다시 볼래요</button>
     </div>
 
-    <!-- 이전 / 발음 / 섞기 / 다음 (한 줄) -->
+    <!-- 발음 듣기 / 예문 듣기 -->
     <div class="row">
-      <button class="btn btn-move" id="prevBtn">◀ 이전</button>
-      <button class="btn btn-speak" id="speakBtn">🔊 발음</button>
-      <button class="btn btn-shuffle" id="shuffleBtn">🔀 섞기</button>
-      <button class="btn btn-move" id="nextBtn">다음 ▶</button>
+      <button class="btn btn-speak" id="speakBtn">🔊 발음 듣기</button>
+      <button class="btn btn-speak" id="speakExampleBtn">🔊 예문 듣기</button>
+    </div>
+
+    <!-- 이전 / 섞기 / 다음 -->
+    <div class="row">
+      <button class="btn btn-plain" id="prevBtn">◀ 이전</button>
+      <button class="btn btn-plain" id="shuffleBtn">🔀 섞기</button>
+      <button class="btn btn-plain" id="nextBtn">다음 ▶</button>
     </div>
 
     <!-- 단어 만들기 창 열기 버튼 -->
-    <button class="btn btn-open" id="openAddBtn">✏️ 나만의 단어 만들기</button>
+    <button class="btn btn-open" id="openAddBtn">＋ 나만의 단어 만들기</button>
   </div>
 
   <!-- 단어 만들기 창 (버튼을 누르면 나타나요) -->
   <div class="modal" id="addModal">
-    <form class="modal-box add-box" id="addForm">
-      <button type="button" class="close-btn" id="closeAddBtn" aria-label="닫기">✖</button>
-      <h2>✏️ 나만의 단어 만들기</h2>
+    <form class="modal-box" id="addForm">
+      <button type="button" class="close-btn" id="closeAddBtn" aria-label="닫기">✕</button>
+      <h2>나만의 단어 만들기</h2>
 
-      <div class="field">
-        <label for="inEnglish">영어 단어 *</label>
-        <input id="inEnglish" type="text" placeholder="예: tiger" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label for="inKorean">한국어 뜻 *</label>
-        <input id="inKorean" type="text" placeholder="예: 호랑이" autocomplete="off">
-      </div>
-
-      <div class="field">
-        <label for="inExample">영어 예문</label>
-        <input id="inExample" type="text" placeholder="예: The tiger is fast." autocomplete="off">
-      </div>
-
-      <div class="field-pair">
+      <div class="field-row">
         <div class="field">
-          <label for="inEmoji">이모지</label>
-          <input id="inEmoji" type="text" placeholder="예: 🐯" autocomplete="off">
+          <label for="inEnglish">영어 단어 *</label>
+          <input id="inEnglish" type="text" placeholder="예: persuade" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="inIpa">발음기호</label>
+          <input id="inIpa" type="text" placeholder="예: /pərˈsweɪd/" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="inMeaning">한국어 뜻 * (2개까지, 쉼표로 구분)</label>
+        <input id="inMeaning" type="text" placeholder="예: 설득하다, 납득시키다" autocomplete="off">
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="inPos">품사</label>
+          <select id="inPos">
+            <option>동사</option>
+            <option>명사</option>
+            <option>형용사</option>
+            <option>부사</option>
+            <option>구동사</option>
+            <option>전치사</option>
+            <option>접속사</option>
+            <option>기타</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="inLevel">난이도</label>
+          <select id="inLevel">
+            <option>기본</option>
+            <option selected>중급</option>
+            <option>고급</option>
+          </select>
         </div>
         <div class="field">
           <label for="inTopic">주제</label>
           <select id="inTopic">
-            <option value="내 단어">⭐ 내 단어</option>
-            <option value="동물">🐶 동물</option>
-            <option value="과일">🍎 과일</option>
-            <option value="색깔">🎨 색깔</option>
-            <option value="학교">🏫 학교</option>
+            <option>내 단어</option>
+            <option>비즈니스</option>
+            <option>일상 회화</option>
+            <option>감정/성격</option>
+            <option>사회/뉴스</option>
+            <option>여행/생활</option>
           </select>
         </div>
       </div>
 
+      <div class="field">
+        <label for="inExample">영어 예문</label>
+        <input id="inExample" type="text" placeholder="예: I persuaded him to join us." autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="inExampleKo">예문 해석</label>
+        <input id="inExampleKo" type="text" placeholder="예: 나는 그가 우리와 함께하도록 설득했다." autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="inSynonyms">유의어 (쉼표로 구분)</label>
+        <input id="inSynonyms" type="text" placeholder="예: convince, talk into" autocomplete="off">
+      </div>
+
       <div class="message" id="addMessage"></div>
-      <button class="btn btn-add" type="submit">➕ 카드 추가하기</button>
+      <button class="btn btn-primary" type="submit">카드 추가하기</button>
     </form>
   </div>
 
@@ -641,11 +746,11 @@
   <div class="modal" id="celebrate">
     <div class="modal-box celebrate-box">
       <div class="celebrate-emoji">🏆</div>
-      <h2>축하해요! 🎉</h2>
-      <p id="celebrateText">단어를 모두 외웠어요!<br>정말 대단해요! 👏</p>
+      <h2>모두 외웠어요!</h2>
+      <p id="celebrateText">단어를 모두 외웠어요. 수고하셨어요!</p>
       <div class="row">
-        <button class="btn btn-learned" id="closeCelebrateBtn">좋아요! 😊</button>
-        <button class="btn btn-again" id="restartBtn">처음부터 🔁</button>
+        <button class="btn btn-learned" id="closeCelebrateBtn">확인</button>
+        <button class="btn btn-again" id="restartBtn">🔁 처음부터 다시</button>
       </div>
     </div>
   </div>
@@ -653,45 +758,234 @@
   <!-- ===================== JavaScript (움직이게 하기) ===================== -->
   <script>
     // ------------------------------------------------------------
-    // 1. 처음부터 들어 있는 단어 20개
+    // 1. 기본 단어 50개 (주제 5개 × 10개)
+    //    meanings: 자주 쓰는 뜻 순서로 2개까지
+    //    level: 기본 / 중급 / 고급
     // ------------------------------------------------------------
     const baseWords = [
-      // 동물
-      { topic: "동물", english: "dog",      korean: "개",     emoji: "🐶", example: "I have a dog." },
-      { topic: "동물", english: "cat",      korean: "고양이", emoji: "🐱", example: "The cat is sleeping." },
-      { topic: "동물", english: "rabbit",   korean: "토끼",   emoji: "🐰", example: "The rabbit can jump." },
-      { topic: "동물", english: "elephant", korean: "코끼리", emoji: "🐘", example: "The elephant is big." },
-      { topic: "동물", english: "lion",     korean: "사자",   emoji: "🦁", example: "The lion is strong." },
+      // ===== 비즈니스 =====
+      { topic: "비즈니스", english: "deadline", pos: "명사", ipa: "/ˈdedlaɪn/", level: "기본",
+        meanings: ["마감 기한", "최종 기한"],
+        example: "We have to meet the deadline by Friday.", exampleKo: "우리는 금요일까지 마감을 맞춰야 해요.",
+        synonyms: ["due date", "time limit"] },
+      { topic: "비즈니스", english: "colleague", pos: "명사", ipa: "/ˈkɑːliːɡ/", level: "기본",
+        meanings: ["동료"],
+        example: "I had lunch with a colleague from marketing.", exampleKo: "마케팅 부서 동료와 점심을 먹었어요.",
+        synonyms: ["coworker", "associate"] },
+      { topic: "비즈니스", english: "agenda", pos: "명사", ipa: "/əˈdʒendə/", level: "기본",
+        meanings: ["(회의) 안건", "의제"],
+        example: "What's on the agenda for today's meeting?", exampleKo: "오늘 회의 안건이 뭐예요?",
+        synonyms: ["schedule", "program"] },
+      { topic: "비즈니스", english: "negotiate", pos: "동사", ipa: "/nɪˈɡoʊʃieɪt/", level: "중급",
+        meanings: ["협상하다", "(합의를) 성사시키다"],
+        example: "We managed to negotiate a lower price with the supplier.", exampleKo: "우리는 공급업체와 협상해서 가격을 낮췄어요.",
+        synonyms: ["bargain", "discuss"] },
+      { topic: "비즈니스", english: "postpone", pos: "동사", ipa: "/poʊstˈpoʊn/", level: "중급",
+        meanings: ["연기하다", "미루다"],
+        example: "The meeting has been postponed until next week.", exampleKo: "회의가 다음 주로 연기됐어요.",
+        synonyms: ["delay", "put off"] },
+      { topic: "비즈니스", english: "revenue", pos: "명사", ipa: "/ˈrevənuː/", level: "중급",
+        meanings: ["수익", "매출"],
+        example: "Our revenue grew by 15 percent this year.", exampleKo: "올해 우리 매출이 15퍼센트 늘었어요.",
+        synonyms: ["income", "earnings"] },
+      { topic: "비즈니스", english: "implement", pos: "동사", ipa: "/ˈɪmplɪment/", level: "고급",
+        meanings: ["실행하다", "시행하다"],
+        example: "The company will implement the new policy next month.", exampleKo: "회사는 다음 달에 새 정책을 시행할 거예요.",
+        synonyms: ["carry out", "execute"] },
+      { topic: "비즈니스", english: "reimburse", pos: "동사", ipa: "/ˌriːɪmˈbɜːrs/", level: "고급",
+        meanings: ["(비용을) 상환하다", "환급하다"],
+        example: "The company will reimburse you for travel expenses.", exampleKo: "회사가 출장비를 돌려줄 거예요.",
+        synonyms: ["repay", "refund"] },
+      { topic: "비즈니스", english: "delegate", pos: "동사", ipa: "/ˈdelɪɡeɪt/", level: "고급",
+        meanings: ["(업무를) 위임하다", "맡기다"],
+        example: "A good manager knows how to delegate tasks.", exampleKo: "좋은 관리자는 일을 맡길 줄 알아요.",
+        synonyms: ["assign", "entrust"] },
+      { topic: "비즈니스", english: "feasible", pos: "형용사", ipa: "/ˈfiːzəbl/", level: "고급",
+        meanings: ["실현 가능한", "실행할 수 있는"],
+        example: "Is this plan feasible with our current budget?", exampleKo: "지금 예산으로 이 계획이 실현 가능할까요?",
+        synonyms: ["possible", "practical"] },
 
-      // 과일
-      { topic: "과일", english: "apple",      korean: "사과",   emoji: "🍎", example: "I like apples." },
-      { topic: "과일", english: "banana",     korean: "바나나", emoji: "🍌", example: "The banana is yellow." },
-      { topic: "과일", english: "grape",      korean: "포도",   emoji: "🍇", example: "Grapes are sweet." },
-      { topic: "과일", english: "strawberry", korean: "딸기",   emoji: "🍓", example: "I eat a strawberry." },
-      { topic: "과일", english: "watermelon", korean: "수박",   emoji: "🍉", example: "Watermelon is good in summer." },
+      // ===== 일상 회화 =====
+      { topic: "일상 회화", english: "appreciate", pos: "동사", ipa: "/əˈpriːʃieɪt/", level: "기본",
+        meanings: ["고마워하다", "진가를 알아보다"],
+        example: "I really appreciate your help.", exampleKo: "도와줘서 정말 고마워요.",
+        synonyms: ["be grateful for", "value"] },
+      { topic: "일상 회화", english: "convenient", pos: "형용사", ipa: "/kənˈviːniənt/", level: "기본",
+        meanings: ["편리한", "(시간이) 괜찮은"],
+        example: "Is Tuesday afternoon convenient for you?", exampleKo: "화요일 오후 괜찮으세요?",
+        synonyms: ["handy", "suitable"] },
+      { topic: "일상 회화", english: "mention", pos: "동사", ipa: "/ˈmenʃn/", level: "기본",
+        meanings: ["언급하다", "말하다"],
+        example: "She mentioned that she was moving to Busan.", exampleKo: "그녀가 부산으로 이사 간다고 말했어요.",
+        synonyms: ["bring up", "refer to"] },
+      { topic: "일상 회화", english: "figure out", pos: "구동사", ipa: "/ˈfɪɡjər aʊt/", level: "기본",
+        meanings: ["알아내다", "이해하다"],
+        example: "I can't figure out how this app works.", exampleKo: "이 앱이 어떻게 작동하는지 모르겠어요.",
+        synonyms: ["work out", "solve"] },
+      { topic: "일상 회화", english: "definitely", pos: "부사", ipa: "/ˈdefɪnətli/", level: "기본",
+        meanings: ["확실히", "물론"],
+        example: "I'll definitely be there on time.", exampleKo: "꼭 제시간에 갈게요.",
+        synonyms: ["certainly", "surely"] },
+      { topic: "일상 회화", english: "awkward", pos: "형용사", ipa: "/ˈɔːkwərd/", level: "중급",
+        meanings: ["어색한", "곤란한"],
+        example: "There was an awkward silence after his joke.", exampleKo: "그의 농담 후에 어색한 침묵이 흘렀어요.",
+        synonyms: ["uncomfortable", "embarrassing"] },
+      { topic: "일상 회화", english: "hesitate", pos: "동사", ipa: "/ˈhezɪteɪt/", level: "중급",
+        meanings: ["망설이다", "주저하다"],
+        example: "Don't hesitate to call me if you need anything.", exampleKo: "필요한 게 있으면 망설이지 말고 전화하세요.",
+        synonyms: ["pause", "waver"] },
+      { topic: "일상 회화", english: "assume", pos: "동사", ipa: "/əˈsuːm/", level: "중급",
+        meanings: ["(사실이라고) 생각하다", "(책임을) 맡다"],
+        example: "I assumed you already knew about the party.", exampleKo: "당신이 파티에 대해 이미 알고 있는 줄 알았어요.",
+        synonyms: ["suppose", "presume"] },
+      { topic: "일상 회화", english: "insist", pos: "동사", ipa: "/ɪnˈsɪst/", level: "중급",
+        meanings: ["고집하다", "주장하다"],
+        example: "He insisted on paying for dinner.", exampleKo: "그가 저녁값을 내겠다고 고집했어요.",
+        synonyms: ["demand", "maintain"] },
+      { topic: "일상 회화", english: "occasionally", pos: "부사", ipa: "/əˈkeɪʒnəli/", level: "중급",
+        meanings: ["가끔", "때때로"],
+        example: "We occasionally go hiking on weekends.", exampleKo: "우리는 주말에 가끔 등산을 가요.",
+        synonyms: ["sometimes", "now and then"] },
 
-      // 색깔
-      { topic: "색깔", english: "red",    korean: "빨간색", emoji: "🔴", example: "The apple is red." },
-      { topic: "색깔", english: "blue",   korean: "파란색", emoji: "🔵", example: "The sky is blue." },
-      { topic: "색깔", english: "yellow", korean: "노란색", emoji: "🟡", example: "The sun is yellow." },
-      { topic: "색깔", english: "green",  korean: "초록색", emoji: "🟢", example: "The grass is green." },
-      { topic: "색깔", english: "purple", korean: "보라색", emoji: "🟣", example: "I have a purple bag." },
+      // ===== 감정/성격 =====
+      { topic: "감정/성격", english: "anxious", pos: "형용사", ipa: "/ˈæŋkʃəs/", level: "기본",
+        meanings: ["불안한", "간절히 바라는"],
+        example: "I always feel anxious before a job interview.", exampleKo: "면접 전에는 늘 불안해요.",
+        synonyms: ["nervous", "worried"] },
+      { topic: "감정/성격", english: "frustrated", pos: "형용사", ipa: "/ˈfrʌstreɪtɪd/", level: "기본",
+        meanings: ["좌절한", "답답한"],
+        example: "She got frustrated when the computer crashed again.", exampleKo: "컴퓨터가 또 멈추자 그녀는 답답해했어요.",
+        synonyms: ["annoyed", "discouraged"] },
+      { topic: "감정/성격", english: "confident", pos: "형용사", ipa: "/ˈkɑːnfɪdənt/", level: "기본",
+        meanings: ["자신감 있는", "확신하는"],
+        example: "I'm confident that we'll win the contract.", exampleKo: "우리가 계약을 따낼 거라고 확신해요.",
+        synonyms: ["self-assured", "sure"] },
+      { topic: "감정/성격", english: "considerate", pos: "형용사", ipa: "/kənˈsɪdərət/", level: "중급",
+        meanings: ["사려 깊은", "배려하는"],
+        example: "It was very considerate of you to call.", exampleKo: "전화해 주다니 정말 배려심이 깊으시네요.",
+        synonyms: ["thoughtful", "kind"] },
+      { topic: "감정/성격", english: "stubborn", pos: "형용사", ipa: "/ˈstʌbərn/", level: "중급",
+        meanings: ["고집 센", "완강한"],
+        example: "My father is too stubborn to ask for directions.", exampleKo: "우리 아버지는 고집이 세서 길을 묻지 않으세요.",
+        synonyms: ["obstinate", "headstrong"] },
+      { topic: "감정/성격", english: "reluctant", pos: "형용사", ipa: "/rɪˈlʌktənt/", level: "중급",
+        meanings: ["꺼리는", "마지못해 하는"],
+        example: "He was reluctant to share his opinion in the meeting.", exampleKo: "그는 회의에서 의견을 말하기를 꺼렸어요.",
+        synonyms: ["unwilling", "hesitant"] },
+      { topic: "감정/성격", english: "overwhelmed", pos: "형용사", ipa: "/ˌoʊvərˈwelmd/", level: "중급",
+        meanings: ["압도된", "벅찬"],
+        example: "I felt overwhelmed by all the work on my desk.", exampleKo: "책상 위에 쌓인 일에 압도되는 느낌이었어요.",
+        synonyms: ["swamped", "overloaded"] },
+      { topic: "감정/성격", english: "resilient", pos: "형용사", ipa: "/rɪˈzɪliənt/", level: "고급",
+        meanings: ["회복력 있는", "잘 이겨 내는"],
+        example: "Children are often more resilient than we think.", exampleKo: "아이들은 우리가 생각하는 것보다 회복력이 강한 경우가 많아요.",
+        synonyms: ["tough", "adaptable"] },
+      { topic: "감정/성격", english: "meticulous", pos: "형용사", ipa: "/məˈtɪkjələs/", level: "고급",
+        meanings: ["꼼꼼한", "세심한"],
+        example: "She is meticulous about checking every detail.", exampleKo: "그녀는 모든 세부 사항을 꼼꼼하게 확인해요.",
+        synonyms: ["careful", "thorough"] },
+      { topic: "감정/성격", english: "indifferent", pos: "형용사", ipa: "/ɪnˈdɪfrənt/", level: "고급",
+        meanings: ["무관심한", "그저 그런"],
+        example: "He seemed indifferent to the news.", exampleKo: "그는 그 소식에 무관심해 보였어요.",
+        synonyms: ["uninterested", "unconcerned"] },
 
-      // 학교 물건
-      { topic: "학교", english: "pencil", korean: "연필",   emoji: "✏️", example: "I write with a pencil." },
-      { topic: "학교", english: "book",   korean: "책",     emoji: "📘", example: "I read a book." },
-      { topic: "학교", english: "eraser", korean: "지우개", emoji: "🧽", example: "Can I use your eraser?" },
-      { topic: "학교", english: "ruler",  korean: "자",     emoji: "📏", example: "This ruler is long." },
-      { topic: "학교", english: "bag",    korean: "가방",   emoji: "🎒", example: "My bag is heavy." }
+      // ===== 사회/뉴스 =====
+      { topic: "사회/뉴스", english: "policy", pos: "명사", ipa: "/ˈpɑːləsi/", level: "기본",
+        meanings: ["정책", "방침"],
+        example: "The government announced a new housing policy.", exampleKo: "정부가 새 주택 정책을 발표했어요.",
+        synonyms: ["plan", "guideline"] },
+      { topic: "사회/뉴스", english: "election", pos: "명사", ipa: "/ɪˈlekʃn/", level: "기본",
+        meanings: ["선거"],
+        example: "Many young people voted in the last election.", exampleKo: "지난 선거에서 많은 젊은이들이 투표했어요.",
+        synonyms: ["vote", "poll"] },
+      { topic: "사회/뉴스", english: "shortage", pos: "명사", ipa: "/ˈʃɔːrtɪdʒ/", level: "기본",
+        meanings: ["부족", "결핍"],
+        example: "The hospital is facing a shortage of nurses.", exampleKo: "그 병원은 간호사 부족을 겪고 있어요.",
+        synonyms: ["lack", "scarcity"] },
+      { topic: "사회/뉴스", english: "inflation", pos: "명사", ipa: "/ɪnˈfleɪʃn/", level: "중급",
+        meanings: ["물가 상승", "인플레이션"],
+        example: "Inflation has made groceries much more expensive.", exampleKo: "물가 상승으로 장보기가 훨씬 비싸졌어요.",
+        synonyms: ["rising prices"] },
+      { topic: "사회/뉴스", english: "controversy", pos: "명사", ipa: "/ˈkɑːntrəvɜːrsi/", level: "중급",
+        meanings: ["논란", "논쟁"],
+        example: "The new law caused a lot of controversy.", exampleKo: "새 법은 많은 논란을 일으켰어요.",
+        synonyms: ["dispute", "debate"] },
+      { topic: "사회/뉴스", english: "regulation", pos: "명사", ipa: "/ˌreɡjuˈleɪʃn/", level: "중급",
+        meanings: ["규제", "규정"],
+        example: "Stricter regulations on plastic use will start next year.", exampleKo: "플라스틱 사용에 대한 더 엄격한 규제가 내년부터 시작돼요.",
+        synonyms: ["rule", "restriction"] },
+      { topic: "사회/뉴스", english: "sustainable", pos: "형용사", ipa: "/səˈsteɪnəbl/", level: "중급",
+        meanings: ["지속 가능한", "환경을 해치지 않는"],
+        example: "The city is investing in sustainable energy.", exampleKo: "그 도시는 지속 가능한 에너지에 투자하고 있어요.",
+        synonyms: ["eco-friendly", "renewable"] },
+      { topic: "사회/뉴스", english: "unprecedented", pos: "형용사", ipa: "/ʌnˈpresɪdentɪd/", level: "고급",
+        meanings: ["전례 없는", "유례없는"],
+        example: "The country is facing an unprecedented heat wave.", exampleKo: "그 나라는 전례 없는 폭염을 겪고 있어요.",
+        synonyms: ["unheard-of", "extraordinary"] },
+      { topic: "사회/뉴스", english: "allegation", pos: "명사", ipa: "/ˌæləˈɡeɪʃn/", level: "고급",
+        meanings: ["(증거 없는) 혐의", "주장"],
+        example: "The minister denied all allegations of corruption.", exampleKo: "장관은 모든 부패 혐의를 부인했어요.",
+        synonyms: ["accusation", "claim"] },
+      { topic: "사회/뉴스", english: "deteriorate", pos: "동사", ipa: "/dɪˈtɪriəreɪt/", level: "고급",
+        meanings: ["악화되다", "나빠지다"],
+        example: "Relations between the two countries continued to deteriorate.", exampleKo: "두 나라의 관계는 계속 악화됐어요.",
+        synonyms: ["worsen", "decline"] },
+
+      // ===== 여행/생활 =====
+      { topic: "여행/생활", english: "reservation", pos: "명사", ipa: "/ˌrezərˈveɪʃn/", level: "기본",
+        meanings: ["예약", "의구심(주로 복수형)"],
+        example: "I'd like to make a reservation for two at seven.", exampleKo: "7시에 두 명 예약하고 싶어요.",
+        synonyms: ["booking"] },
+      { topic: "여행/생활", english: "luggage", pos: "명사", ipa: "/ˈlʌɡɪdʒ/", level: "기본",
+        meanings: ["짐", "수하물"],
+        example: "Can I leave my luggage here until check-in?", exampleKo: "체크인할 때까지 짐을 여기 맡겨도 될까요?",
+        synonyms: ["baggage"] },
+      { topic: "여행/생활", english: "destination", pos: "명사", ipa: "/ˌdestɪˈneɪʃn/", level: "기본",
+        meanings: ["목적지", "행선지"],
+        example: "Jeju is a popular destination for honeymooners.", exampleKo: "제주는 신혼부부에게 인기 있는 여행지예요.",
+        synonyms: ["stop", "end point"] },
+      { topic: "여행/생활", english: "refund", pos: "명사", ipa: "/ˈriːfʌnd/", level: "기본",
+        meanings: ["환불", "환불금"],
+        example: "Can I get a refund if I cancel my ticket?", exampleKo: "표를 취소하면 환불받을 수 있나요?",
+        synonyms: ["repayment", "reimbursement"] },
+      { topic: "여행/생활", english: "itinerary", pos: "명사", ipa: "/aɪˈtɪnəreri/", level: "중급",
+        meanings: ["여행 일정(표)"],
+        example: "I'll email you the itinerary for our trip.", exampleKo: "여행 일정표를 이메일로 보내 드릴게요.",
+        synonyms: ["schedule", "travel plan"] },
+      { topic: "여행/생활", english: "accommodation", pos: "명사", ipa: "/əˌkɑːməˈdeɪʃn/", level: "중급",
+        meanings: ["숙소", "숙박 시설"],
+        example: "The price includes flights and accommodation.", exampleKo: "가격에 항공편과 숙소가 포함돼 있어요.",
+        synonyms: ["lodging", "housing"] },
+      { topic: "여행/생활", english: "commute", pos: "동사", ipa: "/kəˈmjuːt/", level: "중급",
+        meanings: ["통근하다", "출퇴근하다"],
+        example: "I commute to work by subway every day.", exampleKo: "저는 매일 지하철로 출퇴근해요.",
+        synonyms: ["travel to work"] },
+      { topic: "여행/생활", english: "layover", pos: "명사", ipa: "/ˈleɪoʊvər/", level: "중급",
+        meanings: ["(비행기) 경유 대기", "잠시 머묾"],
+        example: "We have a three-hour layover in Tokyo.", exampleKo: "도쿄에서 3시간 경유 대기가 있어요.",
+        synonyms: ["stopover", "connection"] },
+      { topic: "여행/생활", english: "complimentary", pos: "형용사", ipa: "/ˌkɑːmplɪˈmentri/", level: "고급",
+        meanings: ["무료의", "칭찬하는"],
+        example: "The hotel offers complimentary breakfast.", exampleKo: "그 호텔은 무료 조식을 제공해요.",
+        synonyms: ["free", "on the house"] },
+      { topic: "여행/생활", english: "amenity", pos: "명사", ipa: "/əˈmenəti/", level: "고급",
+        meanings: ["편의 시설", "생활 편의 용품"],
+        example: "The apartment is close to shops and other amenities.", exampleKo: "그 아파트는 상점과 다른 편의 시설이 가까워요.",
+        synonyms: ["facility", "convenience"] }
     ];
+
+    // 주제 목록 (단어 만들기 창과 옛 기록 정리에 사용)
+    const TOPICS = ["비즈니스", "일상 회화", "감정/성격", "사회/뉴스", "여행/생활", "내 단어"];
+    const LEVELS = ["기본", "중급", "고급"];
 
     // ------------------------------------------------------------
     // 2. 브라우저에 저장하고 불러오기 (localStorage)
     //    브라우저를 껐다 켜도 남아 있게 해 줘요.
     //    혹시 저장이 막힌 브라우저여도 페이지가 멈추지 않도록 try/catch로 감싸요.
     // ------------------------------------------------------------
-    const SAVE_KEY_MY_WORDS = "wordcards-my-words";
-    const SAVE_KEY_LEARNED  = "wordcards-learned";
+    const SAVE_KEY_MY_WORDS   = "wordcards-my-words";     // 내가 만든 단어 (예전과 같은 이름)
+    const SAVE_KEY_LEARNED    = "wordcards-v2-learned";   // 새 '외웠어요' 기록
+    const OLD_KEY_LEARNED     = "wordcards-learned";      // 예전 '외웠어요' 기록
 
     function loadData(key, defaultValue) {
       try {
@@ -710,23 +1004,70 @@
       }
     }
 
-    // 내가 추가한 단어들
-    let myWords = loadData(SAVE_KEY_MY_WORDS, []);
-    // 외운 단어들 (영어 단어를 소문자로 모아 둔 목록)
+    function removeData(key) {
+      try {
+        localStorage.removeItem(key);
+      } catch (error) {
+        // 지울 수 없는 환경이면 조용히 넘어가요.
+      }
+    }
+
+    // 단어를 구별하는 이름표 (대문자/소문자 차이는 무시)
+    // 기본 단어는 "base:", 내가 만든 단어는 "my:"를 앞에 붙여서 서로 섞이지 않게 해요.
+    function keyOf(word) {
+      return (word.mine ? "my:" : "base:") + word.english.trim().toLowerCase();
+    }
+
+    // 예전 모양으로 저장된 '내 단어'를 새 모양으로 바꿔 주기
+    // (예전: korean, emoji / 새: meanings, pos, ipa, level, exampleKo, synonyms)
+    function normalizeMyWord(w) {
+      let meanings = w.meanings;
+      if (!Array.isArray(meanings)) {
+        meanings = w.korean ? [w.korean] : [];
+      }
+      return {
+        topic:     TOPICS.includes(w.topic) ? w.topic : "내 단어",   // 예전 주제(동물 등)는 '내 단어'로
+        english:   String(w.english || ""),
+        pos:       w.pos || "",
+        ipa:       w.ipa || "",
+        level:     LEVELS.includes(w.level) ? w.level : "",          // 모르면 비워 두기
+        meanings:  meanings.slice(0, 2),
+        example:   w.example || "",
+        exampleKo: w.exampleKo || "",
+        synonyms:  Array.isArray(w.synonyms) ? w.synonyms : []
+      };
+    }
+
+    // 내가 추가한 단어들 (예전 단어도 지우지 않고 새 모양으로 바꿔서 그대로 남겨요)
+    let myWords = loadData(SAVE_KEY_MY_WORDS, [])
+      .map(normalizeMyWord)
+      .filter(function (w) { return w.english; });
+    saveData(SAVE_KEY_MY_WORDS, myWords);
+
+    // 외운 단어 기록
     let learned = new Set(loadData(SAVE_KEY_LEARNED, []));
+
+    // 예전 '외웠어요' 기록 정리하기 (한 번만 실행돼요)
+    //  - 예전 기본 단어(dog, apple 등) 기록은 버려요.
+    //  - 내가 직접 만든 단어의 기록만 새 기록으로 옮겨요.
+    const oldLearned = loadData(OLD_KEY_LEARNED, null);
+    if (Array.isArray(oldLearned)) {
+      const myKeys = myWords.map(function (w) { return w.english.trim().toLowerCase(); });
+      oldLearned.forEach(function (k) {
+        if (myKeys.includes(k)) learned.add("my:" + k);
+      });
+      removeData(OLD_KEY_LEARNED);
+      saveData(SAVE_KEY_LEARNED, [...learned]);
+    }
 
     function saveMyWords() { saveData(SAVE_KEY_MY_WORDS, myWords); }
     function saveLearned() { saveData(SAVE_KEY_LEARNED, [...learned]); }
-
-    // 단어를 구별하는 이름표 (대문자/소문자 차이는 무시)
-    function keyOf(word) {
-      return word.english.trim().toLowerCase();
-    }
 
     // ------------------------------------------------------------
     // 3. 지금 상태를 기억하는 변수
     // ------------------------------------------------------------
     let currentTopic = "전체";   // 지금 고른 주제
+    let currentLevel = "전체";   // 지금 고른 난이도
     let cards = [];              // 지금 보여 줄 카드 목록
     let currentIndex = 0;        // 지금 보고 있는 카드 번호 (0부터 시작)
 
@@ -737,34 +1078,39 @@
       }));
     }
 
-    // 고른 주제에 맞는 카드만 골라서 cards에 넣기
+    // 고른 주제와 난이도에 맞는 카드만 골라서 cards에 넣기
     function buildCards() {
-      const all = getAllWords();
-      if (currentTopic === "전체") {
-        cards = all;
-      } else {
-        cards = all.filter(function (w) { return w.topic === currentTopic; });
-      }
+      cards = getAllWords().filter(function (w) {
+        const topicOk = currentTopic === "전체" || w.topic === currentTopic;
+        const levelOk = currentLevel === "전체" || w.level === currentLevel;
+        return topicOk && levelOk;
+      });
     }
 
     // ------------------------------------------------------------
     // 4. 화면 요소 가져오기
     // ------------------------------------------------------------
-    const cardEl       = document.getElementById("card");
-    const emojiEl      = document.getElementById("emoji");
-    const wordEl       = document.getElementById("word");
-    const meaningEl    = document.getElementById("meaning");
-    const exampleEl    = document.getElementById("example");
-    const counterEl    = document.getElementById("counter");
-    const progressText = document.getElementById("progressText");
-    const progressFill = document.getElementById("progressFill");
-    const deleteBtn    = document.getElementById("deleteBtn");
-    const celebrateEl  = document.getElementById("celebrate");
-    const addModal     = document.getElementById("addModal");
+    const $ = function (id) { return document.getElementById(id); };
+
+    const cardEl       = $("card");
+    const wordEl       = $("word");
+    const posEl        = $("pos");
+    const ipaEl        = $("ipa");
+    const levelBadge   = $("levelBadge");
+    const topicBadge   = $("topicBadge");
+    const meaningEl    = $("meaning");
+    const exampleEnEl  = $("exampleEn");
+    const exampleKoEl  = $("exampleKo");
+    const synonymsEl   = $("synonyms");
+    const counterEl    = $("counter");
+    const progressText = $("progressText");
+    const progressFill = $("progressFill");
+    const deleteBtn    = $("deleteBtn");
+    const celebrateEl  = $("celebrate");
+    const addModal     = $("addModal");
 
     // 카드가 하나도 없을 때(예: '내 단어'를 아직 안 만들었을 때) 버튼 막기
-    const cardButtons = ["learnedBtn", "againBtn", "prevBtn", "nextBtn", "speakBtn", "shuffleBtn"]
-      .map(function (id) { return document.getElementById(id); });
+    const cardButtons = ["learnedBtn", "againBtn", "prevBtn", "nextBtn", "speakBtn", "speakExampleBtn", "shuffleBtn"].map($);
 
     // ------------------------------------------------------------
     // 5. 지금 카드를 화면에 그리는 함수
@@ -774,11 +1120,16 @@
 
       // 카드가 없으면 안내 문구 보여 주기
       if (cards.length === 0) {
-        emojiEl.textContent   = "📭";
-        wordEl.textContent    = "카드가 없어요";
-        meaningEl.textContent = "아래 버튼으로 만들어 보세요!";
-        exampleEl.textContent = "✏️ 나만의 단어 만들기";
-        counterEl.textContent = "0 / 0";
+        wordEl.textContent      = "카드가 없어요";
+        posEl.textContent       = "";
+        ipaEl.textContent       = "다른 주제나 난이도를 고르거나, 아래에서 단어를 만들어 보세요.";
+        levelBadge.hidden       = true;
+        topicBadge.hidden       = true;
+        meaningEl.textContent   = "카드가 없어요";
+        exampleEnEl.textContent = "";
+        exampleKoEl.textContent = "";
+        synonymsEl.textContent  = "";
+        counterEl.textContent   = "0 / 0";
         cardEl.classList.remove("learned", "mine");
         deleteBtn.hidden = true;
         cardButtons.forEach(function (b) { b.disabled = true; });
@@ -788,16 +1139,40 @@
       cardButtons.forEach(function (b) { b.disabled = false; });
 
       const item = cards[currentIndex];
-      emojiEl.textContent   = item.emoji;
-      wordEl.textContent    = item.english;
-      meaningEl.textContent = item.korean;
-      exampleEl.textContent = item.example || "(예문이 없어요)";
+
+      // 앞면
+      wordEl.textContent = item.english;
+      posEl.textContent  = item.pos;
+      ipaEl.textContent  = item.ipa;
+      levelBadge.hidden  = !item.level;
+      levelBadge.textContent = item.level;
+      levelBadge.className = "badge level-" + item.level;
+      topicBadge.hidden  = item.mine && item.topic === "내 단어";   // '내 단어' 표시와 겹치지 않게
+      topicBadge.textContent = item.topic;
+
+      // 뒷면
+      meaningEl.textContent = item.meanings
+        .map(function (m, i) { return item.meanings.length > 1 ? (i + 1) + ". " + m : m; })
+        .join("   ");
+      exampleEnEl.textContent = item.example || "(예문이 없어요)";
+      exampleKoEl.textContent = item.exampleKo || "";
+
+      synonymsEl.textContent = "";
+      if (item.synonyms && item.synonyms.length > 0) {
+        const label = document.createElement("b");
+        label.textContent = "유의어 ";
+        synonymsEl.append(label, item.synonyms.join(", "));
+      }
+
       counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
 
       // 외운 카드, 내가 만든 카드 표시
       cardEl.classList.toggle("learned", learned.has(keyOf(item)));
       cardEl.classList.toggle("mine", !!item.mine);
       deleteBtn.hidden = !item.mine;
+
+      // '예문 듣기'는 예문이 있을 때만
+      $("speakExampleBtn").disabled = !item.example;
 
       updateProgress();
     }
@@ -814,11 +1189,10 @@
       const done  = countLearned();
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
-      progressText.innerHTML = "";   // 비우고 다시 쓰기
-      progressText.append(total + "개 중 ");
+      progressText.textContent = "";   // 비우고 다시 쓰기
       const b = document.createElement("b");
       b.textContent = done + "개";
-      progressText.append(b, " 외웠어요!");
+      progressText.append(total + "개 중 ", b, " 외웠어요");
 
       progressFill.style.width = percent + "%";
     }
@@ -846,11 +1220,11 @@
       showCard();
     }
 
-    document.getElementById("nextBtn").addEventListener("click", goNext);
-    document.getElementById("prevBtn").addEventListener("click", goPrev);
+    $("nextBtn").addEventListener("click", goNext);
+    $("prevBtn").addEventListener("click", goPrev);
 
     // ------------------------------------------------------------
-    // 9. 외웠어요 ✅ / 다시 볼래요 🔁
+    // 9. 외웠어요 / 다시 볼래요
     // ------------------------------------------------------------
     function markLearned() {
       if (cards.length === 0) return;
@@ -875,10 +1249,10 @@
       goNext();
     }
 
-    document.getElementById("learnedBtn").addEventListener("click", markLearned);
-    document.getElementById("againBtn").addEventListener("click", markAgain);
+    $("learnedBtn").addEventListener("click", markLearned);
+    $("againBtn").addEventListener("click", markAgain);
 
-    // 외운 기록 지우기 (지금 고른 주제의 카드만)
+    // 외운 기록 지우기 (지금 보고 있는 카드들만)
     function resetLearned() {
       cards.forEach(function (w) { learned.delete(keyOf(w)); });
       saveLearned();
@@ -886,8 +1260,8 @@
       showCard();
     }
 
-    document.getElementById("resetBtn").addEventListener("click", function () {
-      if (confirm("지금 보고 있는 주제의 외운 기록을 지울까요?")) {
+    $("resetBtn").addEventListener("click", function () {
+      if (confirm("지금 보고 있는 카드들의 외운 기록을 지울까요?")) {
         resetLearned();
       }
     });
@@ -896,21 +1270,19 @@
     // 10. 축하 창과 색종이
     // ------------------------------------------------------------
     function celebrate() {
-      const topicName = currentTopic === "전체" ? "" : "'" + currentTopic + "' ";
-      document.getElementById("celebrateText").innerHTML = "";
-      document.getElementById("celebrateText").append(
-        topicName + "단어 " + cards.length + "개를 모두 외웠어요!",
-        document.createElement("br"),
-        "정말 대단해요! 👏"
-      );
+      const parts = [];
+      if (currentTopic !== "전체") parts.push("'" + currentTopic + "'");
+      if (currentLevel !== "전체") parts.push("'" + currentLevel + "'");
+      const scope = parts.length ? parts.join(" ") + " " : "";
+      $("celebrateText").textContent = scope + "단어 " + cards.length + "개를 모두 외웠어요. 수고하셨어요!";
       celebrateEl.classList.add("show");
 
-      // 색종이 30개를 위에서 떨어뜨리기
-      const pieces = ["🎉", "⭐", "🎈", "💖", "🌸", "✨"];
-      for (let i = 0; i < 30; i++) {
+      // 차분한 색 색종이 40개를 위에서 떨어뜨리기
+      const colors = ["#34507a", "#2f7d5b", "#a8661c", "#7a3f6e", "#9aa1b0"];
+      for (let i = 0; i < 40; i++) {
         const c = document.createElement("div");
         c.className = "confetti";
-        c.textContent = pieces[i % pieces.length];
+        c.style.background = colors[i % colors.length];
         c.style.left = Math.random() * 100 + "vw";
         c.style.animationDuration = (2 + Math.random() * 2) + "s";
         c.style.animationDelay = Math.random() * 0.8 + "s";
@@ -919,33 +1291,44 @@
       }
     }
 
-    document.getElementById("closeCelebrateBtn").addEventListener("click", function () {
+    $("closeCelebrateBtn").addEventListener("click", function () {
       celebrateEl.classList.remove("show");
     });
 
-    document.getElementById("restartBtn").addEventListener("click", function () {
+    $("restartBtn").addEventListener("click", function () {
       celebrateEl.classList.remove("show");
       resetLearned();
     });
 
     // ------------------------------------------------------------
-    // 11. 발음 듣기 (브라우저의 음성 기능 사용)
+    // 11. 발음 듣기 / 예문 듣기 (브라우저의 음성 기능 사용)
     // ------------------------------------------------------------
-    function speakWord() {
-      if (cards.length === 0) return;
+    function speak(text, rate) {
+      if (!text) return;
       if (!("speechSynthesis" in window)) {
-        alert("이 브라우저는 음성 기능을 지원하지 않아요. 크롬이나 엣지에서 열어 보세요!");
+        alert("이 브라우저는 음성 기능을 지원하지 않아요. 크롬이나 엣지에서 열어 보세요.");
         return;
       }
       window.speechSynthesis.cancel();   // 이전에 읽던 소리는 멈추기
 
-      const speech = new SpeechSynthesisUtterance(cards[currentIndex].english);
+      const speech = new SpeechSynthesisUtterance(text);
       speech.lang = "en-US";   // 미국 영어 발음
-      speech.rate = 0.8;       // 조금 천천히 읽기
+      speech.rate = rate;
       window.speechSynthesis.speak(speech);
     }
 
-    document.getElementById("speakBtn").addEventListener("click", speakWord);
+    function speakWord() {
+      if (cards.length === 0) return;
+      speak(cards[currentIndex].english, 0.85);
+    }
+
+    function speakExample() {
+      if (cards.length === 0) return;
+      speak(cards[currentIndex].example, 0.9);
+    }
+
+    $("speakBtn").addEventListener("click", speakWord);
+    $("speakExampleBtn").addEventListener("click", speakExample);
 
     // ------------------------------------------------------------
     // 12. 섞기 (카드 순서를 랜덤으로 바꾸기)
@@ -960,18 +1343,17 @@
       showCard();
     }
 
-    document.getElementById("shuffleBtn").addEventListener("click", shuffleCards);
+    $("shuffleBtn").addEventListener("click", shuffleCards);
 
     // ------------------------------------------------------------
-    // 13. 주제 고르기
+    // 13. 주제 / 난이도 고르기
     // ------------------------------------------------------------
-    const topicButtons = document.querySelectorAll(".topic-btn");
+    const topicButtons = document.querySelectorAll("[data-topic]");
+    const levelButtons = document.querySelectorAll("[data-level]");
 
-    function selectTopic(topic) {
-      currentTopic = topic;
-      topicButtons.forEach(function (b) {
-        b.classList.toggle("active", b.dataset.topic === topic);
-      });
+    function applyFilter() {
+      topicButtons.forEach(function (b) { b.classList.toggle("active", b.dataset.topic === currentTopic); });
+      levelButtons.forEach(function (b) { b.classList.toggle("active", b.dataset.level === currentLevel); });
       buildCards();
       currentIndex = 0;
       showCard();
@@ -979,36 +1361,49 @@
 
     topicButtons.forEach(function (button) {
       button.addEventListener("click", function () {
-        selectTopic(button.dataset.topic);
+        currentTopic = button.dataset.topic;
+        applyFilter();
+      });
+    });
+
+    levelButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        currentLevel = button.dataset.level;
+        applyFilter();
       });
     });
 
     // ------------------------------------------------------------
     // 14. 나만의 단어 만들기 (팝업 창)
     // ------------------------------------------------------------
-    const addForm    = document.getElementById("addForm");
-    const addMessage = document.getElementById("addMessage");
+    const addForm    = $("addForm");
+    const addMessage = $("addMessage");
 
     function showMessage(text, type) {
       addMessage.textContent = text;
       addMessage.className = "message " + type;
     }
 
+    // 쉼표로 나눠서 빈칸 없는 목록으로 만들기 ("a, b," → ["a", "b"])
+    function splitList(text) {
+      return text.split(/[,，]/).map(function (s) { return s.trim(); }).filter(Boolean);
+    }
+
     // 창 열기 / 닫기
     function openAddModal() {
       showMessage("", "");
       addModal.classList.add("show");
-      document.getElementById("inEnglish").focus();
+      $("inEnglish").focus();
     }
 
     function closeAddModal() {
       addModal.classList.remove("show");
     }
 
-    document.getElementById("openAddBtn").addEventListener("click", openAddModal);
-    document.getElementById("closeAddBtn").addEventListener("click", closeAddModal);
+    $("openAddBtn").addEventListener("click", openAddModal);
+    $("closeAddBtn").addEventListener("click", closeAddModal);
 
-    // 창 바깥(흐린 배경)을 누르면 닫기
+    // 창 바깥(어두운 배경)을 누르면 닫기
     addModal.addEventListener("click", function (event) {
       if (event.target === addModal) closeAddModal();
     });
@@ -1016,29 +1411,36 @@
     addForm.addEventListener("submit", function (event) {
       event.preventDefault();   // 페이지가 새로고침되지 않게 막기
 
-      const english = document.getElementById("inEnglish").value.trim();
-      const korean  = document.getElementById("inKorean").value.trim();
-      const example = document.getElementById("inExample").value.trim();
-      const emoji   = document.getElementById("inEmoji").value.trim() || "📝";
-      const topic   = document.getElementById("inTopic").value;
+      const english  = $("inEnglish").value.trim();
+      const meanings = splitList($("inMeaning").value);
 
       // 꼭 필요한 칸이 비었는지 확인
-      if (!english || !korean) {
-        showMessage("영어 단어와 한국어 뜻은 꼭 써 주세요! 🙏", "error");
+      if (!english || meanings.length === 0) {
+        showMessage("영어 단어와 한국어 뜻은 꼭 입력해 주세요.", "error");
         return;
       }
 
-      // 이미 있는 단어인지 확인
-      const exists = getAllWords().some(function (w) {
-        return keyOf(w) === english.toLowerCase();
+      // 이미 만든 단어인지 확인 (기본 단어와 같은 단어는 '내 단어'로 따로 만들 수 있어요)
+      const exists = myWords.some(function (w) {
+        return w.english.toLowerCase() === english.toLowerCase();
       });
       if (exists) {
-        showMessage("'" + english + "'는 이미 있는 단어예요! 😊", "error");
+        showMessage("'" + english + "'는 이미 내 단어에 있어요.", "error");
         return;
       }
 
       // 새 단어 저장하기
-      const newWord = { topic: topic, english: english, korean: korean, emoji: emoji, example: example };
+      const newWord = {
+        topic:     $("inTopic").value,
+        english:   english,
+        pos:       $("inPos").value,
+        ipa:       $("inIpa").value.trim(),
+        level:     $("inLevel").value,
+        meanings:  meanings.slice(0, 2),
+        example:   $("inExample").value.trim(),
+        exampleKo: $("inExampleKo").value.trim(),
+        synonyms:  splitList($("inSynonyms").value)
+      };
       myWords.push(newWord);
       saveMyWords();
 
@@ -1046,8 +1448,12 @@
       closeAddModal();
 
       // 방금 만든 카드를 바로 보여 주기
-      selectTopic(topic);
-      currentIndex = cards.findIndex(function (w) { return keyOf(w) === english.toLowerCase(); });
+      currentTopic = newWord.topic;
+      currentLevel = "전체";
+      applyFilter();
+      currentIndex = cards.findIndex(function (w) {
+        return w.mine && w.english.toLowerCase() === english.toLowerCase();
+      });
       showCard();
     });
 
@@ -1058,7 +1464,9 @@
       if (!item || !item.mine) return;
       if (!confirm("'" + item.english + "' 카드를 지울까요?")) return;
 
-      myWords = myWords.filter(function (w) { return keyOf(w) !== keyOf(item); });
+      myWords = myWords.filter(function (w) {
+        return w.english.toLowerCase() !== item.english.toLowerCase();
+      });
       learned.delete(keyOf(item));
       saveMyWords();
       saveLearned();
@@ -1069,8 +1477,8 @@
     });
 
     // ------------------------------------------------------------
-    // 15. 보너스: 키보드로도 움직일 수 있어요
-    //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기,  Esc: 창 닫기
+    // 15. 키보드로도 움직일 수 있어요
+    //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기,  E: 예문 듣기,  Esc: 창 닫기
     //     (글자를 쓰는 칸에 있을 때는 작동하지 않아요)
     // ------------------------------------------------------------
     document.addEventListener("keydown", function (event) {
@@ -1094,10 +1502,11 @@
         event.preventDefault();
         speakWord();
       }
+      if (event.key === "e" || event.key === "E") speakExample();
     });
 
     // 처음 페이지가 열리면 '전체' 카드 보여 주기
-    selectTopic("전체");
+    applyFilter();
   </script>
 </body>
 </html>
