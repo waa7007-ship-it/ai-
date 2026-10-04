@@ -113,25 +113,6 @@
       letter-spacing: -0.5px;
     }
 
-    /* 시작 화면 사진: 원본 그대로 (자르기·필터·모서리 깎기 없음, 비율 유지) */
-    .hero-frame {
-      display: inline-block;
-      padding: 6px;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      box-shadow: 0 8px 22px rgba(30, 40, 60, 0.12);
-      margin-bottom: 10px;
-      line-height: 0;
-    }
-
-    .hero-photo {
-      display: block;
-      height: 220px;   /* 높이만 정하고 너비는 원래 비율대로 */
-      width: auto;
-      max-width: 100%;
-    }
-
     .start-title p {
       margin: 4px 0 0;
       color: var(--text-soft);
@@ -798,15 +779,7 @@
     }
 
     /* 키가 작은 화면(작은 휴대폰)에서는 간격과 높이를 조금 줄이기 */
-    @media (max-height: 760px) {
-      .hero-photo    { height: 170px; }
-    }
-
     @media (max-height: 700px) {
-      /* 키가 작은 화면: 사진을 제목 옆에 나란히 (사진은 그대로, 크기만 작게) */
-      .start-title   { display: flex; align-items: center; gap: 14px; text-align: left; white-space: nowrap; }
-      .hero-frame    { margin-bottom: 0; padding: 4px; flex-shrink: 0; }   /* 사진 틀이 눌려서 찌그러지지 않게 */
-      .hero-photo    { height: 120px; max-width: none; }
       .wrap          { gap: 6px; }
       .btn           { min-height: 44px; }
       .card-area     { height: 240px; }
@@ -822,14 +795,8 @@
   <!-- ========== 1) 시작 화면: 난이도 고르기 ========== -->
   <div class="wrap" id="startScreen">
     <div class="start-title">
-      <!-- 사진은 원본 파일을 그대로 사용해요 (수정하지 않음) -->
-      <div class="hero-frame">
-        <img class="hero-photo" src="images/photo.webp" alt="앱 대표 사진" width="750" height="1334">
-      </div>
-      <div>
-        <h1>영어 단어 학습</h1>
-        <p>공부할 난이도를 골라 주세요</p>
-      </div>
+      <h1>영어 단어 학습</h1>
+      <p>공부할 난이도를 골라 주세요</p>
     </div>
 
     <!-- 하 / 중 / 상 버튼은 아래 자바스크립트가 만들어요 -->

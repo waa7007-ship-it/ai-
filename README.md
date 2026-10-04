@@ -12,7 +12,6 @@
 | `manifest.webmanifest` | 앱 이름·아이콘·색 등 "설치용 정보" |
 | `sw.js` | 서비스 워커: 인터넷이 꺼져 있어도 열리게 해 줌 |
 | `icons/` | 앱 아이콘 (`icon.svg`가 원본 그림) |
-| `images/photo.webp` | 시작 화면 사진 (원본 그대로, 수정하지 않음) |
 
 ## 단어 추가하는 법
 1. 난이도에 맞는 `words-○○.js` 파일을 열어요.
@@ -23,5 +22,5 @@
 뜻 최대 2개(`meanings`), 예문(`example`), 예문 해석(`exampleKo`), 유의어 1~2개(`synonyms`)
 
 ## 새 파일을 만들었을 때만
-`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v4` → `wordcards-v5`)
+`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v3` → `wordcards-v4`)
 단어 파일이나 `index.html`을 고치기만 할 때는 따로 할 일이 없어요.

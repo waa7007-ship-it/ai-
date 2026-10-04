@@ -7,9 +7,9 @@
 //   그래서 단어 파일(words-*.js)이나 index.html을 고쳐도 따로 할 일이 없어요.
 //
 // ▶ 새 파일을 추가했을 때만
-//   아래 APP_FILES 목록에 그 파일 이름을 넣고, CACHE_NAME 숫자를 하나 올려 주세요. (v4 → v5)
+//   아래 APP_FILES 목록에 그 파일 이름을 넣고, CACHE_NAME 숫자를 하나 올려 주세요. (v3 → v4)
 // ============================================================
-const CACHE_NAME = "wordcards-v4";
+const CACHE_NAME = "wordcards-v3";
 
 // 앱을 처음 열 때 미리 저장해 둘 파일들 (단어 파일 3개도 모두 포함)
 const APP_FILES = [
@@ -22,8 +22,7 @@ const APP_FILES = [
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon.png",
-  "./images/photo.webp"
+  "./icons/apple-touch-icon.png"
 ];
 
 // 인터넷이 느릴 때 몇 초까지 기다릴지 (넘으면 저장해 둔 파일 사용)
