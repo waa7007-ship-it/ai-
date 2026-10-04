@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- 앱 아이콘: 남색 바탕 위에 겹쳐진 단어 카드 두 장 -->
+  <rect width="512" height="512" rx="112" fill="#34507a"/>
+  <!-- 뒤에 있는 카드 -->
+  <rect x="150" y="118" width="232" height="292" rx="28" fill="#9fb3d1" transform="rotate(10 266 264)"/>
+  <!-- 앞에 있는 카드 -->
+  <rect x="122" y="112" width="232" height="292" rx="28" fill="#ffffff" transform="rotate(-6 238 258)"/>
+  <g transform="rotate(-6 238 258)">
+    <text x="238" y="262" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-weight="bold" font-size="112" fill="#34507a">Aa</text>
+    <rect x="178" y="296" width="120" height="14" rx="7" fill="#d5dceb"/>
+    <rect x="198" y="324" width="80" height="14" rx="7" fill="#d5dceb"/>
+  </g>
+  <!-- 외웠어요 체크 -->
+  <circle cx="360" cy="372" r="58" fill="#2f7d5b" stroke="#34507a" stroke-width="10"/>
+  <path d="M332 372 l20 20 l38 -40" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
