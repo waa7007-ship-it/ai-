@@ -957,6 +957,7 @@
             <option>감정/성격</option>
             <option>일상 회화</option>
             <option>여행/생활</option>
+            <option>건강</option>
             <option>비즈니스</option>
             <option>사회/뉴스</option>
             <option>학술</option>
@@ -1013,7 +1014,7 @@
     };
 
     // 주제 버튼을 보여 줄 순서 (여기에 없는 새 주제는 뒤쪽에 붙어요)
-    const TOPIC_ORDER = ["일상생활", "음식", "감정/성격", "일상 회화", "여행/생활", "비즈니스", "사회/뉴스", "학술"];
+    const TOPIC_ORDER = ["일상생활", "음식", "감정/성격", "일상 회화", "여행/생활", "건강", "비즈니스", "사회/뉴스", "학술"];
     const MY_TOPIC = "내 단어";
 
     // ------------------------------------------------------------
@@ -1231,6 +1232,7 @@
     function afterLevelLoaded(level) {
       const base = levelData[level];
       counts[level] = base.length;
+      countedThisTime.add(level);
       saveData(SAVE.counts, counts);
 
       const baseKeys = new Set(base.map(keyOf));
@@ -1379,14 +1381,16 @@
       });
     }
 
-    // 시작 화면에 보여 줄 단어 수를 아직 모르는 난이도가 있으면, 뒤에서 조용히 한 번 세어 두기
-    // (처음 한 번만 해요. 그 뒤로는 난이도를 열 때마다 저절로 새로 세어져요.)
+    // 시작 화면의 단어 수를 최신으로 맞추기
+    // 앱을 켤 때마다 난이도별로 한 번씩 뒤에서 조용히 세고, 다 센 단어는 메모리에서 바로 비워요.
+    // (단어 파일에 단어를 추가하면 다음에 앱을 켤 때 시작 화면 숫자가 저절로 바뀌어요.)
+    const countedThisTime = new Set();
     let countingNow = false;
     async function countUnknownLevels() {
       if (countingNow) return;
       countingNow = true;
       for (const level of LEVELS) {
-        const needCount = typeof counts[level] !== "number";
+        const needCount = !countedThisTime.has(level);
         const needMigrate = pending && !pending.checked.includes(level);
         if (!needCount && !needMigrate) continue;
         try {

@@ -22,5 +22,5 @@
 뜻 최대 2개(`meanings`), 예문(`example`), 예문 해석(`exampleKo`), 유의어 1~2개(`synonyms`)
 
 ## 새 파일을 만들었을 때만
-`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v3` → `wordcards-v4`)
+`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v5` → `wordcards-v6`)
 단어 파일이나 `index.html`을 고치기만 할 때는 따로 할 일이 없어요.
