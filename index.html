@@ -40,13 +40,13 @@
       --red:         #b24a4a;
       --red-soft:    #f8e4e4;
 
-      /* 난이도 색 */
-      --lv-basic:     #2f7d5b;
-      --lv-basic-bg:  #e2f1ea;
-      --lv-mid:       #34507a;
-      --lv-mid-bg:    #e6ecf5;
-      --lv-high:      #7a3f6e;
-      --lv-high-bg:   #f2e6ef;
+      /* 난이도 색 (하 / 중 / 상) */
+      --lv-low:      #2f7d5b;
+      --lv-low-bg:   #e2f1ea;
+      --lv-mid:      #34507a;
+      --lv-mid-bg:   #e6ecf5;
+      --lv-high:     #7a3f6e;
+      --lv-high-bg:  #f2e6ef;
     }
 
     * {
@@ -86,7 +86,11 @@
       user-select: none;
     }
 
-    /* 화면 가운데 모아 두는 상자 */
+    [hidden] {
+      display: none !important;
+    }
+
+    /* 화면 가운데 모아 두는 상자 (시작 화면, 카드 화면) */
     .wrap {
       width: 100%;
       max-width: 680px;
@@ -96,12 +100,157 @@
       gap: 10px;
     }
 
-    h1 {
+    /* ==================== 시작 화면 ==================== */
+    .start-title {
+      text-align: center;
+      margin-bottom: 6px;
+    }
+
+    .start-title h1 {
       margin: 0;
-      font-size: 1.5rem;
-      font-weight: 700;
+      font-size: 1.7rem;
       color: var(--navy);
       letter-spacing: -0.5px;
+    }
+
+    .start-title p {
+      margin: 4px 0 0;
+      color: var(--text-soft);
+      font-size: 1rem;
+    }
+
+    /* 난이도 고르기 큰 버튼 */
+    .level-card {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      text-align: left;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      border: 2px solid var(--line);
+      border-radius: 18px;
+      padding: 16px 18px;
+      cursor: pointer;
+      transition: border-color 0.15s, transform 0.1s;
+    }
+
+    .level-card:hover  { border-color: var(--text-faint); }
+    .level-card:active { transform: scale(0.99); }
+
+    /* 마지막으로 공부한 난이도 */
+    .level-card.last {
+      border-color: var(--navy);
+      box-shadow: 0 6px 18px rgba(52, 80, 122, 0.12);
+    }
+
+    .level-letter {
+      flex-shrink: 0;
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .level-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .level-name {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 1.25rem;
+      font-weight: 700;
+    }
+
+    .last-badge {
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: #fff;
+      background: var(--navy);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .level-desc {
+      font-size: 0.92rem;
+      color: var(--text-soft);
+      margin: 2px 0 8px;
+    }
+
+    .level-stats {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.88rem;
+      color: var(--text-soft);
+      margin-bottom: 5px;
+    }
+
+    .level-stats b {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .start-footer {
+      display: flex;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    /* 난이도별 색 */
+    .lv-하 { background: var(--lv-low-bg);  color: var(--lv-low); }
+    .lv-중 { background: var(--lv-mid-bg);  color: var(--lv-mid); }
+    .lv-상 { background: var(--lv-high-bg); color: var(--lv-high); }
+    .progress-fill.bar-하 { background: var(--lv-low); }
+    .progress-fill.bar-중 { background: var(--lv-mid); }
+    .progress-fill.bar-상 { background: var(--lv-high); }
+
+    /* ==================== 카드 화면 ==================== */
+    /* 맨 위 줄: 난이도 바꾸기 / 지금 난이도 / 단어 추가 */
+    .top-bar {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .top-btn {
+      flex-shrink: 0;
+      font-family: inherit;
+      font-size: 0.95rem;
+      font-weight: 500;
+      min-height: 44px;
+      padding: 6px 12px;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .top-info {
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--text-soft);
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .top-info .badge {
+      font-size: 0.9rem;
     }
 
     /* ---------- 진행 상황 (몇 개 외웠는지) ---------- */
@@ -145,7 +294,7 @@
       transition: width 0.5s;
     }
 
-    .reset-btn {
+    .small-btn {
       flex-shrink: 0;
       border: 1px solid var(--line);
       background: var(--surface);
@@ -159,44 +308,77 @@
     }
 
     /* 작은 버튼 둘레에 눈에 안 보이는 '누르는 영역'을 넓혀서 손가락으로 누르기 쉽게 */
-    .reset-btn::after,
+    .small-btn::after,
     .delete-btn::after {
       content: "";
       position: absolute;
       inset: -10px -6px;
     }
 
-    .progress-buttons {
-      display: flex;
-      gap: 8px;
-    }
-
     .install-btn {
       background: var(--navy);
       border-color: var(--navy);
       color: #fff;
+      min-height: 44px;
+      padding: 8px 16px;
+      font-size: 0.95rem;
     }
 
-    /* ---------- 주제 / 난이도 고르기 ---------- */
+    /* ---------- 검색창 + 오늘의 학습량 ---------- */
+    .tools {
+      width: 100%;
+      display: flex;
+      gap: 8px;
+    }
+
+    .search {
+      flex: 1;
+      min-width: 0;
+      font-family: inherit;
+      font-size: 1rem;
+      min-height: 44px;
+      padding: 8px 12px 8px 36px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      color: var(--text);
+      background: var(--surface) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239aa1b0' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='M20 20l-4-4'/%3E%3C/svg%3E") no-repeat 11px center;
+    }
+
+    .search:focus,
+    .goal-select:focus {
+      outline: 2px solid var(--navy-soft);
+      border-color: var(--navy);
+    }
+
+    .goal-select {
+      flex-shrink: 0;
+      font-family: inherit;
+      font-size: 1rem;
+      min-height: 44px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    /* ---------- 주제 고르기 ---------- */
     .filter {
       width: 100%;
       display: flex;
       gap: 6px;
       overflow-x: auto;              /* 좁은 화면에서는 옆으로 밀어서 보기 */
       scrollbar-width: none;
+      transition: opacity 0.2s;
     }
 
     .filter::-webkit-scrollbar {
       display: none;
     }
 
-    .filter-label {
-      flex-shrink: 0;
-      align-self: center;
-      font-size: 0.85rem;
-      color: var(--text-faint);
-      width: 46px;
-      white-space: nowrap;
+    /* 검색 중에는 주제 버튼을 흐리게 (검색은 고른 난이도 전체에서 찾아요) */
+    .filter.dim {
+      opacity: 0.45;
     }
 
     .chip {
@@ -306,11 +488,6 @@
     .card.mine .badge-mine { display: inline-block; }
 
     .badge-topic { background: #eef0f4; color: var(--text-soft); }
-
-    /* 난이도 표시 */
-    .level-기본 { background: var(--lv-basic-bg); color: var(--lv-basic); }
-    .level-중급 { background: var(--lv-mid-bg);   color: var(--lv-mid); }
-    .level-고급 { background: var(--lv-high-bg);  color: var(--lv-high); }
 
     .counter {
       font-size: 0.8rem;
@@ -437,7 +614,6 @@
     .btn-plain   { background: var(--surface); border-color: var(--line); }
     .btn-speak   { background: var(--navy-soft); color: var(--navy); }
     .btn-primary { background: var(--navy); color: #fff; width: 100%; }
-    .btn-open    { background: transparent; border: 1px dashed #b9c0cc; color: var(--text-soft); width: 100%; min-height: 46px; }
 
     /* ---------- 팝업 창 (축하 창, 단어 만들기 창) ---------- */
     .modal {
@@ -578,14 +754,14 @@
 
     /* ---------- 휴대폰처럼 좁은 화면일 때 ---------- */
     @media (max-width: 480px) {
-      body        { font-size: 16px; padding: 10px 12px; }
+      body        { font-size: 16px; padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
       .wrap       { gap: 8px; }
-      .chip       { padding: 6px 12px; min-height: 44px; flex-grow: 0; }
+      .chip       { padding: 6px 12px; flex-grow: 0; }
       .card-area  { height: 250px; }
+      .card-back  { padding: 14px 14px 12px; }
       .badge      { font-size: 0.82rem; }
       .hint,
       .counter    { font-size: 0.85rem; }
-      .card-back  { padding: 14px 14px 12px; }
       .word       { font-size: 2rem; }
       .meaning    { font-size: 1.15rem; margin-bottom: 8px; }
       .example    { padding: 6px 10px; }
@@ -593,70 +769,82 @@
       .example-ko { font-size: 0.85rem; }
       .synonyms   { margin-top: 6px; font-size: 0.85rem; }
       .btn        { font-size: 1.05rem; min-height: 48px; }
+      .top-btn    { padding: 6px 10px; }
+      .wide-only  { display: none; }      /* 좁은 화면에서는 긴 설명 숨기기 */
       .field-row  { flex-wrap: wrap; gap: 0 10px; }
       .field-row .field { flex: 1 1 40%; }
+      .level-card   { padding: 14px; gap: 12px; }
+      .level-letter { width: 54px; height: 54px; font-size: 1.7rem; }
+      .level-desc   { font-size: 0.85rem; }
     }
 
-    /* 키가 조금 작은 화면(노트북 등)에서는 간격을 살짝 줄이기 */
-    @media (max-height: 760px) {
-      .wrap { gap: 8px; }
-      h1    { font-size: 1.3rem; }
-    }
-
-    /* 키가 작은 화면(작은 휴대폰)에서는 제목을 숨기고 버튼 높이를 조금 줄이기 */
+    /* 키가 작은 화면(작은 휴대폰)에서는 간격과 높이를 조금 줄이기 */
     @media (max-height: 700px) {
-      h1        { display: none; }
-      .wrap     { gap: 6px; }
-      .chip     { min-height: 44px; }
-      .btn      { min-height: 44px; }
-      .btn-open { min-height: 44px; }
-      .card-area { height: 240px; }
-      .progress-box { padding: 8px 14px 10px; }
-      .progress-top { margin-bottom: 6px; }
+      .wrap          { gap: 6px; }
+      .btn           { min-height: 44px; }
+      .card-area     { height: 240px; }
+      .progress-box  { padding: 8px 14px 10px; }
+      .progress-top  { margin-bottom: 6px; }
     }
   </style>
 </head>
 <body>
 
   <!-- ===================== HTML (화면에 보이는 내용) ===================== -->
-  <div class="wrap">
 
-    <h1>English Vocabulary</h1>
+  <!-- ========== 1) 시작 화면: 난이도 고르기 ========== -->
+  <div class="wrap" id="startScreen">
+    <div class="start-title">
+      <h1>English Vocabulary</h1>
+      <p>공부할 난이도를 골라 주세요</p>
+    </div>
+
+    <!-- 하 / 중 / 상 버튼은 아래 자바스크립트가 만들어요 -->
+    <div class="wrap" id="levelList"></div>
+
+    <div class="start-footer">
+      <button class="small-btn install-btn" id="installBtn" hidden>📲 앱 설치</button>
+    </div>
+  </div>
+
+  <!-- ========== 2) 카드 화면 ========== -->
+  <div class="wrap" id="cardScreen" hidden>
+
+    <!-- 맨 위 줄 -->
+    <div class="top-bar">
+      <button class="top-btn" id="homeBtn">🏠 난이도 바꾸기</button>
+      <div class="top-info">
+        <span class="badge" id="levelBadgeTop">중</span>
+        <span id="levelTotalText">0 / 30 외움</span>
+      </div>
+      <button class="top-btn" id="openAddBtn">＋ 단어</button>
+    </div>
 
     <!-- 진행 상황 -->
     <div class="progress-box">
       <div class="progress-top">
-        <div class="progress-text" id="progressText">50개 중 0개 외웠어요</div>
-        <div class="progress-buttons">
-          <button class="reset-btn install-btn" id="installBtn" hidden>앱 설치</button>
-          <button class="reset-btn" id="resetBtn">처음부터</button>
-        </div>
+        <div class="progress-text" id="progressText">오늘 0 / 20개 외웠어요</div>
+        <button class="small-btn" id="resetBtn">처음부터</button>
       </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
     </div>
 
-    <!-- 주제 고르기 -->
-    <div class="filter" id="topicFilter">
-      <span class="filter-label">주제</span>
-      <button class="chip active" data-topic="전체">전체</button>
-      <button class="chip" data-topic="비즈니스">비즈니스</button>
-      <button class="chip" data-topic="일상 회화">일상 회화</button>
-      <button class="chip" data-topic="감정/성격">감정/성격</button>
-      <button class="chip" data-topic="사회/뉴스">사회/뉴스</button>
-      <button class="chip" data-topic="여행/생활">여행/생활</button>
-      <button class="chip" data-topic="내 단어">내 단어</button>
+    <!-- 검색창 + 오늘의 학습량 -->
+    <div class="tools">
+      <input class="search" id="searchInput" type="search" placeholder="영어 또는 한국어로 검색" autocomplete="off" aria-label="단어 검색">
+      <select class="goal-select" id="goalSelect" aria-label="오늘의 학습량">
+        <option value="10">오늘 10개</option>
+        <option value="20">오늘 20개</option>
+        <option value="30">오늘 30개</option>
+        <option value="50">오늘 50개</option>
+        <option value="all">전체 보기</option>
+      </select>
     </div>
 
-    <!-- 난이도 고르기 -->
-    <div class="filter" id="levelFilter">
-      <span class="filter-label">난이도</span>
-      <button class="chip active" data-level="전체">전체</button>
-      <button class="chip" data-level="기본">기본</button>
-      <button class="chip" data-level="중급">중급</button>
-      <button class="chip" data-level="고급">고급</button>
-    </div>
+    <!-- 주제 고르기 (고른 난이도에 있는 주제만 자동으로 만들어져요) -->
+    <div class="filter" id="topicFilter"></div>
 
     <!-- 단어 카드 -->
     <div class="card-area">
@@ -664,34 +852,34 @@
         <!-- 앞면: 단어 + 품사 + 발음기호 -->
         <div class="card-face card-front">
           <div class="corner corner-tl">
-            <span class="badge" id="levelBadge">중급</span>
+            <span class="badge" id="levelBadge">중</span>
             <span class="badge badge-topic" id="topicBadge">비즈니스</span>
             <span class="badge badge-mine">내 단어</span>
           </div>
           <div class="corner corner-tr">
             <span class="badge badge-learned">✓ 외웠어요</span>
           </div>
-          <div class="word" id="word">negotiate</div>
+          <div class="word" id="word">word</div>
           <div class="word-info">
-            <span class="pos" id="pos">동사</span>
-            <span id="ipa">/nɪˈɡoʊʃieɪt/</span>
+            <span class="pos" id="pos"></span>
+            <span id="ipa"></span>
           </div>
           <div class="hint">카드를 누르면 뜻이 보여요</div>
           <div class="corner corner-bl">
             <button class="delete-btn" id="deleteBtn" hidden>🗑️ 지우기</button>
           </div>
           <div class="corner corner-br">
-            <span class="counter" id="counter">1 / 50</span>
+            <span class="counter" id="counter">0 / 0</span>
           </div>
         </div>
         <!-- 뒷면: 뜻 + 예문 + 해석 + 유의어 -->
         <div class="card-face card-back">
-          <div class="meaning" id="meaning">협상하다</div>
+          <div class="meaning" id="meaning"></div>
           <div class="example">
-            <div class="example-en" id="exampleEn">We need to negotiate a better price.</div>
-            <div class="example-ko" id="exampleKo">우리는 더 좋은 가격으로 협상해야 해요.</div>
+            <div class="example-en" id="exampleEn"></div>
+            <div class="example-ko" id="exampleKo"></div>
           </div>
-          <div class="synonyms" id="synonyms"><b>유의어</b> bargain, discuss</div>
+          <div class="synonyms" id="synonyms"></div>
         </div>
       </div>
     </div>
@@ -714,9 +902,6 @@
       <button class="btn btn-plain" id="shuffleBtn">🔀 섞기</button>
       <button class="btn btn-plain" id="nextBtn">다음 ▶</button>
     </div>
-
-    <!-- 단어 만들기 창 열기 버튼 -->
-    <button class="btn btn-open" id="openAddBtn">＋ 나만의 단어 만들기</button>
   </div>
 
   <!-- 단어 만들기 창 (버튼을 누르면 나타나요) -->
@@ -758,9 +943,9 @@
         <div class="field">
           <label for="inLevel">난이도</label>
           <select id="inLevel">
-            <option>기본</option>
-            <option selected>중급</option>
-            <option>고급</option>
+            <option value="하">하 (기초)</option>
+            <option value="중">중 (중급)</option>
+            <option value="상">상 (고급)</option>
           </select>
         </div>
         <div class="field">
@@ -772,6 +957,7 @@
             <option>감정/성격</option>
             <option>사회/뉴스</option>
             <option>여행/생활</option>
+            <option>학술</option>
           </select>
         </div>
       </div>
@@ -812,234 +998,38 @@
   <!-- ===================== JavaScript (움직이게 하기) ===================== -->
   <script>
     // ------------------------------------------------------------
-    // 1. 기본 단어 50개 (주제 5개 × 10개)
-    //    meanings: 자주 쓰는 뜻 순서로 2개까지
-    //    level: 기본 / 중급 / 고급
+    // 1. 난이도 정보
+    //    단어는 난이도별 파일(words-easy.js 등)에 따로 들어 있어요.
+    //    고른 난이도의 파일만 불러와서 앱이 가볍게 움직여요.
     // ------------------------------------------------------------
-    const baseWords = [
-      // ===== 비즈니스 =====
-      { topic: "비즈니스", english: "deadline", pos: "명사", ipa: "/ˈdedlaɪn/", level: "기본",
-        meanings: ["마감 기한", "최종 기한"],
-        example: "We have to meet the deadline by Friday.", exampleKo: "우리는 금요일까지 마감을 맞춰야 해요.",
-        synonyms: ["due date", "time limit"] },
-      { topic: "비즈니스", english: "colleague", pos: "명사", ipa: "/ˈkɑːliːɡ/", level: "기본",
-        meanings: ["동료"],
-        example: "I had lunch with a colleague from marketing.", exampleKo: "마케팅 부서 동료와 점심을 먹었어요.",
-        synonyms: ["coworker", "associate"] },
-      { topic: "비즈니스", english: "agenda", pos: "명사", ipa: "/əˈdʒendə/", level: "기본",
-        meanings: ["(회의) 안건", "의제"],
-        example: "What's on the agenda for today's meeting?", exampleKo: "오늘 회의 안건이 뭐예요?",
-        synonyms: ["schedule", "program"] },
-      { topic: "비즈니스", english: "negotiate", pos: "동사", ipa: "/nɪˈɡoʊʃieɪt/", level: "중급",
-        meanings: ["협상하다", "(합의를) 성사시키다"],
-        example: "We managed to negotiate a lower price with the supplier.", exampleKo: "우리는 공급업체와 협상해서 가격을 낮췄어요.",
-        synonyms: ["bargain", "discuss"] },
-      { topic: "비즈니스", english: "postpone", pos: "동사", ipa: "/poʊstˈpoʊn/", level: "중급",
-        meanings: ["연기하다", "미루다"],
-        example: "The meeting has been postponed until next week.", exampleKo: "회의가 다음 주로 연기됐어요.",
-        synonyms: ["delay", "put off"] },
-      { topic: "비즈니스", english: "revenue", pos: "명사", ipa: "/ˈrevənuː/", level: "중급",
-        meanings: ["수익", "매출"],
-        example: "Our revenue grew by 15 percent this year.", exampleKo: "올해 우리 매출이 15퍼센트 늘었어요.",
-        synonyms: ["income", "earnings"] },
-      { topic: "비즈니스", english: "implement", pos: "동사", ipa: "/ˈɪmplɪment/", level: "고급",
-        meanings: ["실행하다", "시행하다"],
-        example: "The company will implement the new policy next month.", exampleKo: "회사는 다음 달에 새 정책을 시행할 거예요.",
-        synonyms: ["carry out", "execute"] },
-      { topic: "비즈니스", english: "reimburse", pos: "동사", ipa: "/ˌriːɪmˈbɜːrs/", level: "고급",
-        meanings: ["(비용을) 상환하다", "환급하다"],
-        example: "The company will reimburse you for travel expenses.", exampleKo: "회사가 출장비를 돌려줄 거예요.",
-        synonyms: ["repay", "refund"] },
-      { topic: "비즈니스", english: "delegate", pos: "동사", ipa: "/ˈdelɪɡeɪt/", level: "고급",
-        meanings: ["(업무를) 위임하다", "맡기다"],
-        example: "A good manager knows how to delegate tasks.", exampleKo: "좋은 관리자는 일을 맡길 줄 알아요.",
-        synonyms: ["assign", "entrust"] },
-      { topic: "비즈니스", english: "feasible", pos: "형용사", ipa: "/ˈfiːzəbl/", level: "고급",
-        meanings: ["실현 가능한", "실행할 수 있는"],
-        example: "Is this plan feasible with our current budget?", exampleKo: "지금 예산으로 이 계획이 실현 가능할까요?",
-        synonyms: ["possible", "practical"] },
+    const LEVELS = ["하", "중", "상"];
 
-      // ===== 일상 회화 =====
-      { topic: "일상 회화", english: "appreciate", pos: "동사", ipa: "/əˈpriːʃieɪt/", level: "기본",
-        meanings: ["고마워하다", "진가를 알아보다"],
-        example: "I really appreciate your help.", exampleKo: "도와줘서 정말 고마워요.",
-        synonyms: ["be grateful for", "value"] },
-      { topic: "일상 회화", english: "convenient", pos: "형용사", ipa: "/kənˈviːniənt/", level: "기본",
-        meanings: ["편리한", "(시간이) 괜찮은"],
-        example: "Is Tuesday afternoon convenient for you?", exampleKo: "화요일 오후 괜찮으세요?",
-        synonyms: ["handy", "suitable"] },
-      { topic: "일상 회화", english: "mention", pos: "동사", ipa: "/ˈmenʃn/", level: "기본",
-        meanings: ["언급하다", "말하다"],
-        example: "She mentioned that she was moving to Busan.", exampleKo: "그녀가 부산으로 이사 간다고 말했어요.",
-        synonyms: ["bring up", "refer to"] },
-      { topic: "일상 회화", english: "figure out", pos: "구동사", ipa: "/ˈfɪɡjər aʊt/", level: "기본",
-        meanings: ["알아내다", "이해하다"],
-        example: "I can't figure out how this app works.", exampleKo: "이 앱이 어떻게 작동하는지 모르겠어요.",
-        synonyms: ["work out", "solve"] },
-      { topic: "일상 회화", english: "definitely", pos: "부사", ipa: "/ˈdefɪnətli/", level: "기본",
-        meanings: ["확실히", "물론"],
-        example: "I'll definitely be there on time.", exampleKo: "꼭 제시간에 갈게요.",
-        synonyms: ["certainly", "surely"] },
-      { topic: "일상 회화", english: "awkward", pos: "형용사", ipa: "/ˈɔːkwərd/", level: "중급",
-        meanings: ["어색한", "곤란한"],
-        example: "There was an awkward silence after his joke.", exampleKo: "그의 농담 후에 어색한 침묵이 흘렀어요.",
-        synonyms: ["uncomfortable", "embarrassing"] },
-      { topic: "일상 회화", english: "hesitate", pos: "동사", ipa: "/ˈhezɪteɪt/", level: "중급",
-        meanings: ["망설이다", "주저하다"],
-        example: "Don't hesitate to call me if you need anything.", exampleKo: "필요한 게 있으면 망설이지 말고 전화하세요.",
-        synonyms: ["pause", "waver"] },
-      { topic: "일상 회화", english: "assume", pos: "동사", ipa: "/əˈsuːm/", level: "중급",
-        meanings: ["(사실이라고) 생각하다", "(책임을) 맡다"],
-        example: "I assumed you already knew about the party.", exampleKo: "당신이 파티에 대해 이미 알고 있는 줄 알았어요.",
-        synonyms: ["suppose", "presume"] },
-      { topic: "일상 회화", english: "insist", pos: "동사", ipa: "/ɪnˈsɪst/", level: "중급",
-        meanings: ["고집하다", "주장하다"],
-        example: "He insisted on paying for dinner.", exampleKo: "그가 저녁값을 내겠다고 고집했어요.",
-        synonyms: ["demand", "maintain"] },
-      { topic: "일상 회화", english: "occasionally", pos: "부사", ipa: "/əˈkeɪʒnəli/", level: "중급",
-        meanings: ["가끔", "때때로"],
-        example: "We occasionally go hiking on weekends.", exampleKo: "우리는 주말에 가끔 등산을 가요.",
-        synonyms: ["sometimes", "now and then"] },
+    const LEVEL_INFO = {
+      "하": { file: "words-easy.js",   name: "기초", desc: "중·고등 기초, 일상생활에서 자주 쓰는 단어" },
+      "중": { file: "words-medium.js", name: "중급", desc: "수능·토익 수준, 뉴스·직장에서 자주 쓰는 단어" },
+      "상": { file: "words-hard.js",   name: "고급", desc: "토플·텝스 수준, 학술·전문 분야와 고급 글의 단어" }
+    };
 
-      // ===== 감정/성격 =====
-      { topic: "감정/성격", english: "anxious", pos: "형용사", ipa: "/ˈæŋkʃəs/", level: "기본",
-        meanings: ["불안한", "간절히 바라는"],
-        example: "I always feel anxious before a job interview.", exampleKo: "면접 전에는 늘 불안해요.",
-        synonyms: ["nervous", "worried"] },
-      { topic: "감정/성격", english: "frustrated", pos: "형용사", ipa: "/ˈfrʌstreɪtɪd/", level: "기본",
-        meanings: ["좌절한", "답답한"],
-        example: "She got frustrated when the computer crashed again.", exampleKo: "컴퓨터가 또 멈추자 그녀는 답답해했어요.",
-        synonyms: ["annoyed", "discouraged"] },
-      { topic: "감정/성격", english: "confident", pos: "형용사", ipa: "/ˈkɑːnfɪdənt/", level: "기본",
-        meanings: ["자신감 있는", "확신하는"],
-        example: "I'm confident that we'll win the contract.", exampleKo: "우리가 계약을 따낼 거라고 확신해요.",
-        synonyms: ["self-assured", "sure"] },
-      { topic: "감정/성격", english: "considerate", pos: "형용사", ipa: "/kənˈsɪdərət/", level: "중급",
-        meanings: ["사려 깊은", "배려하는"],
-        example: "It was very considerate of you to call.", exampleKo: "전화해 주다니 정말 배려심이 깊으시네요.",
-        synonyms: ["thoughtful", "kind"] },
-      { topic: "감정/성격", english: "stubborn", pos: "형용사", ipa: "/ˈstʌbərn/", level: "중급",
-        meanings: ["고집 센", "완강한"],
-        example: "My father is too stubborn to ask for directions.", exampleKo: "우리 아버지는 고집이 세서 길을 묻지 않으세요.",
-        synonyms: ["obstinate", "headstrong"] },
-      { topic: "감정/성격", english: "reluctant", pos: "형용사", ipa: "/rɪˈlʌktənt/", level: "중급",
-        meanings: ["꺼리는", "마지못해 하는"],
-        example: "He was reluctant to share his opinion in the meeting.", exampleKo: "그는 회의에서 의견을 말하기를 꺼렸어요.",
-        synonyms: ["unwilling", "hesitant"] },
-      { topic: "감정/성격", english: "overwhelmed", pos: "형용사", ipa: "/ˌoʊvərˈwelmd/", level: "중급",
-        meanings: ["압도된", "벅찬"],
-        example: "I felt overwhelmed by all the work on my desk.", exampleKo: "책상 위에 쌓인 일에 압도되는 느낌이었어요.",
-        synonyms: ["swamped", "overloaded"] },
-      { topic: "감정/성격", english: "resilient", pos: "형용사", ipa: "/rɪˈzɪliənt/", level: "고급",
-        meanings: ["회복력 있는", "잘 이겨 내는"],
-        example: "Children are often more resilient than we think.", exampleKo: "아이들은 우리가 생각하는 것보다 회복력이 강한 경우가 많아요.",
-        synonyms: ["tough", "adaptable"] },
-      { topic: "감정/성격", english: "meticulous", pos: "형용사", ipa: "/məˈtɪkjələs/", level: "고급",
-        meanings: ["꼼꼼한", "세심한"],
-        example: "She is meticulous about checking every detail.", exampleKo: "그녀는 모든 세부 사항을 꼼꼼하게 확인해요.",
-        synonyms: ["careful", "thorough"] },
-      { topic: "감정/성격", english: "indifferent", pos: "형용사", ipa: "/ɪnˈdɪfrənt/", level: "고급",
-        meanings: ["무관심한", "그저 그런"],
-        example: "He seemed indifferent to the news.", exampleKo: "그는 그 소식에 무관심해 보였어요.",
-        synonyms: ["uninterested", "unconcerned"] },
-
-      // ===== 사회/뉴스 =====
-      { topic: "사회/뉴스", english: "policy", pos: "명사", ipa: "/ˈpɑːləsi/", level: "기본",
-        meanings: ["정책", "방침"],
-        example: "The government announced a new housing policy.", exampleKo: "정부가 새 주택 정책을 발표했어요.",
-        synonyms: ["plan", "guideline"] },
-      { topic: "사회/뉴스", english: "election", pos: "명사", ipa: "/ɪˈlekʃn/", level: "기본",
-        meanings: ["선거"],
-        example: "Many young people voted in the last election.", exampleKo: "지난 선거에서 많은 젊은이들이 투표했어요.",
-        synonyms: ["vote", "poll"] },
-      { topic: "사회/뉴스", english: "shortage", pos: "명사", ipa: "/ˈʃɔːrtɪdʒ/", level: "기본",
-        meanings: ["부족", "결핍"],
-        example: "The hospital is facing a shortage of nurses.", exampleKo: "그 병원은 간호사 부족을 겪고 있어요.",
-        synonyms: ["lack", "scarcity"] },
-      { topic: "사회/뉴스", english: "inflation", pos: "명사", ipa: "/ɪnˈfleɪʃn/", level: "중급",
-        meanings: ["물가 상승", "인플레이션"],
-        example: "Inflation has made groceries much more expensive.", exampleKo: "물가 상승으로 장보기가 훨씬 비싸졌어요.",
-        synonyms: ["rising prices"] },
-      { topic: "사회/뉴스", english: "controversy", pos: "명사", ipa: "/ˈkɑːntrəvɜːrsi/", level: "중급",
-        meanings: ["논란", "논쟁"],
-        example: "The new law caused a lot of controversy.", exampleKo: "새 법은 많은 논란을 일으켰어요.",
-        synonyms: ["dispute", "debate"] },
-      { topic: "사회/뉴스", english: "regulation", pos: "명사", ipa: "/ˌreɡjuˈleɪʃn/", level: "중급",
-        meanings: ["규제", "규정"],
-        example: "Stricter regulations on plastic use will start next year.", exampleKo: "플라스틱 사용에 대한 더 엄격한 규제가 내년부터 시작돼요.",
-        synonyms: ["rule", "restriction"] },
-      { topic: "사회/뉴스", english: "sustainable", pos: "형용사", ipa: "/səˈsteɪnəbl/", level: "중급",
-        meanings: ["지속 가능한", "환경을 해치지 않는"],
-        example: "The city is investing in sustainable energy.", exampleKo: "그 도시는 지속 가능한 에너지에 투자하고 있어요.",
-        synonyms: ["eco-friendly", "renewable"] },
-      { topic: "사회/뉴스", english: "unprecedented", pos: "형용사", ipa: "/ʌnˈpresɪdentɪd/", level: "고급",
-        meanings: ["전례 없는", "유례없는"],
-        example: "The country is facing an unprecedented heat wave.", exampleKo: "그 나라는 전례 없는 폭염을 겪고 있어요.",
-        synonyms: ["unheard-of", "extraordinary"] },
-      { topic: "사회/뉴스", english: "allegation", pos: "명사", ipa: "/ˌæləˈɡeɪʃn/", level: "고급",
-        meanings: ["(증거 없는) 혐의", "주장"],
-        example: "The minister denied all allegations of corruption.", exampleKo: "장관은 모든 부패 혐의를 부인했어요.",
-        synonyms: ["accusation", "claim"] },
-      { topic: "사회/뉴스", english: "deteriorate", pos: "동사", ipa: "/dɪˈtɪriəreɪt/", level: "고급",
-        meanings: ["악화되다", "나빠지다"],
-        example: "Relations between the two countries continued to deteriorate.", exampleKo: "두 나라의 관계는 계속 악화됐어요.",
-        synonyms: ["worsen", "decline"] },
-
-      // ===== 여행/생활 =====
-      { topic: "여행/생활", english: "reservation", pos: "명사", ipa: "/ˌrezərˈveɪʃn/", level: "기본",
-        meanings: ["예약", "의구심(주로 복수형)"],
-        example: "I'd like to make a reservation for two at seven.", exampleKo: "7시에 두 명 예약하고 싶어요.",
-        synonyms: ["booking"] },
-      { topic: "여행/생활", english: "luggage", pos: "명사", ipa: "/ˈlʌɡɪdʒ/", level: "기본",
-        meanings: ["짐", "수하물"],
-        example: "Can I leave my luggage here until check-in?", exampleKo: "체크인할 때까지 짐을 여기 맡겨도 될까요?",
-        synonyms: ["baggage"] },
-      { topic: "여행/생활", english: "destination", pos: "명사", ipa: "/ˌdestɪˈneɪʃn/", level: "기본",
-        meanings: ["목적지", "행선지"],
-        example: "Jeju is a popular destination for honeymooners.", exampleKo: "제주는 신혼부부에게 인기 있는 여행지예요.",
-        synonyms: ["stop", "end point"] },
-      { topic: "여행/생활", english: "refund", pos: "명사", ipa: "/ˈriːfʌnd/", level: "기본",
-        meanings: ["환불", "환불금"],
-        example: "Can I get a refund if I cancel my ticket?", exampleKo: "표를 취소하면 환불받을 수 있나요?",
-        synonyms: ["repayment", "reimbursement"] },
-      { topic: "여행/생활", english: "itinerary", pos: "명사", ipa: "/aɪˈtɪnəreri/", level: "중급",
-        meanings: ["여행 일정(표)"],
-        example: "I'll email you the itinerary for our trip.", exampleKo: "여행 일정표를 이메일로 보내 드릴게요.",
-        synonyms: ["schedule", "travel plan"] },
-      { topic: "여행/생활", english: "accommodation", pos: "명사", ipa: "/əˌkɑːməˈdeɪʃn/", level: "중급",
-        meanings: ["숙소", "숙박 시설"],
-        example: "The price includes flights and accommodation.", exampleKo: "가격에 항공편과 숙소가 포함돼 있어요.",
-        synonyms: ["lodging", "housing"] },
-      { topic: "여행/생활", english: "commute", pos: "동사", ipa: "/kəˈmjuːt/", level: "중급",
-        meanings: ["통근하다", "출퇴근하다"],
-        example: "I commute to work by subway every day.", exampleKo: "저는 매일 지하철로 출퇴근해요.",
-        synonyms: ["travel to work"] },
-      { topic: "여행/생활", english: "layover", pos: "명사", ipa: "/ˈleɪoʊvər/", level: "중급",
-        meanings: ["(비행기) 경유 대기", "잠시 머묾"],
-        example: "We have a three-hour layover in Tokyo.", exampleKo: "도쿄에서 3시간 경유 대기가 있어요.",
-        synonyms: ["stopover", "connection"] },
-      { topic: "여행/생활", english: "complimentary", pos: "형용사", ipa: "/ˌkɑːmplɪˈmentri/", level: "고급",
-        meanings: ["무료의", "칭찬하는"],
-        example: "The hotel offers complimentary breakfast.", exampleKo: "그 호텔은 무료 조식을 제공해요.",
-        synonyms: ["free", "on the house"] },
-      { topic: "여행/생활", english: "amenity", pos: "명사", ipa: "/əˈmenəti/", level: "고급",
-        meanings: ["편의 시설", "생활 편의 용품"],
-        example: "The apartment is close to shops and other amenities.", exampleKo: "그 아파트는 상점과 다른 편의 시설이 가까워요.",
-        synonyms: ["facility", "convenience"] }
-    ];
-
-    // 주제 목록 (단어 만들기 창과 옛 기록 정리에 사용)
-    const TOPICS = ["비즈니스", "일상 회화", "감정/성격", "사회/뉴스", "여행/생활", "내 단어"];
-    const LEVELS = ["기본", "중급", "고급"];
+    // 주제 버튼을 보여 줄 순서 (여기에 없는 새 주제는 뒤쪽에 붙어요)
+    const TOPIC_ORDER = ["비즈니스", "일상 회화", "감정/성격", "사회/뉴스", "여행/생활", "학술"];
+    const MY_TOPIC = "내 단어";
 
     // ------------------------------------------------------------
     // 2. 브라우저에 저장하고 불러오기 (localStorage)
     //    브라우저를 껐다 켜도 남아 있게 해 줘요.
     //    혹시 저장이 막힌 브라우저여도 페이지가 멈추지 않도록 try/catch로 감싸요.
     // ------------------------------------------------------------
-    const SAVE_KEY_MY_WORDS   = "wordcards-my-words";     // 내가 만든 단어 (예전과 같은 이름)
-    const SAVE_KEY_LEARNED    = "wordcards-v2-learned";   // 새 '외웠어요' 기록
-    const OLD_KEY_LEARNED     = "wordcards-learned";      // 예전 '외웠어요' 기록
+    const SAVE = {
+      myWords:   "wordcards-my-words",                                  // 내가 만든 단어
+      learned:   function (level) { return "wordcards-v3-learned-" + level; },   // 난이도별 외운 기록
+      today:     function (level) { return "wordcards-v3-today-" + level; },     // 난이도별 오늘의 단어
+      counts:    "wordcards-v3-counts",          // 난이도별 단어 수 (시작 화면에 보여 주려고 기억)
+      lastLevel: "wordcards-v3-last-level",      // 마지막으로 고른 난이도
+      goal:      "wordcards-v3-daily-goal",      // 오늘의 학습량
+      pending:   "wordcards-v3-pending",         // 예전 기록 중 아직 옮기지 못한 것
+      oldV2:     "wordcards-v2-learned",         // 예전(v2) 외운 기록
+      oldV1:     "wordcards-learned"             // 아주 예전(v1) 외운 기록
+    };
 
     function loadData(key, defaultValue) {
       try {
@@ -1072,80 +1062,229 @@
       return (word.mine ? "my:" : "base:") + word.english.trim().toLowerCase();
     }
 
-    // 예전 모양으로 저장된 '내 단어'를 새 모양으로 바꿔 주기
-    // (예전: korean, emoji / 새: meanings, pos, ipa, level, exampleKo, synonyms)
+    // 글자 하나 또는 목록을 항상 목록으로 바꾸기
+    function toList(value) {
+      if (Array.isArray(value)) return value.map(String).map(function (s) { return s.trim(); }).filter(Boolean);
+      return value ? [String(value).trim()] : [];
+    }
+
+    // 예전 난이도 이름을 새 이름으로 (기본→하, 중급→중, 고급→상)
+    function toNewLevel(level) {
+      const map = { "기본": "하", "중급": "중", "고급": "상" };
+      if (LEVELS.includes(level)) return level;
+      return map[level] || "하";   // 모르면 '하'로
+    }
+
+    // 내가 만든 단어를 새 모양으로 맞추기 (예전 모양: korean, emoji 등)
     function normalizeMyWord(w) {
-      let meanings = w.meanings;
-      if (!Array.isArray(meanings)) {
-        meanings = w.korean ? [w.korean] : [];
-      }
+      const meanings = Array.isArray(w.meanings) ? toList(w.meanings) : toList(w.korean);
+      const knownTopic = TOPIC_ORDER.includes(w.topic) || w.topic === MY_TOPIC;
       return {
-        topic:     TOPICS.includes(w.topic) ? w.topic : "내 단어",   // 예전 주제(동물 등)는 '내 단어'로
-        english:   String(w.english || ""),
+        english:   String(w.english || "").trim(),
         pos:       w.pos || "",
         ipa:       w.ipa || "",
-        level:     LEVELS.includes(w.level) ? w.level : "",          // 모르면 비워 두기
+        level:     toNewLevel(w.level),
+        topic:     knownTopic ? w.topic : MY_TOPIC,      // 예전 주제(동물 등)는 '내 단어'로
         meanings:  meanings.slice(0, 2),
         example:   w.example || "",
         exampleKo: w.exampleKo || "",
-        synonyms:  Array.isArray(w.synonyms) ? w.synonyms : []
+        synonyms:  toList(w.synonyms).slice(0, 2)
       };
     }
 
     // 내가 추가한 단어들 (예전 단어도 지우지 않고 새 모양으로 바꿔서 그대로 남겨요)
-    let myWords = loadData(SAVE_KEY_MY_WORDS, [])
+    let myWords = loadData(SAVE.myWords, [])
       .map(normalizeMyWord)
-      .filter(function (w) { return w.english; });
-    saveData(SAVE_KEY_MY_WORDS, myWords);
+      .filter(function (w) { return w.english && w.meanings.length > 0; });
+    saveData(SAVE.myWords, myWords);
 
-    // 외운 단어 기록
-    let learned = new Set(loadData(SAVE_KEY_LEARNED, []));
+    function saveMyWords() { saveData(SAVE.myWords, myWords); }
 
-    // 예전 '외웠어요' 기록 정리하기 (한 번만 실행돼요)
-    //  - 예전 기본 단어(dog, apple 등) 기록은 버려요.
-    //  - 내가 직접 만든 단어의 기록만 새 기록으로 옮겨요.
-    const oldLearned = loadData(OLD_KEY_LEARNED, null);
-    if (Array.isArray(oldLearned)) {
-      const myKeys = myWords.map(function (w) { return w.english.trim().toLowerCase(); });
-      oldLearned.forEach(function (k) {
-        if (myKeys.includes(k)) learned.add("my:" + k);
+    // 난이도별 외운 기록 (필요할 때 꺼내 쓰기)
+    const learnedSets = {};
+
+    function getLearned(level) {
+      if (!learnedSets[level]) learnedSets[level] = new Set(loadData(SAVE.learned(level), []));
+      return learnedSets[level];
+    }
+
+    function saveLearned(level) {
+      saveData(SAVE.learned(level), [...getLearned(level)]);
+    }
+
+    // ------------------------------------------------------------
+    // 3. 예전 저장 기록을 새 구조로 옮기기 (한 번만 실행돼요)
+    //    - 내가 만든 단어의 기록 → 그 단어의 난이도 기록으로 바로 옮겨요.
+    //    - 기본 단어의 기록 → 어느 난이도인지는 단어 파일을 열어 봐야 알 수 있어서
+    //      '옮길 목록(pending)'에 넣어 두었다가, 난이도 파일을 불러올 때 옮겨요.
+    // ------------------------------------------------------------
+    let pending = loadData(SAVE.pending, null);   // { keys: [...], checked: ["하", ...] }
+
+    (function migrateOldRecords() {
+      const oldV2 = loadData(SAVE.oldV2, null);
+      const oldV1 = loadData(SAVE.oldV1, null);
+      if (!Array.isArray(oldV2) && !Array.isArray(oldV1)) return;
+
+      function findMyWord(english) {
+        return myWords.find(function (w) { return w.english.toLowerCase() === english; });
+      }
+      function addMyRecord(english) {
+        const w = findMyWord(english);
+        if (w) getLearned(w.level).add("my:" + english);
+      }
+
+      const baseKeys = [];
+      (oldV2 || []).forEach(function (key) {
+        if (key.indexOf("my:") === 0) addMyRecord(key.slice(3));
+        else if (key.indexOf("base:") === 0) baseKeys.push(key);
       });
-      removeData(OLD_KEY_LEARNED);
-      saveData(SAVE_KEY_LEARNED, [...learned]);
-    }
+      (oldV1 || []).forEach(function (english) { addMyRecord(String(english).toLowerCase()); });
 
-    function saveMyWords() { saveData(SAVE_KEY_MY_WORDS, myWords); }
-    function saveLearned() { saveData(SAVE_KEY_LEARNED, [...learned]); }
+      LEVELS.forEach(saveLearned);
+      if (baseKeys.length > 0) {
+        pending = { keys: baseKeys, checked: [] };
+        saveData(SAVE.pending, pending);
+      }
+      removeData(SAVE.oldV2);
+      removeData(SAVE.oldV1);
+    })();
 
     // ------------------------------------------------------------
-    // 3. 지금 상태를 기억하는 변수
+    // 4. 단어 파일 불러오기
+    //    <script> 태그로 불러오기 때문에 파일을 더블클릭해서 열어도,
+    //    인터넷(GitHub Pages)에 올려도 똑같이 작동해요.
     // ------------------------------------------------------------
-    let currentTopic = "전체";   // 지금 고른 주제
-    let currentLevel = "전체";   // 지금 고른 난이도
-    let cards = [];              // 지금 보여 줄 카드 목록
-    let currentIndex = 0;        // 지금 보고 있는 카드 번호 (0부터 시작)
+    window.WORD_FILES = window.WORD_FILES || {};
+    const levelData = {};     // 불러와서 정리한 기본 단어 (난이도별)
+    const loading = {};       // 지금 불러오는 중인 파일
+    let counts = loadData(SAVE.counts, {});   // 난이도별 기본 단어 수
 
-    // 기본 단어 + 내가 만든 단어를 합친 전체 목록
-    function getAllWords() {
-      return baseWords.concat(myWords.map(function (w) {
-        return Object.assign({}, w, { mine: true });
-      }));
-    }
-
-    // 고른 주제와 난이도에 맞는 카드만 골라서 cards에 넣기
-    function buildCards() {
-      cards = getAllWords().filter(function (w) {
-        const topicOk = currentTopic === "전체" || w.topic === currentTopic;
-        const levelOk = currentLevel === "전체" || w.level === currentLevel;
-        return topicOk && levelOk;
+    // 파일에서 읽은 단어를 앱에서 쓰기 좋은 모양으로 정리하기
+    function normalizeBaseWords(list, level) {
+      const seen = new Set();
+      const result = [];
+      (Array.isArray(list) ? list : []).forEach(function (w) {
+        if (!w || !w.english) return;
+        const english = String(w.english).trim();
+        const k = english.toLowerCase();
+        if (seen.has(k)) return;          // 같은 단어가 두 번 있으면 처음 것만
+        seen.add(k);
+        const meanings = toList(w.meanings);
+        if (meanings.length === 0) return; // 뜻이 없으면 건너뛰기
+        result.push({
+          english:   english,
+          pos:       w.pos || "",
+          ipa:       w.ipa || "",
+          level:     level,
+          topic:     w.topic || "기타",
+          meanings:  meanings.slice(0, 2),
+          example:   w.example || "",
+          exampleKo: w.exampleKo || "",
+          synonyms:  toList(w.synonyms).slice(0, 2)
+        });
       });
+      return result;
+    }
+
+    function loadLevel(level) {
+      if (levelData[level]) return Promise.resolve(levelData[level]);
+      if (loading[level]) return loading[level];
+
+      loading[level] = new Promise(function (resolve, reject) {
+        // 예전에 붙였던 같은 파일의 <script>가 있으면 지우고 새로 붙이기
+        const old = document.querySelector('script[data-level="' + level + '"]');
+        if (old) old.remove();
+
+        const script = document.createElement("script");
+        script.src = LEVEL_INFO[level].file;
+        script.dataset.level = level;
+        script.onload = function () {
+          delete loading[level];
+          const list = window.WORD_FILES[level];
+          if (!Array.isArray(list)) {
+            reject(new Error("파일 안에 단어 목록이 없어요"));
+            return;
+          }
+          levelData[level] = normalizeBaseWords(list, level);
+          delete window.WORD_FILES[level];   // 원본은 정리했으니 지워서 메모리 아끼기
+          afterLevelLoaded(level);
+          resolve(levelData[level]);
+        };
+        script.onerror = function () {
+          delete loading[level];
+          script.remove();
+          reject(new Error("파일을 불러오지 못했어요"));
+        };
+        document.head.appendChild(script);
+      });
+      return loading[level];
+    }
+
+    // 다른 난이도의 단어는 메모리에서 비워서 앱을 가볍게 유지하기
+    function freeLevel(level) {
+      delete levelData[level];
+    }
+
+    // 난이도 파일을 불러온 뒤 할 일: 단어 수 기억, 예전 기록 옮기기, 없어진 단어 기록 정리
+    function afterLevelLoaded(level) {
+      const base = levelData[level];
+      counts[level] = base.length;
+      saveData(SAVE.counts, counts);
+
+      const baseKeys = new Set(base.map(keyOf));
+      const learned = getLearned(level);
+
+      // 예전 기록 옮기기
+      if (pending && !pending.checked.includes(level)) {
+        pending.keys = pending.keys.filter(function (key) {
+          if (baseKeys.has(key)) { learned.add(key); return false; }
+          return true;
+        });
+        pending.checked.push(level);
+        if (pending.keys.length === 0 || pending.checked.length === LEVELS.length) {
+          pending = null;                 // 다 옮겼으면(또는 어디에도 없으면) 끝
+          removeData(SAVE.pending);
+        } else {
+          saveData(SAVE.pending, pending);
+        }
+      }
+
+      // 이제 없는 단어의 기록은 지우기 (단어 파일에서 단어를 뺀 경우)
+      const validKeys = new Set(baseKeys);
+      myWordsOf(level).forEach(function (w) { validKeys.add(keyOf(w)); });
+      [...learned].forEach(function (key) { if (!validKeys.has(key)) learned.delete(key); });
+      saveLearned(level);
+    }
+
+    // 고른 난이도의 내가 만든 단어
+    function myWordsOf(level) {
+      return myWords
+        .filter(function (w) { return w.level === level; })
+        .map(function (w) { return Object.assign({}, w, { mine: true }); });
+    }
+
+    // 고른 난이도의 전체 단어 (기본 단어 + 내가 만든 단어)
+    function wordsOf(level) {
+      return (levelData[level] || []).concat(myWordsOf(level));
     }
 
     // ------------------------------------------------------------
-    // 4. 화면 요소 가져오기
+    // 5. 지금 상태를 기억하는 변수
+    // ------------------------------------------------------------
+    let activeLevel = null;                              // 지금 공부하는 난이도
+    let currentTopic = "전체";                           // 지금 고른 주제
+    let searchText = "";                                 // 검색어
+    let dailyGoal = loadData(SAVE.goal, "20");           // 오늘의 학습량 ("10" ~ "50" 또는 "all")
+    let cards = [];                                      // 지금 보여 줄 카드 목록
+    let currentIndex = 0;                                // 지금 보고 있는 카드 번호 (0부터 시작)
+
+    // ------------------------------------------------------------
+    // 6. 화면 요소 가져오기
     // ------------------------------------------------------------
     const $ = function (id) { return document.getElementById(id); };
 
+    const startScreen  = $("startScreen");
+    const cardScreen   = $("cardScreen");
     const cardEl       = $("card");
     const wordEl       = $("word");
     const posEl        = $("pos");
@@ -1162,21 +1301,298 @@
     const deleteBtn    = $("deleteBtn");
     const celebrateEl  = $("celebrate");
     const addModal     = $("addModal");
+    const topicFilter  = $("topicFilter");
+    const searchInput  = $("searchInput");
+    const goalSelect   = $("goalSelect");
 
-    // 카드가 하나도 없을 때(예: '내 단어'를 아직 안 만들었을 때) 버튼 막기
+    // 카드가 하나도 없을 때 막아 둘 버튼들
     const cardButtons = ["learnedBtn", "againBtn", "prevBtn", "nextBtn", "speakBtn", "speakExampleBtn", "shuffleBtn"].map($);
 
     // ------------------------------------------------------------
-    // 5. 지금 카드를 화면에 그리는 함수
+    // 7. 시작 화면 (난이도 고르기)
+    // ------------------------------------------------------------
+    function renderStart() {
+      const lastLevel = loadData(SAVE.lastLevel, null);
+      const list = $("levelList");
+      list.textContent = "";
+
+      LEVELS.forEach(function (level) {
+        const info = LEVEL_INFO[level];
+        const myCount = myWords.filter(function (w) { return w.level === level; }).length;
+        const known = typeof counts[level] === "number";
+        const total = known ? counts[level] + myCount : null;
+        const done = Math.min(getLearned(level).size, total || 0);
+        const percent = total ? Math.round((done / total) * 100) : 0;
+
+        const btn = document.createElement("button");
+        btn.className = "level-card" + (level === lastLevel ? " last" : "");
+        btn.dataset.level = level;
+
+        const letter = document.createElement("div");
+        letter.className = "level-letter lv-" + level;
+        letter.textContent = level;
+
+        const body = document.createElement("div");
+        body.className = "level-body";
+
+        const name = document.createElement("div");
+        name.className = "level-name";
+        name.textContent = level + " · " + info.name;
+        if (level === lastLevel) {
+          const badge = document.createElement("span");
+          badge.className = "last-badge";
+          badge.textContent = "마지막 학습";
+          name.appendChild(badge);
+        }
+
+        const desc = document.createElement("div");
+        desc.className = "level-desc";
+        desc.textContent = info.desc;
+
+        const stats = document.createElement("div");
+        stats.className = "level-stats";
+        const left = document.createElement("span");
+        const right = document.createElement("span");
+        if (known) {
+          const b = document.createElement("b");
+          b.textContent = done + "개";
+          left.append("단어 " + total + "개 중 ", b, " 외움");
+          right.textContent = percent + "%";
+        } else {
+          left.textContent = "단어 수 확인 중…";
+        }
+        stats.append(left, right);
+
+        const bar = document.createElement("div");
+        bar.className = "progress-bar";
+        const fill = document.createElement("div");
+        fill.className = "progress-fill bar-" + level;
+        fill.style.width = percent + "%";
+        bar.appendChild(fill);
+
+        body.append(name, desc, stats, bar);
+        btn.append(letter, body);
+        btn.addEventListener("click", function () { enterLevel(level); });
+        list.appendChild(btn);
+      });
+    }
+
+    // 시작 화면에 보여 줄 단어 수를 아직 모르는 난이도가 있으면, 뒤에서 조용히 한 번 세어 두기
+    // (처음 한 번만 해요. 그 뒤로는 난이도를 열 때마다 저절로 새로 세어져요.)
+    let countingNow = false;
+    async function countUnknownLevels() {
+      if (countingNow) return;
+      countingNow = true;
+      for (const level of LEVELS) {
+        const needCount = typeof counts[level] !== "number";
+        const needMigrate = pending && !pending.checked.includes(level);
+        if (!needCount && !needMigrate) continue;
+        try {
+          await loadLevel(level);
+          if (level !== activeLevel) freeLevel(level);
+        } catch (error) {
+          // 못 불러와도 괜찮아요. 그 난이도를 열 때 다시 시도해요.
+        }
+        if (!startScreen.hidden) renderStart();
+      }
+      countingNow = false;
+    }
+
+    function showStart() {
+      celebrateEl.classList.remove("show");
+      closeAddModal();
+      window.speechSynthesis && window.speechSynthesis.cancel();
+      cardScreen.hidden = true;
+      startScreen.hidden = false;
+      renderStart();
+      countUnknownLevels();
+    }
+
+    // ------------------------------------------------------------
+    // 8. 난이도를 골라 카드 화면으로 가기
+    // ------------------------------------------------------------
+    async function enterLevel(level) {
+      try {
+        // 시작 화면에서 단어 수를 세던 중이어도 데이터를 꼭 붙잡아 두기
+        levelData[level] = await loadLevel(level);
+      } catch (error) {
+        alert("'" + LEVEL_INFO[level].file + "' 단어 파일을 불러오지 못했어요.\nindex.html과 같은 폴더에 있는지 확인해 주세요.");
+        return;
+      }
+
+      // 다른 난이도의 단어는 메모리에서 비우기
+      LEVELS.forEach(function (l) { if (l !== level) freeLevel(l); });
+
+      activeLevel = level;
+      saveData(SAVE.lastLevel, level);
+
+      currentTopic = "전체";
+      searchText = "";
+      searchInput.value = "";
+      goalSelect.value = dailyGoal;
+      $("inLevel").value = level;
+
+      const top = $("levelBadgeTop");
+      top.textContent = level;
+      const levelName = document.createElement("span");
+      levelName.className = "wide-only";
+      levelName.textContent = " · " + LEVEL_INFO[level].name;
+      top.appendChild(levelName);
+      top.className = "badge lv-" + level;
+      levelBadge.textContent = level;
+      levelBadge.className = "badge lv-" + level;
+
+      renderTopicChips();
+      applyFilter();
+
+      startScreen.hidden = true;
+      cardScreen.hidden = false;
+
+      // 휴대폰 '뒤로 가기' 버튼을 누르면 시작 화면으로 돌아오게 기록 남기기
+      if (!history.state || history.state.screen !== "cards") {
+        history.pushState({ screen: "cards" }, "");
+      }
+    }
+
+    // 🏠 난이도 바꾸기
+    $("homeBtn").addEventListener("click", function () {
+      if (history.state && history.state.screen === "cards") history.back();   // → popstate에서 시작 화면으로
+      else showStart();
+    });
+
+    window.addEventListener("popstate", function (event) {
+      if (event.state && event.state.screen === "cards" && activeLevel) {
+        enterLevel(activeLevel);
+      } else {
+        showStart();
+      }
+    });
+
+    // ------------------------------------------------------------
+    // 9. 주제 버튼 (고른 난이도에 있는 주제만 만들기)
+    // ------------------------------------------------------------
+    function renderTopicChips() {
+      const topics = [];
+      wordsOf(activeLevel).forEach(function (w) {
+        if (w.topic !== MY_TOPIC && !topics.includes(w.topic)) topics.push(w.topic);
+      });
+      topics.sort(function (a, b) {
+        const ia = TOPIC_ORDER.indexOf(a), ib = TOPIC_ORDER.indexOf(b);
+        return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+      });
+
+      topicFilter.textContent = "";
+      ["전체"].concat(topics, [MY_TOPIC]).forEach(function (topic) {
+        const chip = document.createElement("button");
+        chip.className = "chip" + (topic === currentTopic ? " active" : "");
+        chip.dataset.topic = topic;
+        chip.textContent = topic;
+        topicFilter.appendChild(chip);
+      });
+    }
+
+    topicFilter.addEventListener("click", function (event) {
+      const chip = event.target.closest(".chip");
+      if (!chip) return;
+      currentTopic = chip.dataset.topic;
+      if (searchText) {               // 검색 중에 주제를 누르면 검색을 끝내기
+        searchText = "";
+        searchInput.value = "";
+      }
+      applyFilter();
+    });
+
+    // ------------------------------------------------------------
+    // 10. 오늘의 단어 고르기
+    //     하루에 볼 개수만큼, 아직 못 외운 단어부터 골라요.
+    //     같은 날에는 같은 단어가 유지되고, 다음 날이 되면 새로 골라요.
+    // ------------------------------------------------------------
+    function todayString() {
+      const d = new Date();
+      return d.getFullYear() + "-" + (d.getMonth() + 1) + "-" + d.getDate();
+    }
+
+    function shuffled(list) {
+      const copy = list.slice();
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    function getTodayWords(all) {
+      const goal = Number(dailyGoal);
+      const learned = getLearned(activeLevel);
+      const byKey = new Map(all.map(function (w) { return [keyOf(w), w]; }));
+
+      const saved = loadData(SAVE.today(activeLevel), null);
+      let keys = (saved && saved.date === todayString()) ? saved.keys.filter(function (k) { return byKey.has(k); }) : [];
+      keys = keys.slice(0, goal);
+
+      if (keys.length < goal) {
+        const have = new Set(keys);
+        const rest = all.map(keyOf).filter(function (k) { return !have.has(k); });
+        const notYet = shuffled(rest.filter(function (k) { return !learned.has(k); }));
+        const review = shuffled(rest.filter(function (k) { return learned.has(k); }));
+        keys = keys.concat(notYet, review).slice(0, goal);   // 못 외운 단어 먼저, 모자라면 복습 단어
+      }
+
+      saveData(SAVE.today(activeLevel), { date: todayString(), keys: keys });
+      return keys.map(function (k) { return byKey.get(k); });
+    }
+
+    // ------------------------------------------------------------
+    // 11. 지금 보여 줄 카드 목록 만들기
+    //     - 검색어가 있으면: 고른 난이도 전체에서 찾기
+    //     - '내 단어'를 고르면: 고른 난이도의 내 단어 전부
+    //     - 그 밖에는: 오늘의 단어(또는 전체 보기) 중에서 고른 주제만
+    // ------------------------------------------------------------
+    function buildCards() {
+      const all = wordsOf(activeLevel);
+      const q = searchText.trim().toLowerCase();
+
+      if (q) {
+        cards = all.filter(function (w) {
+          return w.english.toLowerCase().includes(q)
+            || w.meanings.some(function (m) { return m.toLowerCase().includes(q); })
+            || w.synonyms.some(function (s) { return s.toLowerCase().includes(q); });
+        });
+        return;
+      }
+
+      if (currentTopic === MY_TOPIC) {
+        cards = all.filter(function (w) { return w.mine; });
+        return;
+      }
+
+      const source = dailyGoal === "all" ? all : getTodayWords(all);
+      cards = currentTopic === "전체"
+        ? source
+        : source.filter(function (w) { return w.topic === currentTopic; });
+    }
+
+    function applyFilter() {
+      [...topicFilter.children].forEach(function (chip) {
+        chip.classList.toggle("active", chip.dataset.topic === currentTopic && !searchText);
+      });
+      topicFilter.classList.toggle("dim", !!searchText);
+      buildCards();
+      currentIndex = 0;
+      showCard();
+    }
+
+    // ------------------------------------------------------------
+    // 12. 지금 카드를 화면에 그리는 함수
     // ------------------------------------------------------------
     function showCard() {
       cardEl.classList.remove("flipped");   // 새 카드는 항상 앞면부터
 
       // 카드가 없으면 안내 문구 보여 주기
       if (cards.length === 0) {
-        wordEl.textContent      = "카드가 없어요";
+        wordEl.textContent      = searchText ? "검색 결과가 없어요" : "카드가 없어요";
         posEl.textContent       = "";
-        ipaEl.textContent       = "다른 주제나 난이도를 고르거나, 아래에서 단어를 만들어 보세요.";
+        ipaEl.textContent       = searchText ? "다른 말로 검색해 보세요." : "다른 주제를 고르거나, 위의 ＋ 단어로 만들어 보세요.";
         levelBadge.hidden       = true;
         topicBadge.hidden       = true;
         meaningEl.textContent   = "카드가 없어요";
@@ -1198,10 +1614,8 @@
       wordEl.textContent = item.english;
       posEl.textContent  = item.pos;
       ipaEl.textContent  = item.ipa;
-      levelBadge.hidden  = !item.level;
-      levelBadge.textContent = item.level;
-      levelBadge.className = "badge level-" + item.level;
-      topicBadge.hidden  = item.mine && item.topic === "내 단어";   // '내 단어' 표시와 겹치지 않게
+      levelBadge.hidden  = false;
+      topicBadge.hidden  = item.mine && item.topic === MY_TOPIC;   // '내 단어' 표시와 겹치지 않게
       topicBadge.textContent = item.topic;
 
       // 뒷면
@@ -1212,7 +1626,7 @@
       exampleKoEl.textContent = item.exampleKo || "";
 
       synonymsEl.textContent = "";
-      if (item.synonyms && item.synonyms.length > 0) {
+      if (item.synonyms.length > 0) {
         const label = document.createElement("b");
         label.textContent = "유의어 ";
         synonymsEl.append(label, item.synonyms.join(", "));
@@ -1221,7 +1635,7 @@
       counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
 
       // 외운 카드, 내가 만든 카드 표시
-      cardEl.classList.toggle("learned", learned.has(keyOf(item)));
+      cardEl.classList.toggle("learned", getLearned(activeLevel).has(keyOf(item)));
       cardEl.classList.toggle("mine", !!item.mine);
       deleteBtn.hidden = !item.mine;
 
@@ -1232,27 +1646,45 @@
     }
 
     // ------------------------------------------------------------
-    // 6. 진행 상황 (몇 개 외웠는지) 보여 주기
+    // 13. 진행 상황 (몇 개 외웠는지) 보여 주기
     // ------------------------------------------------------------
-    function countLearned() {
-      return cards.filter(function (w) { return learned.has(keyOf(w)); }).length;
+    function countLearned(list) {
+      const learned = getLearned(activeLevel);
+      return list.filter(function (w) { return learned.has(keyOf(w)); }).length;
     }
 
     function updateProgress() {
       const total = cards.length;
-      const done  = countLearned();
+      const done  = countLearned(cards);
       const percent = total === 0 ? 0 : Math.round((done / total) * 100);
 
-      progressText.textContent = "";   // 비우고 다시 쓰기
       const b = document.createElement("b");
       b.textContent = done + "개";
-      progressText.append(total + "개 중 ", b, " 외웠어요");
-
+      progressText.textContent = "";
+      if (searchText) {
+        progressText.append("검색 결과 " + total + "개 · ", b, " 외움");
+      } else if (dailyGoal !== "all" && currentTopic === "전체") {
+        progressText.append("오늘 " + total + "개 중 ", b, " 외웠어요");
+      } else {
+        progressText.append(total + "개 중 ", b, " 외웠어요");
+      }
       progressFill.style.width = percent + "%";
+
+      // 맨 위: 이 난이도 전체에서 몇 개 외웠는지
+      const all = wordsOf(activeLevel);
+      const totalEl = $("levelTotalText");
+      totalEl.textContent = "";
+      const before = document.createElement("span");
+      before.className = "wide-only";
+      before.textContent = "전체 ";
+      const after = document.createElement("span");
+      after.className = "wide-only";
+      after.textContent = " 외움";
+      totalEl.append(before, countLearned(all) + " / " + all.length, after);
     }
 
     // ------------------------------------------------------------
-    // 7. 카드 뒤집기 (카드를 클릭하면 실행)
+    // 14. 카드 뒤집기 (카드를 클릭하면 실행)
     // ------------------------------------------------------------
     function flipCard() {
       if (cards.length > 0) cardEl.classList.toggle("flipped");
@@ -1260,7 +1692,7 @@
     cardEl.addEventListener("click", flipCard);
 
     // ------------------------------------------------------------
-    // 8. 이전 / 다음 버튼 (끝에서 넘기면 처음으로 돌아가요)
+    // 15. 이전 / 다음 버튼 (끝에서 넘기면 처음으로 돌아가요)
     // ------------------------------------------------------------
     function goNext() {
       if (cards.length === 0) return;
@@ -1278,17 +1710,17 @@
     $("prevBtn").addEventListener("click", goPrev);
 
     // ------------------------------------------------------------
-    // 9. 외웠어요 / 다시 볼래요
+    // 16. 외웠어요 / 다시 볼래요
     // ------------------------------------------------------------
     function markLearned() {
       if (cards.length === 0) return;
-      const wasAllDone = countLearned() === cards.length;
+      const wasAllDone = countLearned(cards) === cards.length;
 
-      learned.add(keyOf(cards[currentIndex]));
-      saveLearned();
+      getLearned(activeLevel).add(keyOf(cards[currentIndex]));
+      saveLearned(activeLevel);
 
       // 방금 눌러서 전부 외우게 되었으면 축하!
-      if (!wasAllDone && countLearned() === cards.length) {
+      if (!wasAllDone && countLearned(cards) === cards.length) {
         showCard();
         celebrate();
       } else {
@@ -1298,8 +1730,8 @@
 
     function markAgain() {
       if (cards.length === 0) return;
-      learned.delete(keyOf(cards[currentIndex]));
-      saveLearned();
+      getLearned(activeLevel).delete(keyOf(cards[currentIndex]));
+      saveLearned(activeLevel);
       goNext();
     }
 
@@ -1308,27 +1740,29 @@
 
     // 외운 기록 지우기 (지금 보고 있는 카드들만)
     function resetLearned() {
+      const learned = getLearned(activeLevel);
       cards.forEach(function (w) { learned.delete(keyOf(w)); });
-      saveLearned();
+      saveLearned(activeLevel);
       currentIndex = 0;
       showCard();
     }
 
     $("resetBtn").addEventListener("click", function () {
-      if (confirm("지금 보고 있는 카드들의 외운 기록을 지울까요?")) {
+      if (confirm("지금 보고 있는 카드 " + cards.length + "개의 외운 기록을 지울까요?")) {
         resetLearned();
       }
     });
 
     // ------------------------------------------------------------
-    // 10. 축하 창과 색종이
+    // 17. 축하 창과 색종이
     // ------------------------------------------------------------
     function celebrate() {
-      const parts = [];
-      if (currentTopic !== "전체") parts.push("'" + currentTopic + "'");
-      if (currentLevel !== "전체") parts.push("'" + currentLevel + "'");
-      const scope = parts.length ? parts.join(" ") + " " : "";
-      $("celebrateText").textContent = scope + "단어 " + cards.length + "개를 모두 외웠어요. 수고하셨어요!";
+      let what;
+      if (searchText) what = "검색한 단어 " + cards.length + "개를";
+      else if (currentTopic === "전체" && dailyGoal !== "all") what = "오늘의 단어 " + cards.length + "개를";
+      else if (currentTopic === "전체") what = "'" + activeLevel + "' 단어 " + cards.length + "개를";
+      else what = "'" + currentTopic + "' 단어 " + cards.length + "개를";
+      $("celebrateText").textContent = what + " 모두 외웠어요. 수고하셨어요!";
       celebrateEl.classList.add("show");
 
       // 차분한 색 색종이 40개를 위에서 떨어뜨리기
@@ -1355,7 +1789,7 @@
     });
 
     // ------------------------------------------------------------
-    // 11. 발음 듣기 / 예문 듣기 (브라우저의 음성 기능 사용)
+    // 18. 발음 듣기 / 예문 듣기 (브라우저의 음성 기능 사용)
     // ------------------------------------------------------------
     function speak(text, rate) {
       if (!text) return;
@@ -1385,50 +1819,35 @@
     $("speakExampleBtn").addEventListener("click", speakExample);
 
     // ------------------------------------------------------------
-    // 12. 섞기 (카드 순서를 랜덤으로 바꾸기)
+    // 19. 섞기 (카드 순서를 랜덤으로 바꾸기)
     // ------------------------------------------------------------
-    function shuffleCards() {
-      // 뒤에서부터 하나씩, 앞쪽의 아무 카드와 자리를 바꿔요.
-      for (let i = cards.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [cards[i], cards[j]] = [cards[j], cards[i]];
-      }
+    $("shuffleBtn").addEventListener("click", function () {
+      cards = shuffled(cards);
       currentIndex = 0;
       showCard();
-    }
-
-    $("shuffleBtn").addEventListener("click", shuffleCards);
-
-    // ------------------------------------------------------------
-    // 13. 주제 / 난이도 고르기
-    // ------------------------------------------------------------
-    const topicButtons = document.querySelectorAll("[data-topic]");
-    const levelButtons = document.querySelectorAll("[data-level]");
-
-    function applyFilter() {
-      topicButtons.forEach(function (b) { b.classList.toggle("active", b.dataset.topic === currentTopic); });
-      levelButtons.forEach(function (b) { b.classList.toggle("active", b.dataset.level === currentLevel); });
-      buildCards();
-      currentIndex = 0;
-      showCard();
-    }
-
-    topicButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        currentTopic = button.dataset.topic;
-        applyFilter();
-      });
-    });
-
-    levelButtons.forEach(function (button) {
-      button.addEventListener("click", function () {
-        currentLevel = button.dataset.level;
-        applyFilter();
-      });
     });
 
     // ------------------------------------------------------------
-    // 14. 나만의 단어 만들기 (팝업 창)
+    // 20. 검색창과 오늘의 학습량
+    // ------------------------------------------------------------
+    let searchTimer = null;
+    searchInput.addEventListener("input", function () {
+      clearTimeout(searchTimer);
+      // 글자를 칠 때마다 바로 찾지 않고, 잠깐 멈추면 찾기 (단어가 많아도 부드럽게)
+      searchTimer = setTimeout(function () {
+        searchText = searchInput.value;
+        applyFilter();
+      }, 150);
+    });
+
+    goalSelect.addEventListener("change", function () {
+      dailyGoal = goalSelect.value;
+      saveData(SAVE.goal, dailyGoal);
+      applyFilter();
+    });
+
+    // ------------------------------------------------------------
+    // 21. 나만의 단어 만들기 (팝업 창)
     // ------------------------------------------------------------
     const addForm    = $("addForm");
     const addMessage = $("addMessage");
@@ -1446,6 +1865,7 @@
     // 창 열기 / 닫기
     function openAddModal() {
       showMessage("", "");
+      $("inLevel").value = activeLevel || "하";
       addModal.classList.add("show");
       $("inEnglish").focus();
     }
@@ -1462,7 +1882,7 @@
       if (event.target === addModal) closeAddModal();
     });
 
-    addForm.addEventListener("submit", function (event) {
+    addForm.addEventListener("submit", async function (event) {
       event.preventDefault();   // 페이지가 새로고침되지 않게 막기
 
       const english  = $("inEnglish").value.trim();
@@ -1485,15 +1905,15 @@
 
       // 새 단어 저장하기
       const newWord = {
-        topic:     $("inTopic").value,
         english:   english,
         pos:       $("inPos").value,
         ipa:       $("inIpa").value.trim(),
         level:     $("inLevel").value,
+        topic:     $("inTopic").value,
         meanings:  meanings.slice(0, 2),
         example:   $("inExample").value.trim(),
         exampleKo: $("inExampleKo").value.trim(),
-        synonyms:  splitList($("inSynonyms").value)
+        synonyms:  splitList($("inSynonyms").value).slice(0, 2)
       };
       myWords.push(newWord);
       saveMyWords();
@@ -1501,13 +1921,18 @@
       addForm.reset();
       closeAddModal();
 
-      // 방금 만든 카드를 바로 보여 주기
-      currentTopic = newWord.topic;
-      currentLevel = "전체";
+      // 다른 난이도로 만들었으면 그 난이도로 이동하기
+      if (newWord.level !== activeLevel) await enterLevel(newWord.level);
+
+      // '내 단어'에서 방금 만든 카드를 바로 보여 주기
+      currentTopic = MY_TOPIC;
+      searchText = "";
+      searchInput.value = "";
+      renderTopicChips();
       applyFilter();
-      currentIndex = cards.findIndex(function (w) {
-        return w.mine && w.english.toLowerCase() === english.toLowerCase();
-      });
+      currentIndex = Math.max(0, cards.findIndex(function (w) {
+        return w.english.toLowerCase() === english.toLowerCase();
+      }));
       showCard();
     });
 
@@ -1521,27 +1946,36 @@
       myWords = myWords.filter(function (w) {
         return w.english.toLowerCase() !== item.english.toLowerCase();
       });
-      learned.delete(keyOf(item));
+      getLearned(item.level).delete(keyOf(item));
       saveMyWords();
-      saveLearned();
+      saveLearned(item.level);
 
+      const keepIndex = currentIndex;
+      renderTopicChips();
       buildCards();
-      if (currentIndex >= cards.length) currentIndex = 0;
+      currentIndex = keepIndex >= cards.length ? 0 : keepIndex;
       showCard();
     });
 
     // ------------------------------------------------------------
-    // 15. 키보드로도 움직일 수 있어요
+    // 22. 키보드로도 움직일 수 있어요 (카드 화면에서만)
     //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기,  E: 예문 듣기,  Esc: 창 닫기
     //     (글자를 쓰는 칸에 있을 때는 작동하지 않아요)
     // ------------------------------------------------------------
     document.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
+        if (event.target === searchInput && searchInput.value) {
+          searchInput.value = "";
+          searchText = "";
+          applyFilter();
+          return;
+        }
         closeAddModal();
         celebrateEl.classList.remove("show");
         return;
       }
 
+      if (cardScreen.hidden) return;
       const tag = event.target.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
       if (celebrateEl.classList.contains("show") || addModal.classList.contains("show")) return;
@@ -1560,7 +1994,7 @@
     });
 
     // ------------------------------------------------------------
-    // 16. 휴대폰에 앱처럼 설치하기 (PWA)
+    // 23. 휴대폰에 앱처럼 설치하기 (PWA)
     // ------------------------------------------------------------
     // 서비스 워커 등록: 인터넷이 꺼져 있어도 앱이 열리게 해 줘요.
     // (인터넷 주소(https)로 열었을 때만 작동해요. 파일을 더블클릭해서 열면 건너뛰어요.)
@@ -1596,8 +2030,13 @@
       installBtn.hidden = true;
     });
 
-    // 처음 페이지가 열리면 '전체' 카드 보여 주기
-    applyFilter();
+    // ------------------------------------------------------------
+    // 24. 앱 시작: 항상 시작 화면부터
+    // ------------------------------------------------------------
+    if (history.state && history.state.screen === "cards") {
+      history.replaceState(null, "");   // 새로고침했을 때 남아 있는 '카드 화면' 기록 지우기
+    }
+    showStart();
   </script>
 </body>
 </html>
