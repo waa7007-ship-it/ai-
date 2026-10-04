@@ -1,6 +1,6 @@
 {
-  "name": "영어 단어 카드",
-  "short_name": "단어 카드",
+  "name": "영어 단어 학습",
+  "short_name": "영어 단어 학습",
   "description": "성인 수준 영어 단어 50개를 카드로 외우는 앱",
   "lang": "ko",
   "start_url": "./",

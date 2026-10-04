@@ -1,4 +1,4 @@
-# 영어 단어 카드
+# 영어 단어 학습
 
 난이도(하/중/상)별 영어 단어를 카드로 외우는 웹앱이에요. 휴대폰 홈 화면에 설치해서 앱처럼 쓸 수 있어요(PWA).
 
@@ -22,5 +22,5 @@
 뜻 최대 2개(`meanings`), 예문(`example`), 예문 해석(`exampleKo`), 유의어 1~2개(`synonyms`)
 
 ## 새 파일을 만들었을 때만
-`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v2` → `wordcards-v3`)
+`sw.js`의 `APP_FILES` 목록에 파일 이름을 넣고, `CACHE_NAME` 숫자를 하나 올려 주세요. (`wordcards-v3` → `wordcards-v4`)
 단어 파일이나 `index.html`을 고치기만 할 때는 따로 할 일이 없어요.
