@@ -32,17 +32,24 @@
       box-sizing: border-box;
     }
 
+    html {
+      background: linear-gradient(160deg, #fff7e0 0%, #ffe3ef 45%, #e3f1ff 100%);
+      min-height: 100%;
+    }
+
+    /* 화면 한 개 높이 안에 모두 들어가도록 세로로 가운데 정렬 */
     body {
       margin: 0;
       min-height: 100vh;
+      min-height: 100dvh;   /* 휴대폰 주소창 높이까지 생각한 화면 높이 */
       font-family: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
       font-size: 20px;
       color: var(--text);
-      background: linear-gradient(160deg, #fff7e0 0%, #ffe3ef 45%, #e3f1ff 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 20px 16px 48px;
+      justify-content: center;
+      padding: 12px 16px;
     }
 
     /* 화면 가운데 모아 두는 상자 */
@@ -52,12 +59,12 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
     }
 
     h1 {
       margin: 0;
-      font-size: 2.3rem;
+      font-size: 2rem;
       font-weight: normal;
       color: var(--pink-dark);
       text-shadow: 3px 3px 0 var(--white);
@@ -68,26 +75,33 @@
     .progress-box {
       width: 100%;
       background: var(--white);
-      border-radius: 24px;
-      padding: 14px 18px;
+      border-radius: 20px;
+      padding: 10px 16px 12px;
       box-shadow: 0 6px 16px rgba(240, 98, 146, 0.15);
     }
 
+    /* 글자와 '처음부터' 버튼을 한 줄에 */
+    .progress-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
     .progress-text {
-      font-size: 1.3rem;
-      text-align: center;
-      margin-bottom: 10px;
+      font-size: 1.2rem;
     }
 
     .progress-text b {
       color: var(--pink-dark);
       font-weight: normal;
-      font-size: 1.5rem;
+      font-size: 1.35rem;
     }
 
     .progress-bar {
       width: 100%;
-      height: 26px;
+      height: 20px;
       background: #f3eef7;
       border-radius: 999px;
       overflow: hidden;
@@ -102,40 +116,42 @@
     }
 
     .reset-btn {
-      display: block;
-      margin: 10px auto 0;
-      border: none;
-      background: none;
+      flex-shrink: 0;
+      border: 2px solid #e6dcef;
+      background: #faf7fc;
       color: #a99bb8;
       font-family: inherit;
-      font-size: 0.95rem;
+      font-size: 0.85rem;
+      padding: 4px 10px;
+      border-radius: 999px;
       cursor: pointer;
-      text-decoration: underline;
     }
 
-    /* ---------- 주제 고르기 버튼 ---------- */
+    /* ---------- 주제 고르기 버튼 (6개를 한 줄에) ---------- */
     .topics {
+      width: 100%;
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
+      gap: 6px;
     }
 
     .topic-btn {
+      flex: 1 1 0;           /* 6개가 같은 너비로 한 줄에 */
+      min-width: 0;
       font-family: inherit;
-      font-size: 1.15rem;
+      font-size: 1rem;
       border: 3px solid var(--pink);
       background: var(--white);
       color: var(--pink-dark);
-      padding: 10px 16px;
-      min-height: 50px;
-      border-radius: 999px;
+      padding: 8px 4px;
+      min-height: 48px;
+      border-radius: 16px;
       cursor: pointer;
+      white-space: nowrap;
       transition: transform 0.15s;
     }
 
     .topic-btn:hover {
-      transform: scale(1.06);
+      transform: scale(1.05);
     }
 
     /* 지금 선택된 주제 */
@@ -144,16 +160,11 @@
       color: var(--white);
     }
 
-    .counter {
-      font-size: 1.2rem;
-      color: #8a7f99;
-    }
-
     /* ---------- 카드 (뒤집기 애니메이션) ---------- */
     .card-area {
       width: 100%;
       max-width: 420px;
-      height: 380px;
+      height: 190px;          /* 예전(380px)의 절반 크기 */
       perspective: 1000px;   /* 3D 느낌을 주는 설정 */
     }
 
@@ -174,25 +185,25 @@
     .card-face {
       position: absolute;
       inset: 0;
-      border-radius: 32px;
+      border-radius: 24px;
       background: var(--white);
-      box-shadow: 0 12px 28px rgba(124, 92, 214, 0.18);
+      box-shadow: 0 10px 24px rgba(124, 92, 214, 0.18);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 14px;
       text-align: center;
       backface-visibility: hidden;          /* 뒤쪽 면은 안 보이게 */
       -webkit-backface-visibility: hidden;
     }
 
     .card-front {
-      border: 8px solid var(--yellow);
+      border: 6px solid var(--yellow);
     }
 
     .card-back {
-      border: 8px solid var(--sky);
+      border: 6px solid var(--sky);
       transform: rotateY(180deg);           /* 뒷면은 처음부터 돌려 놓기 */
     }
 
@@ -204,14 +215,14 @@
     /* 카드 구석에 붙는 작은 표시들 */
     .badge {
       position: absolute;
-      top: 14px;
-      font-size: 1rem;
-      padding: 4px 12px;
+      font-size: 0.8rem;
+      padding: 2px 10px;
       border-radius: 999px;
     }
 
     .badge-learned {
-      right: 14px;
+      top: 8px;
+      right: 8px;
       background: var(--mint);
       color: var(--mint-dark);
       display: none;
@@ -222,7 +233,8 @@
     }
 
     .badge-mine {
-      left: 14px;
+      top: 8px;
+      left: 8px;
       background: var(--lavender);
       color: var(--lavender-dark);
       display: none;
@@ -232,35 +244,56 @@
       display: block;
     }
 
+    /* 몇 번째 카드인지 (카드 오른쪽 아래) */
+    .counter {
+      bottom: 8px;
+      right: 10px;
+      color: #b5abc2;
+    }
+
+    /* 내가 만든 카드 지우기 버튼 (카드 왼쪽 아래) */
+    .delete-btn {
+      position: absolute;
+      bottom: 6px;
+      left: 8px;
+      font-family: inherit;
+      font-size: 0.8rem;
+      border: none;
+      background: #ffe0e0;
+      color: #c0506a;
+      padding: 4px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+    }
+
     .emoji {
-      font-size: 6.5rem;
+      font-size: 3.4rem;
       line-height: 1.1;
     }
 
     .word {
-      font-size: 3rem;
-      margin-top: 10px;
+      font-size: 2rem;
       word-break: break-word;
     }
 
     .meaning {
-      font-size: 2.8rem;
+      font-size: 1.9rem;
       color: var(--sky-dark);
-      margin-bottom: 18px;
+      margin-bottom: 8px;
       word-break: break-word;
     }
 
     .example {
-      font-size: 1.4rem;
+      font-size: 1.1rem;
       background: #eef7ff;
-      padding: 14px 18px;
-      border-radius: 18px;
+      padding: 8px 14px;
+      border-radius: 14px;
       word-break: break-word;
     }
 
     .hint {
-      margin-top: 16px;
-      font-size: 1rem;
+      margin-top: 4px;
+      font-size: 0.8rem;
       color: #b5abc2;
     }
 
@@ -268,35 +301,41 @@
     .row {
       width: 100%;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      gap: 8px;
     }
 
     .btn {
       font-family: inherit;
-      font-size: 1.25rem;
+      font-size: 1.15rem;
       border: none;
       color: var(--text);
-      padding: 14px 20px;
-      min-height: 60px;
-      border-radius: 20px;
+      padding: 10px 12px;
+      min-height: 54px;
+      border-radius: 18px;
       cursor: pointer;
-      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.1);
+      white-space: nowrap;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1);
       transition: transform 0.1s;
     }
 
     .btn:active {
-      transform: translateY(4px);
+      transform: translateY(3px);
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
 
-    /* 외웠어요 / 다시 볼래요 버튼은 더 크게, 반반 나누기 */
-    .btn-big {
-      flex: 1 1 0;
-      font-size: 1.45rem;
-      min-height: 72px;
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: default;
     }
+
+    /* 한 줄에 있는 버튼들은 같은 너비로 나눠 갖기 */
+    .row .btn {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .btn-big { font-size: 1.3rem; min-height: 60px; }
 
     .btn-learned { background: var(--mint); }
     .btn-again   { background: var(--peach); }
@@ -304,19 +343,57 @@
     .btn-speak   { background: var(--sky); }
     .btn-shuffle { background: var(--lavender); }
     .btn-add     { background: var(--pink); width: 100%; }
-    .btn-delete  { background: #ffe0e0; font-size: 1rem; min-height: 48px; }
+    .btn-open    { background: var(--white); border: 3px dashed var(--lavender); color: var(--lavender-dark); width: 100%; }
 
-    /* ---------- 새 단어 만들기 ---------- */
-    .add-box {
-      width: 100%;
+    /* ---------- 팝업 창 (축하 창, 단어 만들기 창) ---------- */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 240, 248, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      position: relative;
       background: var(--white);
-      border-radius: 28px;
-      padding: 20px;
-      box-shadow: 0 6px 16px rgba(124, 92, 214, 0.12);
+      border-radius: 32px;
+      padding: 24px 20px;
+      max-width: 440px;
+      width: 100%;
+      max-height: 100%;
+      overflow-y: auto;      /* 아주 작은 화면이면 창 안에서만 스크롤 */
+      box-shadow: 0 16px 40px rgba(240, 98, 146, 0.25);
+      animation: pop 0.4s;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 50%;
+      background: #f3eef7;
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    /* 단어 만들기 창 */
+    .add-box {
+      border: 6px solid var(--lavender);
     }
 
     .add-box h2 {
-      margin: 0 0 14px;
+      margin: 0 0 12px;
       font-size: 1.6rem;
       font-weight: normal;
       color: var(--lavender-dark);
@@ -324,23 +401,23 @@
     }
 
     .field {
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }
 
     .field label {
       display: block;
-      font-size: 1.15rem;
-      margin-bottom: 6px;
+      font-size: 1.1rem;
+      margin-bottom: 4px;
     }
 
     .field input,
     .field select {
       width: 100%;
       font-family: inherit;
-      font-size: 1.25rem;
-      padding: 12px 14px;
+      font-size: 1.2rem;
+      padding: 10px 14px;
       border: 3px solid var(--lavender);
-      border-radius: 16px;
+      border-radius: 14px;
       background: #fcfaff;
       color: var(--text);
     }
@@ -362,41 +439,19 @@
     }
 
     .message {
-      min-height: 1.6em;
+      min-height: 1.5em;
       text-align: center;
-      font-size: 1.1rem;
-      margin-bottom: 8px;
+      font-size: 1.05rem;
+      margin-bottom: 6px;
     }
 
     .message.ok    { color: var(--mint-dark); }
     .message.error { color: var(--pink-dark); }
 
-    /* ---------- 축하 창 ---------- */
-    .celebrate {
-      position: fixed;
-      inset: 0;
-      background: rgba(255, 240, 248, 0.85);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 16px;
-      z-index: 10;
-    }
-
-    .celebrate.show {
-      display: flex;
-    }
-
+    /* 축하 창 */
     .celebrate-box {
-      background: var(--white);
       border: 8px solid var(--yellow);
-      border-radius: 36px;
-      padding: 30px 24px;
-      max-width: 420px;
-      width: 100%;
       text-align: center;
-      box-shadow: 0 16px 40px rgba(240, 98, 146, 0.25);
-      animation: pop 0.5s;
     }
 
     .celebrate-emoji {
@@ -443,24 +498,26 @@
 
     /* ---------- 휴대폰처럼 좁은 화면일 때 ---------- */
     @media (max-width: 480px) {
-      body       { font-size: 18px; }
-      h1         { font-size: 1.9rem; }
-      .card-area { height: 340px; }
-      .emoji     { font-size: 5.2rem; }
-      .word      { font-size: 2.5rem; }
-      .meaning   { font-size: 2.3rem; }
-      .example   { font-size: 1.2rem; }
+      body           { font-size: 17px; padding: 10px 12px; }
+      h1             { font-size: 1.7rem; }
+      .wrap          { gap: 10px; }
+      .progress-text { font-size: 1.05rem; }
 
-      /* 이전/발음/섞기/다음 버튼을 2개씩 두 줄로 */
-      .row-nav .btn {
-        flex: 1 1 calc(50% - 10px);
+      /* 주제 버튼: 이모지를 위, 글자를 아래로 놓아 한 줄에 쏙 */
+      .topics     { gap: 4px; }
+      .topic-btn  {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: 0.85rem;
+        padding: 4px 2px;
+        border-width: 2px;
+        border-radius: 12px;
       }
+      .topic-btn .t-emoji { font-size: 1.3rem; }
 
-      /* 외웠어요 / 다시 볼래요 글자가 한 줄에 들어가게 */
-      .btn-big {
-        font-size: 1.3rem;
-        padding: 14px 8px;
-      }
+      .btn       { font-size: 1rem; padding: 8px 4px; }
+      .btn-big   { font-size: 1.2rem; }
 
       .field-pair {
         flex-direction: column;
@@ -478,24 +535,24 @@
 
     <!-- 진행 상황 -->
     <div class="progress-box">
-      <div class="progress-text" id="progressText">20개 중 0개 외웠어요!</div>
+      <div class="progress-top">
+        <div class="progress-text" id="progressText">20개 중 0개 외웠어요!</div>
+        <button class="reset-btn" id="resetBtn">↺ 처음부터</button>
+      </div>
       <div class="progress-bar">
         <div class="progress-fill" id="progressFill"></div>
       </div>
-      <button class="reset-btn" id="resetBtn">외운 기록 처음부터 다시 하기</button>
     </div>
 
-    <!-- 주제 고르기 -->
+    <!-- 주제 고르기 (6개 한 줄) -->
     <div class="topics">
-      <button class="topic-btn active" data-topic="전체">🌟 전체</button>
-      <button class="topic-btn" data-topic="동물">🐶 동물</button>
-      <button class="topic-btn" data-topic="과일">🍎 과일</button>
-      <button class="topic-btn" data-topic="색깔">🎨 색깔</button>
-      <button class="topic-btn" data-topic="학교">🏫 학교</button>
-      <button class="topic-btn" data-topic="내 단어">⭐ 내 단어</button>
+      <button class="topic-btn active" data-topic="전체"><span class="t-emoji">🌟</span> 전체</button>
+      <button class="topic-btn" data-topic="동물"><span class="t-emoji">🐶</span> 동물</button>
+      <button class="topic-btn" data-topic="과일"><span class="t-emoji">🍎</span> 과일</button>
+      <button class="topic-btn" data-topic="색깔"><span class="t-emoji">🎨</span> 색깔</button>
+      <button class="topic-btn" data-topic="학교"><span class="t-emoji">🏫</span> 학교</button>
+      <button class="topic-btn" data-topic="내 단어"><span class="t-emoji">⭐</span> 내 단어</button>
     </div>
-
-    <div class="counter" id="counter">1 / 20</div>
 
     <!-- 단어 카드 -->
     <div class="card-area">
@@ -506,13 +563,15 @@
           <span class="badge badge-learned">✅ 외웠어요</span>
           <div class="emoji" id="emoji">🐶</div>
           <div class="word" id="word">dog</div>
-          <div class="hint">👆 카드를 눌러서 뒤집어 보세요!</div>
+          <div class="hint">👆 눌러서 뒤집기</div>
+          <button class="delete-btn" id="deleteBtn" hidden>🗑️ 지우기</button>
+          <span class="badge counter" id="counter">1 / 20</span>
         </div>
         <!-- 뒷면 -->
         <div class="card-face card-back">
           <div class="meaning" id="meaning">개</div>
           <div class="example" id="example">I have a dog.</div>
-          <div class="hint">👆 다시 누르면 앞면으로!</div>
+          <div class="hint">👆 다시 누르면 앞면으로</div>
         </div>
       </div>
     </div>
@@ -523,19 +582,22 @@
       <button class="btn btn-big btn-again" id="againBtn">다시 볼래요 🔁</button>
     </div>
 
-    <!-- 이전 / 발음 / 섞기 / 다음 -->
-    <div class="row row-nav">
+    <!-- 이전 / 발음 / 섞기 / 다음 (한 줄) -->
+    <div class="row">
       <button class="btn btn-move" id="prevBtn">◀ 이전</button>
-      <button class="btn btn-speak" id="speakBtn">🔊 발음 듣기</button>
+      <button class="btn btn-speak" id="speakBtn">🔊 발음</button>
       <button class="btn btn-shuffle" id="shuffleBtn">🔀 섞기</button>
       <button class="btn btn-move" id="nextBtn">다음 ▶</button>
     </div>
 
-    <!-- 내가 만든 카드일 때만 보이는 지우기 버튼 -->
-    <button class="btn btn-delete" id="deleteBtn" hidden>🗑️ 이 카드 지우기</button>
+    <!-- 단어 만들기 창 열기 버튼 -->
+    <button class="btn btn-open" id="openAddBtn">✏️ 나만의 단어 만들기</button>
+  </div>
 
-    <!-- 새 단어 만들기 -->
-    <form class="add-box" id="addForm">
+  <!-- 단어 만들기 창 (버튼을 누르면 나타나요) -->
+  <div class="modal" id="addModal">
+    <form class="modal-box add-box" id="addForm">
+      <button type="button" class="close-btn" id="closeAddBtn" aria-label="닫기">✖</button>
       <h2>✏️ 나만의 단어 만들기</h2>
 
       <div class="field">
@@ -576,14 +638,14 @@
   </div>
 
   <!-- 축하 창 (평소에는 숨어 있어요) -->
-  <div class="celebrate" id="celebrate">
-    <div class="celebrate-box">
+  <div class="modal" id="celebrate">
+    <div class="modal-box celebrate-box">
       <div class="celebrate-emoji">🏆</div>
       <h2>축하해요! 🎉</h2>
       <p id="celebrateText">단어를 모두 외웠어요!<br>정말 대단해요! 👏</p>
       <div class="row">
         <button class="btn btn-learned" id="closeCelebrateBtn">좋아요! 😊</button>
-        <button class="btn btn-again" id="restartBtn">처음부터 다시 🔁</button>
+        <button class="btn btn-again" id="restartBtn">처음부터 🔁</button>
       </div>
     </div>
   </div>
@@ -698,6 +760,7 @@
     const progressFill = document.getElementById("progressFill");
     const deleteBtn    = document.getElementById("deleteBtn");
     const celebrateEl  = document.getElementById("celebrate");
+    const addModal     = document.getElementById("addModal");
 
     // 카드가 하나도 없을 때(예: '내 단어'를 아직 안 만들었을 때) 버튼 막기
     const cardButtons = ["learnedBtn", "againBtn", "prevBtn", "nextBtn", "speakBtn", "shuffleBtn"]
@@ -713,7 +776,7 @@
       if (cards.length === 0) {
         emojiEl.textContent   = "📭";
         wordEl.textContent    = "카드가 없어요";
-        meaningEl.textContent = "아래에서 만들어 보세요!";
+        meaningEl.textContent = "아래 버튼으로 만들어 보세요!";
         exampleEl.textContent = "✏️ 나만의 단어 만들기";
         counterEl.textContent = "0 / 0";
         cardEl.classList.remove("learned", "mine");
@@ -921,7 +984,7 @@
     });
 
     // ------------------------------------------------------------
-    // 14. 나만의 단어 만들기
+    // 14. 나만의 단어 만들기 (팝업 창)
     // ------------------------------------------------------------
     const addForm    = document.getElementById("addForm");
     const addMessage = document.getElementById("addMessage");
@@ -930,6 +993,25 @@
       addMessage.textContent = text;
       addMessage.className = "message " + type;
     }
+
+    // 창 열기 / 닫기
+    function openAddModal() {
+      showMessage("", "");
+      addModal.classList.add("show");
+      document.getElementById("inEnglish").focus();
+    }
+
+    function closeAddModal() {
+      addModal.classList.remove("show");
+    }
+
+    document.getElementById("openAddBtn").addEventListener("click", openAddModal);
+    document.getElementById("closeAddBtn").addEventListener("click", closeAddModal);
+
+    // 창 바깥(흐린 배경)을 누르면 닫기
+    addModal.addEventListener("click", function (event) {
+      if (event.target === addModal) closeAddModal();
+    });
 
     addForm.addEventListener("submit", function (event) {
       event.preventDefault();   // 페이지가 새로고침되지 않게 막기
@@ -961,17 +1043,17 @@
       saveMyWords();
 
       addForm.reset();
-      showMessage("'" + english + "' 카드를 만들었어요! 🎉", "ok");
+      closeAddModal();
 
       // 방금 만든 카드를 바로 보여 주기
       selectTopic(topic);
       currentIndex = cards.findIndex(function (w) { return keyOf(w) === english.toLowerCase(); });
       showCard();
-      window.scrollTo({ top: 0, behavior: "smooth" });
     });
 
     // 내가 만든 카드 지우기
-    deleteBtn.addEventListener("click", function () {
+    deleteBtn.addEventListener("click", function (event) {
+      event.stopPropagation();   // 카드가 뒤집히지 않게 막기
       const item = cards[currentIndex];
       if (!item || !item.mine) return;
       if (!confirm("'" + item.english + "' 카드를 지울까요?")) return;
@@ -988,13 +1070,19 @@
 
     // ------------------------------------------------------------
     // 15. 보너스: 키보드로도 움직일 수 있어요
-    //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기
+    //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기,  Esc: 창 닫기
     //     (글자를 쓰는 칸에 있을 때는 작동하지 않아요)
     // ------------------------------------------------------------
     document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") {
+        closeAddModal();
+        celebrateEl.classList.remove("show");
+        return;
+      }
+
       const tag = event.target.tagName;
       if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
-      if (celebrateEl.classList.contains("show")) return;
+      if (celebrateEl.classList.contains("show") || addModal.classList.contains("show")) return;
 
       if (event.key === "ArrowRight") goNext();
       if (event.key === "ArrowLeft")  goPrev();
