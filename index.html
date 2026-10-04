@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>영어 단어 카드</title>
+
+  <!-- ===================== CSS (모양 꾸미기) ===================== -->
+  <style>
+    /* 페이지 전체 기본 설정 */
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+      background: linear-gradient(135deg, #fff6d5 0%, #ffd6e8 50%, #d5ecff 100%);
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px;
+    }
+
+    h1 {
+      margin: 0 0 16px;
+      font-size: 2rem;
+      color: #ff6b9a;
+      text-shadow: 2px 2px 0 #fff;
+    }
+
+    /* 주제 고르기 버튼 묶음 */
+    .topics {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    .topic-btn {
+      border: 3px solid #ffb3cc;
+      background: #fff;
+      color: #ff6b9a;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 8px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: transform 0.15s;
+    }
+
+    .topic-btn:hover {
+      transform: scale(1.08);
+    }
+
+    /* 지금 선택된 주제 버튼 */
+    .topic-btn.active {
+      background: #ff6b9a;
+      color: #fff;
+    }
+
+    /* 몇 번째 카드인지 보여주는 글자 */
+    .counter {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #666;
+      margin-bottom: 12px;
+    }
+
+    /* ---------- 카드 (뒤집기 애니메이션) ---------- */
+    .card-area {
+      width: 100%;
+      max-width: 360px;
+      height: 360px;
+      perspective: 1000px;   /* 3D 느낌을 주는 설정 */
+      margin-bottom: 20px;
+    }
+
+    .card {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.6s;
+    }
+
+    /* 'flipped' 표시가 붙으면 카드가 180도 돌아가요 */
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 24px;
+      background: #fff;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      backface-visibility: hidden;          /* 뒤쪽 면은 안 보이게 */
+      -webkit-backface-visibility: hidden;
+    }
+
+    .card-front {
+      border: 6px solid #ffd166;
+    }
+
+    .card-back {
+      border: 6px solid #6ecbff;
+      transform: rotateY(180deg);           /* 뒷면은 처음부터 돌려 놓기 */
+    }
+
+    .emoji {
+      font-size: 6rem;
+      line-height: 1.1;
+    }
+
+    .word {
+      font-size: 2.6rem;
+      font-weight: bold;
+      color: #333;
+      margin-top: 10px;
+    }
+
+    .meaning {
+      font-size: 2.4rem;
+      font-weight: bold;
+      color: #1e88e5;
+      margin-bottom: 18px;
+    }
+
+    .example {
+      font-size: 1.3rem;
+      color: #555;
+      background: #eef8ff;
+      padding: 12px 16px;
+      border-radius: 14px;
+    }
+
+    .hint {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: #aaa;
+    }
+
+    /* ---------- 아래쪽 버튼들 ---------- */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .btn {
+      border: none;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 12px 20px;
+      border-radius: 16px;
+      cursor: pointer;
+      color: #fff;
+      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s;
+    }
+
+    .btn:active {
+      transform: translateY(3px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+    }
+
+    .btn-move    { background: #ffa94d; }
+    .btn-speak   { background: #51cf66; }
+    .btn-shuffle { background: #845ef7; }
+  </style>
+</head>
+<body>
+
+  <!-- ===================== HTML (화면에 보이는 내용) ===================== -->
+  <h1>🌈 영어 단어 카드</h1>
+
+  <!-- 주제 고르기 버튼 -->
+  <div class="topics">
+    <button class="topic-btn active" data-topic="전체">🌟 전체</button>
+    <button class="topic-btn" data-topic="동물">🐶 동물</button>
+    <button class="topic-btn" data-topic="과일">🍎 과일</button>
+    <button class="topic-btn" data-topic="색깔">🎨 색깔</button>
+    <button class="topic-btn" data-topic="학교">🏫 학교</button>
+  </div>
+
+  <!-- 몇 번째 카드인지 -->
+  <div class="counter" id="counter">1 / 20</div>
+
+  <!-- 단어 카드 -->
+  <div class="card-area">
+    <div class="card" id="card">
+      <!-- 앞면 -->
+      <div class="card-face card-front">
+        <div class="emoji" id="emoji">🐶</div>
+        <div class="word" id="word">dog</div>
+        <div class="hint">👆 카드를 눌러서 뒤집어 보세요!</div>
+      </div>
+      <!-- 뒷면 -->
+      <div class="card-face card-back">
+        <div class="meaning" id="meaning">개</div>
+        <div class="example" id="example">I have a dog.</div>
+        <div class="hint">👆 다시 누르면 앞면으로!</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 버튼들 -->
+  <div class="controls">
+    <button class="btn btn-move" id="prevBtn">◀ 이전</button>
+    <button class="btn btn-speak" id="speakBtn">🔊 발음 듣기</button>
+    <button class="btn btn-shuffle" id="shuffleBtn">🔀 섞기</button>
+    <button class="btn btn-move" id="nextBtn">다음 ▶</button>
+  </div>
+
+  <!-- ===================== JavaScript (움직이게 하기) ===================== -->
+  <script>
+    // ------------------------------------------------------------
+    // 1. 단어 목록
+    //    새 단어를 넣고 싶으면 아래 모양 그대로 한 줄을 추가하면 돼요!
+    // ------------------------------------------------------------
+    const allWords = [
+      // 동물
+      { topic: "동물", english: "dog",      korean: "개",       emoji: "🐶", example: "I have a dog." },
+      { topic: "동물", english: "cat",      korean: "고양이",   emoji: "🐱", example: "The cat is sleeping." },
+      { topic: "동물", english: "rabbit",   korean: "토끼",     emoji: "🐰", example: "The rabbit can jump." },
+      { topic: "동물", english: "elephant", korean: "코끼리",   emoji: "🐘", example: "The elephant is big." },
+      { topic: "동물", english: "lion",     korean: "사자",     emoji: "🦁", example: "The lion is strong." },
+
+      // 과일
+      { topic: "과일", english: "apple",      korean: "사과",   emoji: "🍎", example: "I like apples." },
+      { topic: "과일", english: "banana",     korean: "바나나", emoji: "🍌", example: "The banana is yellow." },
+      { topic: "과일", english: "grape",      korean: "포도",   emoji: "🍇", example: "Grapes are sweet." },
+      { topic: "과일", english: "strawberry", korean: "딸기",   emoji: "🍓", example: "I eat a strawberry." },
+      { topic: "과일", english: "watermelon", korean: "수박",   emoji: "🍉", example: "Watermelon is good in summer." },
+
+      // 색깔
+      { topic: "색깔", english: "red",    korean: "빨간색", emoji: "🔴", example: "The apple is red." },
+      { topic: "색깔", english: "blue",   korean: "파란색", emoji: "🔵", example: "The sky is blue." },
+      { topic: "색깔", english: "yellow", korean: "노란색", emoji: "🟡", example: "The sun is yellow." },
+      { topic: "색깔", english: "green",  korean: "초록색", emoji: "🟢", example: "The grass is green." },
+      { topic: "색깔", english: "purple", korean: "보라색", emoji: "🟣", example: "I have a purple bag." },
+
+      // 학교 물건
+      { topic: "학교", english: "pencil", korean: "연필",   emoji: "✏️", example: "I write with a pencil." },
+      { topic: "학교", english: "book",   korean: "책",     emoji: "📘", example: "I read a book." },
+      { topic: "학교", english: "eraser", korean: "지우개", emoji: "🧽", example: "Can I use your eraser?" },
+      { topic: "학교", english: "ruler",  korean: "자",     emoji: "📏", example: "This ruler is long." },
+      { topic: "학교", english: "bag",    korean: "가방",   emoji: "🎒", example: "My bag is heavy." }
+    ];
+
+    // ------------------------------------------------------------
+    // 2. 지금 상태를 기억하는 변수
+    // ------------------------------------------------------------
+    let cards = [...allWords];   // 지금 보여 줄 카드 목록 (주제에 따라 바뀜)
+    let currentIndex = 0;        // 지금 보고 있는 카드 번호 (0부터 시작)
+
+    // ------------------------------------------------------------
+    // 3. 화면 요소 가져오기
+    // ------------------------------------------------------------
+    const cardEl     = document.getElementById("card");
+    const emojiEl    = document.getElementById("emoji");
+    const wordEl     = document.getElementById("word");
+    const meaningEl  = document.getElementById("meaning");
+    const exampleEl  = document.getElementById("example");
+    const counterEl  = document.getElementById("counter");
+
+    // ------------------------------------------------------------
+    // 4. 지금 카드를 화면에 그리는 함수
+    // ------------------------------------------------------------
+    function showCard() {
+      const item = cards[currentIndex];
+
+      emojiEl.textContent   = item.emoji;
+      wordEl.textContent    = item.english;
+      meaningEl.textContent = item.korean;
+      exampleEl.textContent = item.example;
+      counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
+
+      // 새 카드는 항상 앞면부터 보여 주기
+      cardEl.classList.remove("flipped");
+    }
+
+    // ------------------------------------------------------------
+    // 5. 카드 뒤집기 (카드를 클릭하면 실행)
+    // ------------------------------------------------------------
+    cardEl.addEventListener("click", function () {
+      cardEl.classList.toggle("flipped");
+    });
+
+    // ------------------------------------------------------------
+    // 6. 이전 / 다음 버튼
+    //    마지막 카드에서 '다음'을 누르면 처음으로 돌아가요.
+    // ------------------------------------------------------------
+    function goNext() {
+      currentIndex = (currentIndex + 1) % cards.length;
+      showCard();
+    }
+
+    function goPrev() {
+      currentIndex = (currentIndex - 1 + cards.length) % cards.length;
+      showCard();
+    }
+
+    document.getElementById("nextBtn").addEventListener("click", goNext);
+    document.getElementById("prevBtn").addEventListener("click", goPrev);
+
+    // ------------------------------------------------------------
+    // 7. 발음 듣기 (브라우저의 음성 기능 사용)
+    // ------------------------------------------------------------
+    function speakWord() {
+      if (!("speechSynthesis" in window)) {
+        alert("이 브라우저는 음성 기능을 지원하지 않아요. 크롬이나 엣지에서 열어 보세요!");
+        return;
+      }
+      window.speechSynthesis.cancel();   // 이전에 읽던 소리는 멈추기
+
+      const speech = new SpeechSynthesisUtterance(cards[currentIndex].english);
+      speech.lang = "en-US";   // 미국 영어 발음
+      speech.rate = 0.8;       // 조금 천천히 읽기
+      window.speechSynthesis.speak(speech);
+    }
+
+    document.getElementById("speakBtn").addEventListener("click", speakWord);
+
+    // ------------------------------------------------------------
+    // 8. 섞기 버튼 (카드 순서를 랜덤으로 바꾸기)
+    // ------------------------------------------------------------
+    function shuffleCards() {
+      // 뒤에서부터 하나씩, 앞쪽의 아무 카드와 자리를 바꿔요.
+      for (let i = cards.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [cards[i], cards[j]] = [cards[j], cards[i]];
+      }
+      currentIndex = 0;
+      showCard();
+    }
+
+    document.getElementById("shuffleBtn").addEventListener("click", shuffleCards);
+
+    // ------------------------------------------------------------
+    // 9. 주제 고르기
+    // ------------------------------------------------------------
+    const topicButtons = document.querySelectorAll(".topic-btn");
+
+    topicButtons.forEach(function (button) {
+      button.addEventListener("click", function () {
+        const topic = button.dataset.topic;
+
+        // 선택한 버튼만 색칠하기
+        topicButtons.forEach(function (b) { b.classList.remove("active"); });
+        button.classList.add("active");
+
+        // 고른 주제의 카드만 남기기
+        if (topic === "전체") {
+          cards = [...allWords];
+        } else {
+          cards = allWords.filter(function (w) { return w.topic === topic; });
+        }
+        currentIndex = 0;
+        showCard();
+      });
+    });
+
+    // ------------------------------------------------------------
+    // 10. 보너스: 키보드로도 움직일 수 있어요
+    //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기
+    // ------------------------------------------------------------
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "ArrowRight") goNext();
+      if (event.key === "ArrowLeft")  goPrev();
+      if (event.key === " ") {
+        event.preventDefault();
+        cardEl.classList.toggle("flipped");
+      }
+      if (event.key === "Enter") {
+        event.preventDefault();
+        speakWord();
+      }
+    });
+
+    // 처음 페이지가 열리면 첫 번째 카드 보여 주기
+    showCard();
+  </script>
+</body>
+</html>
