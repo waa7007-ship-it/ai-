@@ -5,9 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>영어 단어 카드</title>
 
+  <!-- 귀여운 글꼴 (인터넷이 안 되면 컴퓨터에 있는 기본 글꼴로 보여요) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+
   <!-- ===================== CSS (모양 꾸미기) ===================== -->
   <style>
-    /* 페이지 전체 기본 설정 */
+    /* ---------- 자주 쓰는 파스텔 색깔을 이름 붙여 모아 두기 ---------- */
+    :root {
+      --pink:        #ffb3cc;
+      --pink-dark:   #f06292;
+      --peach:       #ffd8b1;
+      --yellow:      #fff1a8;
+      --mint:        #b8f2d0;
+      --mint-dark:   #2e9e62;
+      --sky:         #bfe3ff;
+      --sky-dark:    #1e88e5;
+      --lavender:    #dccbff;
+      --lavender-dark: #7c5cd6;
+      --text:        #4a4a5a;
+      --white:       #ffffff;
+    }
+
     * {
       box-sizing: border-box;
     }
@@ -15,68 +35,126 @@
     body {
       margin: 0;
       min-height: 100vh;
-      font-family: "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
-      background: linear-gradient(135deg, #fff6d5 0%, #ffd6e8 50%, #d5ecff 100%);
-      color: #333;
+      font-family: "Jua", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+      font-size: 20px;
+      color: var(--text);
+      background: linear-gradient(160deg, #fff7e0 0%, #ffe3ef 45%, #e3f1ff 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 24px 16px;
+      padding: 20px 16px 48px;
+    }
+
+    /* 화면 가운데 모아 두는 상자 */
+    .wrap {
+      width: 100%;
+      max-width: 560px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
     }
 
     h1 {
-      margin: 0 0 16px;
-      font-size: 2rem;
-      color: #ff6b9a;
-      text-shadow: 2px 2px 0 #fff;
+      margin: 0;
+      font-size: 2.3rem;
+      font-weight: normal;
+      color: var(--pink-dark);
+      text-shadow: 3px 3px 0 var(--white);
+      text-align: center;
     }
 
-    /* 주제 고르기 버튼 묶음 */
+    /* ---------- 진행 상황 (몇 개 외웠는지) ---------- */
+    .progress-box {
+      width: 100%;
+      background: var(--white);
+      border-radius: 24px;
+      padding: 14px 18px;
+      box-shadow: 0 6px 16px rgba(240, 98, 146, 0.15);
+    }
+
+    .progress-text {
+      font-size: 1.3rem;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-text b {
+      color: var(--pink-dark);
+      font-weight: normal;
+      font-size: 1.5rem;
+    }
+
+    .progress-bar {
+      width: 100%;
+      height: 26px;
+      background: #f3eef7;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--mint), #8fe3b3, var(--sky));
+      border-radius: 999px;
+      transition: width 0.5s;
+    }
+
+    .reset-btn {
+      display: block;
+      margin: 10px auto 0;
+      border: none;
+      background: none;
+      color: #a99bb8;
+      font-family: inherit;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    /* ---------- 주제 고르기 버튼 ---------- */
     .topics {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
       gap: 8px;
-      margin-bottom: 16px;
     }
 
     .topic-btn {
-      border: 3px solid #ffb3cc;
-      background: #fff;
-      color: #ff6b9a;
-      font-size: 1rem;
-      font-weight: bold;
-      padding: 8px 16px;
+      font-family: inherit;
+      font-size: 1.15rem;
+      border: 3px solid var(--pink);
+      background: var(--white);
+      color: var(--pink-dark);
+      padding: 10px 16px;
+      min-height: 50px;
       border-radius: 999px;
       cursor: pointer;
       transition: transform 0.15s;
     }
 
     .topic-btn:hover {
-      transform: scale(1.08);
+      transform: scale(1.06);
     }
 
-    /* 지금 선택된 주제 버튼 */
+    /* 지금 선택된 주제 */
     .topic-btn.active {
-      background: #ff6b9a;
-      color: #fff;
+      background: var(--pink);
+      color: var(--white);
     }
 
-    /* 몇 번째 카드인지 보여주는 글자 */
     .counter {
-      font-size: 1.1rem;
-      font-weight: bold;
-      color: #666;
-      margin-bottom: 12px;
+      font-size: 1.2rem;
+      color: #8a7f99;
     }
 
     /* ---------- 카드 (뒤집기 애니메이션) ---------- */
     .card-area {
       width: 100%;
-      max-width: 360px;
-      height: 360px;
+      max-width: 420px;
+      height: 380px;
       perspective: 1000px;   /* 3D 느낌을 주는 설정 */
-      margin-bottom: 20px;
     }
 
     .card {
@@ -96,63 +174,99 @@
     .card-face {
       position: absolute;
       inset: 0;
-      border-radius: 24px;
-      background: #fff;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+      border-radius: 32px;
+      background: var(--white);
+      box-shadow: 0 12px 28px rgba(124, 92, 214, 0.18);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
       text-align: center;
       backface-visibility: hidden;          /* 뒤쪽 면은 안 보이게 */
       -webkit-backface-visibility: hidden;
     }
 
     .card-front {
-      border: 6px solid #ffd166;
+      border: 8px solid var(--yellow);
     }
 
     .card-back {
-      border: 6px solid #6ecbff;
+      border: 8px solid var(--sky);
       transform: rotateY(180deg);           /* 뒷면은 처음부터 돌려 놓기 */
     }
 
+    /* 외운 카드는 테두리가 민트색 */
+    .card.learned .card-front {
+      border-color: var(--mint);
+    }
+
+    /* 카드 구석에 붙는 작은 표시들 */
+    .badge {
+      position: absolute;
+      top: 14px;
+      font-size: 1rem;
+      padding: 4px 12px;
+      border-radius: 999px;
+    }
+
+    .badge-learned {
+      right: 14px;
+      background: var(--mint);
+      color: var(--mint-dark);
+      display: none;
+    }
+
+    .card.learned .badge-learned {
+      display: block;
+    }
+
+    .badge-mine {
+      left: 14px;
+      background: var(--lavender);
+      color: var(--lavender-dark);
+      display: none;
+    }
+
+    .card.mine .badge-mine {
+      display: block;
+    }
+
     .emoji {
-      font-size: 6rem;
+      font-size: 6.5rem;
       line-height: 1.1;
     }
 
     .word {
-      font-size: 2.6rem;
-      font-weight: bold;
-      color: #333;
+      font-size: 3rem;
       margin-top: 10px;
+      word-break: break-word;
     }
 
     .meaning {
-      font-size: 2.4rem;
-      font-weight: bold;
-      color: #1e88e5;
+      font-size: 2.8rem;
+      color: var(--sky-dark);
       margin-bottom: 18px;
+      word-break: break-word;
     }
 
     .example {
-      font-size: 1.3rem;
-      color: #555;
-      background: #eef8ff;
-      padding: 12px 16px;
-      border-radius: 14px;
+      font-size: 1.4rem;
+      background: #eef7ff;
+      padding: 14px 18px;
+      border-radius: 18px;
+      word-break: break-word;
     }
 
     .hint {
-      margin-top: 14px;
-      font-size: 0.9rem;
-      color: #aaa;
+      margin-top: 16px;
+      font-size: 1rem;
+      color: #b5abc2;
     }
 
-    /* ---------- 아래쪽 버튼들 ---------- */
-    .controls {
+    /* ---------- 큰 버튼들 ---------- */
+    .row {
+      width: 100%;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
@@ -160,83 +274,332 @@
     }
 
     .btn {
+      font-family: inherit;
+      font-size: 1.25rem;
       border: none;
-      font-size: 1.1rem;
-      font-weight: bold;
-      padding: 12px 20px;
-      border-radius: 16px;
+      color: var(--text);
+      padding: 14px 20px;
+      min-height: 60px;
+      border-radius: 20px;
       cursor: pointer;
-      color: #fff;
-      box-shadow: 0 4px 0 rgba(0, 0, 0, 0.15);
+      box-shadow: 0 5px 0 rgba(0, 0, 0, 0.1);
       transition: transform 0.1s;
     }
 
     .btn:active {
-      transform: translateY(3px);
-      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.15);
+      transform: translateY(4px);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
     }
 
-    .btn-move    { background: #ffa94d; }
-    .btn-speak   { background: #51cf66; }
-    .btn-shuffle { background: #845ef7; }
+    /* 외웠어요 / 다시 볼래요 버튼은 더 크게, 반반 나누기 */
+    .btn-big {
+      flex: 1 1 0;
+      font-size: 1.45rem;
+      min-height: 72px;
+    }
+
+    .btn-learned { background: var(--mint); }
+    .btn-again   { background: var(--peach); }
+    .btn-move    { background: var(--yellow); }
+    .btn-speak   { background: var(--sky); }
+    .btn-shuffle { background: var(--lavender); }
+    .btn-add     { background: var(--pink); width: 100%; }
+    .btn-delete  { background: #ffe0e0; font-size: 1rem; min-height: 48px; }
+
+    /* ---------- 새 단어 만들기 ---------- */
+    .add-box {
+      width: 100%;
+      background: var(--white);
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: 0 6px 16px rgba(124, 92, 214, 0.12);
+    }
+
+    .add-box h2 {
+      margin: 0 0 14px;
+      font-size: 1.6rem;
+      font-weight: normal;
+      color: var(--lavender-dark);
+      text-align: center;
+    }
+
+    .field {
+      margin-bottom: 12px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 1.15rem;
+      margin-bottom: 6px;
+    }
+
+    .field input,
+    .field select {
+      width: 100%;
+      font-family: inherit;
+      font-size: 1.25rem;
+      padding: 12px 14px;
+      border: 3px solid var(--lavender);
+      border-radius: 16px;
+      background: #fcfaff;
+      color: var(--text);
+    }
+
+    .field input:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--lavender-dark);
+    }
+
+    /* 이모지칸과 주제칸을 한 줄에 나란히 */
+    .field-pair {
+      display: flex;
+      gap: 10px;
+    }
+
+    .field-pair .field {
+      flex: 1;
+    }
+
+    .message {
+      min-height: 1.6em;
+      text-align: center;
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+    }
+
+    .message.ok    { color: var(--mint-dark); }
+    .message.error { color: var(--pink-dark); }
+
+    /* ---------- 축하 창 ---------- */
+    .celebrate {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 240, 248, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 10;
+    }
+
+    .celebrate.show {
+      display: flex;
+    }
+
+    .celebrate-box {
+      background: var(--white);
+      border: 8px solid var(--yellow);
+      border-radius: 36px;
+      padding: 30px 24px;
+      max-width: 420px;
+      width: 100%;
+      text-align: center;
+      box-shadow: 0 16px 40px rgba(240, 98, 146, 0.25);
+      animation: pop 0.5s;
+    }
+
+    .celebrate-emoji {
+      font-size: 5rem;
+      animation: bounce 1s infinite;
+    }
+
+    .celebrate-box h2 {
+      font-size: 2.2rem;
+      font-weight: normal;
+      color: var(--pink-dark);
+      margin: 10px 0;
+    }
+
+    .celebrate-box p {
+      font-size: 1.3rem;
+      margin: 0 0 20px;
+    }
+
+    @keyframes pop {
+      0%   { transform: scale(0.5); opacity: 0; }
+      80%  { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50%      { transform: translateY(-14px); }
+    }
+
+    /* 떨어지는 색종이 */
+    .confetti {
+      position: fixed;
+      top: -40px;
+      font-size: 2rem;
+      pointer-events: none;
+      z-index: 11;
+      animation: fall linear forwards;
+    }
+
+    @keyframes fall {
+      to { transform: translateY(110vh) rotate(540deg); }
+    }
+
+    /* ---------- 휴대폰처럼 좁은 화면일 때 ---------- */
+    @media (max-width: 480px) {
+      body       { font-size: 18px; }
+      h1         { font-size: 1.9rem; }
+      .card-area { height: 340px; }
+      .emoji     { font-size: 5.2rem; }
+      .word      { font-size: 2.5rem; }
+      .meaning   { font-size: 2.3rem; }
+      .example   { font-size: 1.2rem; }
+
+      /* 이전/발음/섞기/다음 버튼을 2개씩 두 줄로 */
+      .row-nav .btn {
+        flex: 1 1 calc(50% - 10px);
+      }
+
+      /* 외웠어요 / 다시 볼래요 글자가 한 줄에 들어가게 */
+      .btn-big {
+        font-size: 1.3rem;
+        padding: 14px 8px;
+      }
+
+      .field-pair {
+        flex-direction: column;
+        gap: 0;
+      }
+    }
   </style>
 </head>
 <body>
 
   <!-- ===================== HTML (화면에 보이는 내용) ===================== -->
-  <h1>🌈 영어 단어 카드</h1>
+  <div class="wrap">
 
-  <!-- 주제 고르기 버튼 -->
-  <div class="topics">
-    <button class="topic-btn active" data-topic="전체">🌟 전체</button>
-    <button class="topic-btn" data-topic="동물">🐶 동물</button>
-    <button class="topic-btn" data-topic="과일">🍎 과일</button>
-    <button class="topic-btn" data-topic="색깔">🎨 색깔</button>
-    <button class="topic-btn" data-topic="학교">🏫 학교</button>
-  </div>
+    <h1>🌈 영어 단어 카드</h1>
 
-  <!-- 몇 번째 카드인지 -->
-  <div class="counter" id="counter">1 / 20</div>
-
-  <!-- 단어 카드 -->
-  <div class="card-area">
-    <div class="card" id="card">
-      <!-- 앞면 -->
-      <div class="card-face card-front">
-        <div class="emoji" id="emoji">🐶</div>
-        <div class="word" id="word">dog</div>
-        <div class="hint">👆 카드를 눌러서 뒤집어 보세요!</div>
+    <!-- 진행 상황 -->
+    <div class="progress-box">
+      <div class="progress-text" id="progressText">20개 중 0개 외웠어요!</div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
       </div>
-      <!-- 뒷면 -->
-      <div class="card-face card-back">
-        <div class="meaning" id="meaning">개</div>
-        <div class="example" id="example">I have a dog.</div>
-        <div class="hint">👆 다시 누르면 앞면으로!</div>
+      <button class="reset-btn" id="resetBtn">외운 기록 처음부터 다시 하기</button>
+    </div>
+
+    <!-- 주제 고르기 -->
+    <div class="topics">
+      <button class="topic-btn active" data-topic="전체">🌟 전체</button>
+      <button class="topic-btn" data-topic="동물">🐶 동물</button>
+      <button class="topic-btn" data-topic="과일">🍎 과일</button>
+      <button class="topic-btn" data-topic="색깔">🎨 색깔</button>
+      <button class="topic-btn" data-topic="학교">🏫 학교</button>
+      <button class="topic-btn" data-topic="내 단어">⭐ 내 단어</button>
+    </div>
+
+    <div class="counter" id="counter">1 / 20</div>
+
+    <!-- 단어 카드 -->
+    <div class="card-area">
+      <div class="card" id="card">
+        <!-- 앞면 -->
+        <div class="card-face card-front">
+          <span class="badge badge-mine">⭐ 내 단어</span>
+          <span class="badge badge-learned">✅ 외웠어요</span>
+          <div class="emoji" id="emoji">🐶</div>
+          <div class="word" id="word">dog</div>
+          <div class="hint">👆 카드를 눌러서 뒤집어 보세요!</div>
+        </div>
+        <!-- 뒷면 -->
+        <div class="card-face card-back">
+          <div class="meaning" id="meaning">개</div>
+          <div class="example" id="example">I have a dog.</div>
+          <div class="hint">👆 다시 누르면 앞면으로!</div>
+        </div>
       </div>
     </div>
+
+    <!-- 외웠어요 / 다시 볼래요 -->
+    <div class="row">
+      <button class="btn btn-big btn-learned" id="learnedBtn">외웠어요 ✅</button>
+      <button class="btn btn-big btn-again" id="againBtn">다시 볼래요 🔁</button>
+    </div>
+
+    <!-- 이전 / 발음 / 섞기 / 다음 -->
+    <div class="row row-nav">
+      <button class="btn btn-move" id="prevBtn">◀ 이전</button>
+      <button class="btn btn-speak" id="speakBtn">🔊 발음 듣기</button>
+      <button class="btn btn-shuffle" id="shuffleBtn">🔀 섞기</button>
+      <button class="btn btn-move" id="nextBtn">다음 ▶</button>
+    </div>
+
+    <!-- 내가 만든 카드일 때만 보이는 지우기 버튼 -->
+    <button class="btn btn-delete" id="deleteBtn" hidden>🗑️ 이 카드 지우기</button>
+
+    <!-- 새 단어 만들기 -->
+    <form class="add-box" id="addForm">
+      <h2>✏️ 나만의 단어 만들기</h2>
+
+      <div class="field">
+        <label for="inEnglish">영어 단어 *</label>
+        <input id="inEnglish" type="text" placeholder="예: tiger" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="inKorean">한국어 뜻 *</label>
+        <input id="inKorean" type="text" placeholder="예: 호랑이" autocomplete="off">
+      </div>
+
+      <div class="field">
+        <label for="inExample">영어 예문</label>
+        <input id="inExample" type="text" placeholder="예: The tiger is fast." autocomplete="off">
+      </div>
+
+      <div class="field-pair">
+        <div class="field">
+          <label for="inEmoji">이모지</label>
+          <input id="inEmoji" type="text" placeholder="예: 🐯" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="inTopic">주제</label>
+          <select id="inTopic">
+            <option value="내 단어">⭐ 내 단어</option>
+            <option value="동물">🐶 동물</option>
+            <option value="과일">🍎 과일</option>
+            <option value="색깔">🎨 색깔</option>
+            <option value="학교">🏫 학교</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="message" id="addMessage"></div>
+      <button class="btn btn-add" type="submit">➕ 카드 추가하기</button>
+    </form>
   </div>
 
-  <!-- 버튼들 -->
-  <div class="controls">
-    <button class="btn btn-move" id="prevBtn">◀ 이전</button>
-    <button class="btn btn-speak" id="speakBtn">🔊 발음 듣기</button>
-    <button class="btn btn-shuffle" id="shuffleBtn">🔀 섞기</button>
-    <button class="btn btn-move" id="nextBtn">다음 ▶</button>
+  <!-- 축하 창 (평소에는 숨어 있어요) -->
+  <div class="celebrate" id="celebrate">
+    <div class="celebrate-box">
+      <div class="celebrate-emoji">🏆</div>
+      <h2>축하해요! 🎉</h2>
+      <p id="celebrateText">단어를 모두 외웠어요!<br>정말 대단해요! 👏</p>
+      <div class="row">
+        <button class="btn btn-learned" id="closeCelebrateBtn">좋아요! 😊</button>
+        <button class="btn btn-again" id="restartBtn">처음부터 다시 🔁</button>
+      </div>
+    </div>
   </div>
 
   <!-- ===================== JavaScript (움직이게 하기) ===================== -->
   <script>
     // ------------------------------------------------------------
-    // 1. 단어 목록
-    //    새 단어를 넣고 싶으면 아래 모양 그대로 한 줄을 추가하면 돼요!
+    // 1. 처음부터 들어 있는 단어 20개
     // ------------------------------------------------------------
-    const allWords = [
+    const baseWords = [
       // 동물
-      { topic: "동물", english: "dog",      korean: "개",       emoji: "🐶", example: "I have a dog." },
-      { topic: "동물", english: "cat",      korean: "고양이",   emoji: "🐱", example: "The cat is sleeping." },
-      { topic: "동물", english: "rabbit",   korean: "토끼",     emoji: "🐰", example: "The rabbit can jump." },
-      { topic: "동물", english: "elephant", korean: "코끼리",   emoji: "🐘", example: "The elephant is big." },
-      { topic: "동물", english: "lion",     korean: "사자",     emoji: "🦁", example: "The lion is strong." },
+      { topic: "동물", english: "dog",      korean: "개",     emoji: "🐶", example: "I have a dog." },
+      { topic: "동물", english: "cat",      korean: "고양이", emoji: "🐱", example: "The cat is sleeping." },
+      { topic: "동물", english: "rabbit",   korean: "토끼",   emoji: "🐰", example: "The rabbit can jump." },
+      { topic: "동물", english: "elephant", korean: "코끼리", emoji: "🐘", example: "The elephant is big." },
+      { topic: "동물", english: "lion",     korean: "사자",   emoji: "🦁", example: "The lion is strong." },
 
       // 과일
       { topic: "과일", english: "apple",      korean: "사과",   emoji: "🍎", example: "I like apples." },
@@ -261,54 +624,161 @@
     ];
 
     // ------------------------------------------------------------
-    // 2. 지금 상태를 기억하는 변수
+    // 2. 브라우저에 저장하고 불러오기 (localStorage)
+    //    브라우저를 껐다 켜도 남아 있게 해 줘요.
+    //    혹시 저장이 막힌 브라우저여도 페이지가 멈추지 않도록 try/catch로 감싸요.
     // ------------------------------------------------------------
-    let cards = [...allWords];   // 지금 보여 줄 카드 목록 (주제에 따라 바뀜)
-    let currentIndex = 0;        // 지금 보고 있는 카드 번호 (0부터 시작)
+    const SAVE_KEY_MY_WORDS = "wordcards-my-words";
+    const SAVE_KEY_LEARNED  = "wordcards-learned";
 
-    // ------------------------------------------------------------
-    // 3. 화면 요소 가져오기
-    // ------------------------------------------------------------
-    const cardEl     = document.getElementById("card");
-    const emojiEl    = document.getElementById("emoji");
-    const wordEl     = document.getElementById("word");
-    const meaningEl  = document.getElementById("meaning");
-    const exampleEl  = document.getElementById("example");
-    const counterEl  = document.getElementById("counter");
+    function loadData(key, defaultValue) {
+      try {
+        const text = localStorage.getItem(key);
+        return text ? JSON.parse(text) : defaultValue;
+      } catch (error) {
+        return defaultValue;
+      }
+    }
 
-    // ------------------------------------------------------------
-    // 4. 지금 카드를 화면에 그리는 함수
-    // ------------------------------------------------------------
-    function showCard() {
-      const item = cards[currentIndex];
+    function saveData(key, value) {
+      try {
+        localStorage.setItem(key, JSON.stringify(value));
+      } catch (error) {
+        // 저장할 수 없는 환경이면 조용히 넘어가요.
+      }
+    }
 
-      emojiEl.textContent   = item.emoji;
-      wordEl.textContent    = item.english;
-      meaningEl.textContent = item.korean;
-      exampleEl.textContent = item.example;
-      counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
+    // 내가 추가한 단어들
+    let myWords = loadData(SAVE_KEY_MY_WORDS, []);
+    // 외운 단어들 (영어 단어를 소문자로 모아 둔 목록)
+    let learned = new Set(loadData(SAVE_KEY_LEARNED, []));
 
-      // 새 카드는 항상 앞면부터 보여 주기
-      cardEl.classList.remove("flipped");
+    function saveMyWords() { saveData(SAVE_KEY_MY_WORDS, myWords); }
+    function saveLearned() { saveData(SAVE_KEY_LEARNED, [...learned]); }
+
+    // 단어를 구별하는 이름표 (대문자/소문자 차이는 무시)
+    function keyOf(word) {
+      return word.english.trim().toLowerCase();
     }
 
     // ------------------------------------------------------------
-    // 5. 카드 뒤집기 (카드를 클릭하면 실행)
+    // 3. 지금 상태를 기억하는 변수
     // ------------------------------------------------------------
-    cardEl.addEventListener("click", function () {
-      cardEl.classList.toggle("flipped");
-    });
+    let currentTopic = "전체";   // 지금 고른 주제
+    let cards = [];              // 지금 보여 줄 카드 목록
+    let currentIndex = 0;        // 지금 보고 있는 카드 번호 (0부터 시작)
+
+    // 기본 단어 + 내가 만든 단어를 합친 전체 목록
+    function getAllWords() {
+      return baseWords.concat(myWords.map(function (w) {
+        return Object.assign({}, w, { mine: true });
+      }));
+    }
+
+    // 고른 주제에 맞는 카드만 골라서 cards에 넣기
+    function buildCards() {
+      const all = getAllWords();
+      if (currentTopic === "전체") {
+        cards = all;
+      } else {
+        cards = all.filter(function (w) { return w.topic === currentTopic; });
+      }
+    }
 
     // ------------------------------------------------------------
-    // 6. 이전 / 다음 버튼
-    //    마지막 카드에서 '다음'을 누르면 처음으로 돌아가요.
+    // 4. 화면 요소 가져오기
+    // ------------------------------------------------------------
+    const cardEl       = document.getElementById("card");
+    const emojiEl      = document.getElementById("emoji");
+    const wordEl       = document.getElementById("word");
+    const meaningEl    = document.getElementById("meaning");
+    const exampleEl    = document.getElementById("example");
+    const counterEl    = document.getElementById("counter");
+    const progressText = document.getElementById("progressText");
+    const progressFill = document.getElementById("progressFill");
+    const deleteBtn    = document.getElementById("deleteBtn");
+    const celebrateEl  = document.getElementById("celebrate");
+
+    // 카드가 하나도 없을 때(예: '내 단어'를 아직 안 만들었을 때) 버튼 막기
+    const cardButtons = ["learnedBtn", "againBtn", "prevBtn", "nextBtn", "speakBtn", "shuffleBtn"]
+      .map(function (id) { return document.getElementById(id); });
+
+    // ------------------------------------------------------------
+    // 5. 지금 카드를 화면에 그리는 함수
+    // ------------------------------------------------------------
+    function showCard() {
+      cardEl.classList.remove("flipped");   // 새 카드는 항상 앞면부터
+
+      // 카드가 없으면 안내 문구 보여 주기
+      if (cards.length === 0) {
+        emojiEl.textContent   = "📭";
+        wordEl.textContent    = "카드가 없어요";
+        meaningEl.textContent = "아래에서 만들어 보세요!";
+        exampleEl.textContent = "✏️ 나만의 단어 만들기";
+        counterEl.textContent = "0 / 0";
+        cardEl.classList.remove("learned", "mine");
+        deleteBtn.hidden = true;
+        cardButtons.forEach(function (b) { b.disabled = true; });
+        updateProgress();
+        return;
+      }
+      cardButtons.forEach(function (b) { b.disabled = false; });
+
+      const item = cards[currentIndex];
+      emojiEl.textContent   = item.emoji;
+      wordEl.textContent    = item.english;
+      meaningEl.textContent = item.korean;
+      exampleEl.textContent = item.example || "(예문이 없어요)";
+      counterEl.textContent = (currentIndex + 1) + " / " + cards.length;
+
+      // 외운 카드, 내가 만든 카드 표시
+      cardEl.classList.toggle("learned", learned.has(keyOf(item)));
+      cardEl.classList.toggle("mine", !!item.mine);
+      deleteBtn.hidden = !item.mine;
+
+      updateProgress();
+    }
+
+    // ------------------------------------------------------------
+    // 6. 진행 상황 (몇 개 외웠는지) 보여 주기
+    // ------------------------------------------------------------
+    function countLearned() {
+      return cards.filter(function (w) { return learned.has(keyOf(w)); }).length;
+    }
+
+    function updateProgress() {
+      const total = cards.length;
+      const done  = countLearned();
+      const percent = total === 0 ? 0 : Math.round((done / total) * 100);
+
+      progressText.innerHTML = "";   // 비우고 다시 쓰기
+      progressText.append(total + "개 중 ");
+      const b = document.createElement("b");
+      b.textContent = done + "개";
+      progressText.append(b, " 외웠어요!");
+
+      progressFill.style.width = percent + "%";
+    }
+
+    // ------------------------------------------------------------
+    // 7. 카드 뒤집기 (카드를 클릭하면 실행)
+    // ------------------------------------------------------------
+    function flipCard() {
+      if (cards.length > 0) cardEl.classList.toggle("flipped");
+    }
+    cardEl.addEventListener("click", flipCard);
+
+    // ------------------------------------------------------------
+    // 8. 이전 / 다음 버튼 (끝에서 넘기면 처음으로 돌아가요)
     // ------------------------------------------------------------
     function goNext() {
+      if (cards.length === 0) return;
       currentIndex = (currentIndex + 1) % cards.length;
       showCard();
     }
 
     function goPrev() {
+      if (cards.length === 0) return;
       currentIndex = (currentIndex - 1 + cards.length) % cards.length;
       showCard();
     }
@@ -317,9 +787,89 @@
     document.getElementById("prevBtn").addEventListener("click", goPrev);
 
     // ------------------------------------------------------------
-    // 7. 발음 듣기 (브라우저의 음성 기능 사용)
+    // 9. 외웠어요 ✅ / 다시 볼래요 🔁
+    // ------------------------------------------------------------
+    function markLearned() {
+      if (cards.length === 0) return;
+      const wasAllDone = countLearned() === cards.length;
+
+      learned.add(keyOf(cards[currentIndex]));
+      saveLearned();
+
+      // 방금 눌러서 전부 외우게 되었으면 축하!
+      if (!wasAllDone && countLearned() === cards.length) {
+        showCard();
+        celebrate();
+      } else {
+        goNext();
+      }
+    }
+
+    function markAgain() {
+      if (cards.length === 0) return;
+      learned.delete(keyOf(cards[currentIndex]));
+      saveLearned();
+      goNext();
+    }
+
+    document.getElementById("learnedBtn").addEventListener("click", markLearned);
+    document.getElementById("againBtn").addEventListener("click", markAgain);
+
+    // 외운 기록 지우기 (지금 고른 주제의 카드만)
+    function resetLearned() {
+      cards.forEach(function (w) { learned.delete(keyOf(w)); });
+      saveLearned();
+      currentIndex = 0;
+      showCard();
+    }
+
+    document.getElementById("resetBtn").addEventListener("click", function () {
+      if (confirm("지금 보고 있는 주제의 외운 기록을 지울까요?")) {
+        resetLearned();
+      }
+    });
+
+    // ------------------------------------------------------------
+    // 10. 축하 창과 색종이
+    // ------------------------------------------------------------
+    function celebrate() {
+      const topicName = currentTopic === "전체" ? "" : "'" + currentTopic + "' ";
+      document.getElementById("celebrateText").innerHTML = "";
+      document.getElementById("celebrateText").append(
+        topicName + "단어 " + cards.length + "개를 모두 외웠어요!",
+        document.createElement("br"),
+        "정말 대단해요! 👏"
+      );
+      celebrateEl.classList.add("show");
+
+      // 색종이 30개를 위에서 떨어뜨리기
+      const pieces = ["🎉", "⭐", "🎈", "💖", "🌸", "✨"];
+      for (let i = 0; i < 30; i++) {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.textContent = pieces[i % pieces.length];
+        c.style.left = Math.random() * 100 + "vw";
+        c.style.animationDuration = (2 + Math.random() * 2) + "s";
+        c.style.animationDelay = Math.random() * 0.8 + "s";
+        document.body.appendChild(c);
+        setTimeout(function () { c.remove(); }, 5000);   // 다 떨어지면 지우기
+      }
+    }
+
+    document.getElementById("closeCelebrateBtn").addEventListener("click", function () {
+      celebrateEl.classList.remove("show");
+    });
+
+    document.getElementById("restartBtn").addEventListener("click", function () {
+      celebrateEl.classList.remove("show");
+      resetLearned();
+    });
+
+    // ------------------------------------------------------------
+    // 11. 발음 듣기 (브라우저의 음성 기능 사용)
     // ------------------------------------------------------------
     function speakWord() {
+      if (cards.length === 0) return;
       if (!("speechSynthesis" in window)) {
         alert("이 브라우저는 음성 기능을 지원하지 않아요. 크롬이나 엣지에서 열어 보세요!");
         return;
@@ -335,7 +885,7 @@
     document.getElementById("speakBtn").addEventListener("click", speakWord);
 
     // ------------------------------------------------------------
-    // 8. 섞기 버튼 (카드 순서를 랜덤으로 바꾸기)
+    // 12. 섞기 (카드 순서를 랜덤으로 바꾸기)
     // ------------------------------------------------------------
     function shuffleCards() {
       // 뒤에서부터 하나씩, 앞쪽의 아무 카드와 자리를 바꿔요.
@@ -350,39 +900,107 @@
     document.getElementById("shuffleBtn").addEventListener("click", shuffleCards);
 
     // ------------------------------------------------------------
-    // 9. 주제 고르기
+    // 13. 주제 고르기
     // ------------------------------------------------------------
     const topicButtons = document.querySelectorAll(".topic-btn");
 
+    function selectTopic(topic) {
+      currentTopic = topic;
+      topicButtons.forEach(function (b) {
+        b.classList.toggle("active", b.dataset.topic === topic);
+      });
+      buildCards();
+      currentIndex = 0;
+      showCard();
+    }
+
     topicButtons.forEach(function (button) {
       button.addEventListener("click", function () {
-        const topic = button.dataset.topic;
-
-        // 선택한 버튼만 색칠하기
-        topicButtons.forEach(function (b) { b.classList.remove("active"); });
-        button.classList.add("active");
-
-        // 고른 주제의 카드만 남기기
-        if (topic === "전체") {
-          cards = [...allWords];
-        } else {
-          cards = allWords.filter(function (w) { return w.topic === topic; });
-        }
-        currentIndex = 0;
-        showCard();
+        selectTopic(button.dataset.topic);
       });
     });
 
     // ------------------------------------------------------------
-    // 10. 보너스: 키보드로도 움직일 수 있어요
+    // 14. 나만의 단어 만들기
+    // ------------------------------------------------------------
+    const addForm    = document.getElementById("addForm");
+    const addMessage = document.getElementById("addMessage");
+
+    function showMessage(text, type) {
+      addMessage.textContent = text;
+      addMessage.className = "message " + type;
+    }
+
+    addForm.addEventListener("submit", function (event) {
+      event.preventDefault();   // 페이지가 새로고침되지 않게 막기
+
+      const english = document.getElementById("inEnglish").value.trim();
+      const korean  = document.getElementById("inKorean").value.trim();
+      const example = document.getElementById("inExample").value.trim();
+      const emoji   = document.getElementById("inEmoji").value.trim() || "📝";
+      const topic   = document.getElementById("inTopic").value;
+
+      // 꼭 필요한 칸이 비었는지 확인
+      if (!english || !korean) {
+        showMessage("영어 단어와 한국어 뜻은 꼭 써 주세요! 🙏", "error");
+        return;
+      }
+
+      // 이미 있는 단어인지 확인
+      const exists = getAllWords().some(function (w) {
+        return keyOf(w) === english.toLowerCase();
+      });
+      if (exists) {
+        showMessage("'" + english + "'는 이미 있는 단어예요! 😊", "error");
+        return;
+      }
+
+      // 새 단어 저장하기
+      const newWord = { topic: topic, english: english, korean: korean, emoji: emoji, example: example };
+      myWords.push(newWord);
+      saveMyWords();
+
+      addForm.reset();
+      showMessage("'" + english + "' 카드를 만들었어요! 🎉", "ok");
+
+      // 방금 만든 카드를 바로 보여 주기
+      selectTopic(topic);
+      currentIndex = cards.findIndex(function (w) { return keyOf(w) === english.toLowerCase(); });
+      showCard();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    // 내가 만든 카드 지우기
+    deleteBtn.addEventListener("click", function () {
+      const item = cards[currentIndex];
+      if (!item || !item.mine) return;
+      if (!confirm("'" + item.english + "' 카드를 지울까요?")) return;
+
+      myWords = myWords.filter(function (w) { return keyOf(w) !== keyOf(item); });
+      learned.delete(keyOf(item));
+      saveMyWords();
+      saveLearned();
+
+      buildCards();
+      if (currentIndex >= cards.length) currentIndex = 0;
+      showCard();
+    });
+
+    // ------------------------------------------------------------
+    // 15. 보너스: 키보드로도 움직일 수 있어요
     //     ← → : 이전/다음,  스페이스: 뒤집기,  엔터: 발음 듣기
+    //     (글자를 쓰는 칸에 있을 때는 작동하지 않아요)
     // ------------------------------------------------------------
     document.addEventListener("keydown", function (event) {
+      const tag = event.target.tagName;
+      if (tag === "INPUT" || tag === "SELECT" || tag === "TEXTAREA") return;
+      if (celebrateEl.classList.contains("show")) return;
+
       if (event.key === "ArrowRight") goNext();
       if (event.key === "ArrowLeft")  goPrev();
       if (event.key === " ") {
         event.preventDefault();
-        cardEl.classList.toggle("flipped");
+        flipCard();
       }
       if (event.key === "Enter") {
         event.preventDefault();
@@ -390,8 +1008,8 @@
       }
     });
 
-    // 처음 페이지가 열리면 첫 번째 카드 보여 주기
-    showCard();
+    // 처음 페이지가 열리면 '전체' 카드 보여 주기
+    selectTopic("전체");
   </script>
 </body>
 </html>
